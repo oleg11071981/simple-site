@@ -3,9 +3,9 @@
     "description": "CodeIgniter4 project starter",
     "license": "MIT",
     "require": {
-        "php": "^7.4",
-        "codeigniter4/framework": "4.4.8",
-      "ext-mbstring": "*"
+        "php": "^7.4 || ^8.0 || ^8.4",
+        "codeigniter4/framework": "^4.5.5",
+        "ext-mbstring": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9",
