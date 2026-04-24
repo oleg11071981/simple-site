@@ -1,0 +1,1021 @@
+/**
+ * Стили для публичной части сайта
+ * Путь: public/css/site.css
+ */
+
+/* ========================================
+   RESET & BASE
+   ======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #f9fafb;
+    color: #111827;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* ========================================
+   ШАПКА (HEADER)
+   ======================================== */
+
+.header {
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.logo span {
+    color: #1e293b;
+    background: none;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+}
+
+.logo:hover {
+    opacity: 0.8;
+}
+
+/* ========================================
+   МЕНЮ (NAVIGATION)
+   ======================================== */
+
+.nav-menu {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.nav-link {
+    text-decoration: none;
+    font-weight: 500;
+    color: #1f2937;
+    transition: color 0.2s;
+    font-size: 1rem;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #2563eb;
+}
+
+.burger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    gap: 6px;
+    padding: 8px;
+}
+
+.burger span {
+    width: 26px;
+    height: 2px;
+    background-color: #1f2937;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.burger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+}
+
+.burger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.burger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+.mobile-nav {
+    display: none;
+    background: #ffffff;
+    border-top: 1px solid #eef2f6;
+    padding: 1rem 1.5rem;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-nav.active {
+    display: flex;
+}
+
+.mobile-nav .nav-link {
+    padding: 0.5rem 0;
+    font-size: 1.1rem;
+    border-bottom: 1px solid #f0f2f5;
+}
+
+/* ========================================
+   ХЛЕБНЫЕ КРОШКИ (BREADCRUMBS)
+   ======================================== */
+
+.breadcrumbs {
+    padding: 1rem 0;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #eef2f6;
+}
+
+.breadcrumbs-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumbs-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.breadcrumbs-item:not(:last-child):after {
+    content: '/';
+    color: #9ca3af;
+}
+
+.breadcrumbs-link {
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.breadcrumbs-link:hover {
+    color: #2563eb;
+}
+
+.breadcrumbs-current {
+    color: #111827;
+    font-weight: 700;
+}
+
+/* ========================================
+   ЗАГОЛОВКИ С ПОДЧЁРКИВАНИЕМ
+   ======================================== */
+
+.page-header,
+.home-header,
+.news-detail-header,
+.news-section .section-title {
+    position: relative;
+    display: inline-block;
+}
+
+.page-header:after,
+.home-header:after,
+.news-detail-header:after,
+.news-section .section-title:after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 56px;
+    height: 4px;
+    background: #2563eb;
+    border-radius: 4px;
+}
+
+/* ========================================
+   СТРАНИЦЫ (PAGES)
+   ======================================== */
+
+/* Заголовок страницы на сером фоне */
+.page-header {
+    margin: 1rem 0;
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+    letter-spacing: -0.01em;
+}
+
+.page-description {
+    font-size: 1rem;
+    color: #6b7280;
+    line-height: 1.5;
+    max-width: 800px;
+    margin-top: 0.5rem;
+}
+
+/* Карточка с контентом на белом фоне */
+.page-card {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+.page-text {
+    color: #4b5563;
+    line-height: 1.8;
+    font-size: 1.0625rem;
+}
+
+.page-text p {
+    margin-bottom: 1.5rem;
+}
+
+.page-text h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem;
+    color: #1f2937;
+}
+
+.page-text h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.75rem;
+    color: #1f2937;
+}
+
+/* Списки внутри карточек */
+.page-text ul,
+.page-text ol {
+    margin: 1rem 0 1.5rem 1.8rem;
+    padding-left: 0;
+}
+
+.page-text li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.page-text img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+    margin: 1.5rem 0;
+}
+
+.page-text blockquote {
+    border-left: 4px solid #2563eb;
+    padding: 0.75rem 0 0.75rem 1.5rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: #4b5563;
+    background: #f9fafb;
+    border-radius: 0 0.75rem 0.75rem 0;
+}
+
+.page-text table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+}
+
+.page-text th,
+.page-text td {
+    border: 1px solid #e5e7eb;
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.page-text th {
+    background: #f9fafb;
+    font-weight: 600;
+}
+
+/* ========================================
+   ГЛАВНАЯ СТРАНИЦА (HOME)
+   ======================================== */
+
+/* Заголовок на сером фоне */
+.home-header {
+    margin: 1rem 0;
+}
+
+.home-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+    letter-spacing: -0.01em;
+}
+
+/* Карточка с контентом на белом фоне */
+.home-card {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+.home-text {
+    color: #4b5563;
+    line-height: 1.8;
+    font-size: 1.0625rem;
+}
+
+.home-text p {
+    margin-bottom: 1.5rem;
+}
+
+.home-text h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem;
+    color: #1f2937;
+}
+
+.home-text h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.75rem;
+    color: #1f2937;
+}
+
+/* Списки внутри карточек */
+.home-text ul,
+.home-text ol {
+    margin: 1rem 0 1.5rem 1.8rem;
+    padding-left: 0;
+}
+
+.home-text li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.home-text img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+    margin: 1.5rem 0;
+}
+
+.home-text blockquote {
+    border-left: 4px solid #2563eb;
+    padding: 0.75rem 0 0.75rem 1.5rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: #4b5563;
+    background: #f9fafb;
+    border-radius: 0 0.75rem 0.75rem 0;
+}
+
+/* ========================================
+   НОВОСТИ (NEWS)
+   ======================================== */
+
+/* Сетка новостей */
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+/* Карточка новости */
+.news-card {
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    border: 1px solid #edf2f7;
+}
+
+.news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e1;
+}
+
+.news-image {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    overflow: hidden;
+}
+
+.news-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.news-content {
+    padding: 1.5rem;
+}
+
+.news-date {
+    font-size: 0.75rem;
+    color: #2563eb;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.news-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+    color: #1f2937;
+}
+
+.news-excerpt {
+    color: #4b5563;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.read-more {
+    color: #2563eb;
+    font-weight: 500;
+    font-size: 0.85rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.read-more:hover {
+    text-decoration: underline;
+}
+
+/* Детальная страница новости */
+.news-detail-header {
+    margin: 1rem 0;
+}
+
+.news-detail-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+    letter-spacing: -0.01em;
+}
+
+.news-detail-meta {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding-bottom: 0.5rem;
+}
+
+.news-detail-date,
+.news-detail-author {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.news-detail-image {
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.news-detail-image img {
+    max-width: 100%;
+    max-height: 500px;
+    border-radius: 1rem;
+    object-fit: cover;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.news-detail-card {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+.news-detail-content {
+    color: #4b5563;
+    line-height: 1.8;
+    font-size: 1.0625rem;
+}
+
+.news-detail-content p {
+    margin-bottom: 1.5rem;
+}
+
+.news-detail-content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem;
+    color: #1f2937;
+}
+
+.news-detail-content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.75rem;
+    color: #1f2937;
+}
+
+/* Списки внутри детальной новости */
+.news-detail-content ul,
+.news-detail-content ol {
+    margin: 1rem 0 1.5rem 1.8rem;
+    padding-left: 0;
+}
+
+.news-detail-content li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.news-detail-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+    margin: 1.5rem 0;
+}
+
+.news-detail-content blockquote {
+    border-left: 4px solid #2563eb;
+    padding: 0.75rem 0 0.75rem 1.5rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: #4b5563;
+    background: #f9fafb;
+    border-radius: 0 0.75rem 0.75rem 0;
+}
+
+/* Другие новости */
+.other-news {
+    margin: 3rem 0;
+}
+
+.other-news-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+}
+
+.other-news-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.other-news-card {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1px solid #edf2f7;
+}
+
+.other-news-card:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.other-news-image {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.other-news-image img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.other-news-date {
+    font-size: 0.7rem;
+    color: #2563eb;
+    font-weight: 500;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.other-news-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #1f2937;
+}
+
+/* Блок новостей на главной */
+.news-section {
+    margin: 3rem 0;
+}
+
+.news-section .section-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.01em;
+    color: #1f2937;
+}
+
+.empty-news {
+    text-align: center;
+    padding: 4rem;
+    color: #6c757d;
+    background: white;
+    border-radius: 1rem;
+}
+
+/* ========================================
+   ПОДВАЛ (FOOTER)
+   ======================================== */
+
+.footer {
+    background: #111827;
+    color: #e5e7eb;
+    padding: 32px 0;
+    margin-top: 2rem;
+}
+
+.footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.copyright {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+/* ========================================
+   ПАГИНАЦИЯ
+   ======================================== */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.pagination a, .pagination span {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background: white;
+    color: #2563eb;
+    text-decoration: none;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s;
+}
+
+.pagination a:hover {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+.pagination .active span {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+/* ========================================
+   АДАПТИВНОСТЬ (RESPONSIVE)
+   ======================================== */
+
+@media (max-width: 992px) {
+    .container {
+        padding: 0 20px;
+    }
+
+    .news-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        height: 64px;
+    }
+
+    .nav-menu {
+        display: none;
+    }
+
+    .burger {
+        display: flex;
+    }
+
+    .container {
+        padding: 0 16px;
+    }
+
+    .page-title,
+    .news-detail-title,
+    .home-title {
+        font-size: 1.5rem;
+    }
+
+    .page-card,
+    .home-card,
+    .news-detail-card {
+        padding: 1.5rem;
+        border-radius: 1rem;
+    }
+
+    .news-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .news-section .section-title {
+        font-size: 1.35rem;
+    }
+
+    .footer-inner {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .breadcrumbs-item {
+        font-size: 0.75rem;
+    }
+
+    .pagination a, .pagination span {
+        padding: 0.35rem 0.75rem;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-card,
+    .home-card,
+    .news-detail-card {
+        padding: 1rem;
+    }
+
+    .news-image {
+        height: 160px;
+    }
+
+    .page-text ul,
+    .page-text ol,
+    .home-text ul,
+    .home-text ol,
+    .news-detail-content ul,
+    .news-detail-content ol {
+        margin: 1rem 0 1.5rem 1.5rem;
+    }
+}
+
+/* ========================================
+   КОНТАКТЫ (CONTACTS)
+   ======================================== */
+
+.contacts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.contacts-info-card,
+.contacts-map-card,
+.feedback-card {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+.contacts-info-title {
+    font-size: 1.35rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #2563eb;
+    display: inline-block;
+    color: #1f2937;
+}
+
+.contacts-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.contacts-info-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.contacts-info-icon {
+    font-size: 1.5rem;
+    min-width: 2rem;
+}
+
+.contacts-info-content {
+    flex: 1;
+}
+
+.contacts-info-label {
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 0.25rem;
+    font-size: 0.85rem;
+}
+
+.contacts-info-value {
+    color: #1f2937;
+    font-size: 1rem;
+}
+
+.contacts-link {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.contacts-link:hover {
+    text-decoration: underline;
+}
+
+.map-container {
+    border-radius: 1rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.map-container iframe {
+    width: 100%;
+    height: 400px;
+    border: none;
+}
+
+.map-note {
+    text-align: center;
+    margin-top: 0.75rem;
+}
+
+.map-link {
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+.map-link:hover {
+    text-decoration: underline;
+}
+
+/* Форма обратной связи */
+.feedback-card {
+    margin-top: 0;
+}
+
+.feedback-form {
+    margin-top: 1rem;
+}
+
+.feedback-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.feedback-form-group {
+    margin-bottom: 1rem;
+}
+
+.feedback-form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #4b5563;
+    margin-bottom: 0.5rem;
+}
+
+.feedback-input,
+.feedback-textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+    font-family: inherit;
+}
+
+.feedback-input:focus,
+.feedback-textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+.feedback-textarea {
+    resize: vertical;
+}
+
+.feedback-form-actions {
+    text-align: left;
+    margin-top: 0.5rem;
+}
+
+.feedback-btn {
+    background: #2563eb;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.feedback-btn:hover {
+    background: #1d4ed8;
+}
+
+/* Адаптивность для контактов */
+@media (max-width: 992px) {
+    .contacts-grid {
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .contacts-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .feedback-form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .contacts-info-card,
+    .contacts-map-card,
+    .feedback-card {
+        padding: 1.25rem;
+    }
+
+    .map-container iframe {
+        height: 300px;
+    }
+}

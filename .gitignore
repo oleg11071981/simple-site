@@ -1,0 +1,155 @@
+#-------------------------
+# Operating Specific Junk Files
+#-------------------------
+
+# OS X
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# OS X Thumbnails
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+
+#-------------------------
+# Environment Files
+#-------------------------
+.env
+.env.backup
+.env.local
+.vagrant
+Vagrantfile
+
+#-------------------------
+# CodeIgniter Specific
+#-------------------------
+writable/cache/*
+!writable/cache/.gitkeep
+
+writable/logs/*
+!writable/logs/.gitkeep
+
+writable/session/*
+!writable/session/.gitkeep
+
+writable/uploads/*
+!writable/uploads/.gitkeep
+
+writable/debugbar/*
+!writable/debugbar/.gitkeep
+
+php_errors.log
+
+#-------------------------
+# Uploads
+#-------------------------
+public/uploads/temp/*
+!public/uploads/temp/.gitkeep
+
+public/uploads/ckeditor/*
+!public/uploads/ckeditor/.gitkeep
+
+#-------------------------
+# Composer
+#-------------------------
+vendor/
+composer.lock
+composer.phar
+
+#-------------------------
+# Docker
+#-------------------------
+databases/mysql/
+logs/
+*.pid
+docker-compose.override.yml
+
+#-------------------------
+# Builds and Temp
+#-------------------------
+/builds/
+build/
+temp/
+tmp/
+
+#-------------------------
+# IDE / Development
+#-------------------------
+.idea/
+*.iml
+.vscode/
+*.sublime-*
+.netrwhist
+.php-version
+.phpintel
+/api/
+/results/
+/phpunit*.xml
+/.phpunit.*.cache
+.php_cs.cache
+.phpstorm.meta.php
+_ide_helper.php
+
+# Netbeans
+nbproject/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+.nb-gradle/
+
+#-------------------------
+# Testing
+#-------------------------
+tests/coverage*
+phpunit
+.coverage
+.clover
+
+#-------------------------
+# Package Managers
+#-------------------------
+node_modules/
+package-lock.json
+yarn.lock
+
+#-------------------------
+# Project Specific
+#-------------------------
+*.log
+*.cache
+*.sqlite
+*.sqlite-journal
+.env.example
+
+#-------------------------
+# Database files (не храним в Git)
+#-------------------------
+databases/mysql/*.sock
+databases/mysql/*.pid
+databases/mysql/auto.cnf
+databases/mysql/binlog.*
+databases/mysql/ib*
+databases/mysql/#innodb_*
+databases/mysql/mysql.sock
+databases/mysql/performance_schema/
+databases/mysql/sys/
+
+# Logs
+logs/*.log
