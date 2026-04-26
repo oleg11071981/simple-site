@@ -21,6 +21,7 @@ use App\Models\NNewsArticlesModel;
 use App\Models\NSiteModel;
 use App\Models\NSiteconfigModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
+use CodeIgniter\HTTP\RedirectResponse;
 
 /**
  * Контроллер публичной части сайта
@@ -92,16 +93,20 @@ class SiteController extends BaseController
     }
 
     /**
-     * Отображение произвольной страницы
+     * Отображение произвольной страницы с поддержкой вложенных URL
      *
      * @route GET /{slug}
-     * @param string $slug Уникальный путь (URL) страницы
-     * @return string HTML страница
+     * @param string ...$segments Сегменты URL
+     * @return string|RedirectResponse HTML страница или редирект
      * @throws PageNotFoundException Если страница не найдена
      */
-    public function page(string $slug): string
+    public function page(...$segments)
     {
-        $page = $this->pagesModel->where('path', $slug)
+        $fullPath = implode('/', $segments);
+
+        // Ищем страницу по последнему сегменту
+        $lastSegment = end($segments);
+        $page = $this->pagesModel->where('path', $lastSegment)
             ->where('publish', 1)
             ->first();
 
@@ -109,17 +114,32 @@ class SiteController extends BaseController
             throw PageNotFoundException::forPageNotFound();
         }
 
+        // Проверяем, правильный ли URL
+        $correctPath = $this->pagesModel->getFullPath($page['id']);
+
+        if ($fullPath !== $correctPath) {
+            // Перенаправляем на правильный URL
+            return redirect()->to('/' . $correctPath);
+        }
+
         $settings = $this->settingsModel->getAll();
 
+        // Получаем дерево вложенных страниц
+        $childrenTree = $this->pagesModel->getTreeForDisplay($page['id']);
+
+        // Получаем хлебные крошки
+        $breadcrumbs = $this->getBreadcrumbs($page['id']);
+
         $data = [
-            'title'       => $page['name'] . ' | ' . ($settings['SiteName'] ?? 'n-cms'),
-            'description' => $page['description'] ?: ($settings['Description'] ?? ''),
-            'keywords'    => $page['keywords'] ?: ($settings['Keywords'] ?? ''),
-            'page'        => $page,
-            'menuPages'   => $this->pagesModel->getMenuPages(),
-            'breadcrumbs' => $this->getBreadcrumbs($page['id']),
-            'currentPage' => $page['name'],
-            'activePage'  => 'page_' . $page['id'],
+            'title'         => $page['name'] . ' | ' . ($settings['SiteName'] ?? 'n-cms'),
+            'description'   => $page['description'] ?: ($settings['Description'] ?? ''),
+            'keywords'      => $page['keywords'] ?: ($settings['Keywords'] ?? ''),
+            'page'          => $page,
+            'childrenTree'  => $childrenTree,
+            'breadcrumbs'   => $breadcrumbs,
+            'menuPages'     => $this->pagesModel->getMenuPages(),
+            'activePage'    => 'page_' . $page['id'],
+            'currentPage'   => $page['name'],
         ];
 
         return view('site/page', $data);
@@ -129,24 +149,29 @@ class SiteController extends BaseController
      * Получение хлебных крошек для навигации
      *
      * @param int $id ID текущей страницы
-     * @return array Массив с элементами хлебных крошек (name, url)
+     * @return array
      */
     private function getBreadcrumbs(int $id): array
     {
         $breadcrumbs = [];
+        $parents = [];
         $current = $this->pagesModel->find($id);
 
-        // Собираем цепочку родителей (исключая текущую страницу)
-        $parents = [];
+        // Собираем всех родителей (исключая текущую страницу)
         while ($current && $current['parent'] > 0) {
-            array_unshift($parents, $current);
-            $current = $this->pagesModel->find($current['parent']);
+            $parent = $this->pagesModel->find($current['parent']);
+            if ($parent) {
+                array_unshift($parents, $parent);
+                $current = $parent;
+            } else {
+                break;
+            }
         }
 
         foreach ($parents as $parent) {
             $breadcrumbs[] = [
                 'name' => $parent['name'],
-                'url'  => '/' . $parent['path']
+                'url'  => '/' . $this->pagesModel->getFullPath($parent['id'])
             ];
         }
 
@@ -173,7 +198,6 @@ class SiteController extends BaseController
             ->orderBy('id', 'DESC')
             ->paginate($perPage, 'default', $page);
 
-        // Добавляем информацию о фото
         foreach ($news as &$item) {
             if ($item['foto'] > 0) {
                 $file = $fileModel->find($item['foto']);
@@ -220,7 +244,6 @@ class SiteController extends BaseController
             throw PageNotFoundException::forPageNotFound();
         }
 
-        // Добавляем информацию о фото
         if ($news['foto'] > 0) {
             $file = $fileModel->find($news['foto']);
             if ($file) {
@@ -228,7 +251,6 @@ class SiteController extends BaseController
             }
         }
 
-        // Получаем другие новости для блока "Читайте также"
         $otherNews = $newsModel->where('publish', 1)
             ->where('id !=', $news['id'])
             ->orderBy('date', 'DESC')
@@ -290,5 +312,4 @@ class SiteController extends BaseController
 
         return view('site/contacts', $data);
     }
-
 }

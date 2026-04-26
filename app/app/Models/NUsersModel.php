@@ -320,4 +320,39 @@ class NUsersModel extends Model
             ->where('publish', 1)
             ->findAll();
     }
+
+    /**
+     * Получить дерево страниц для текущего раздела
+     *
+     * @param int $parent ID родительской страницы
+     * @return array
+     */
+    public function getTreeForDisplay(int $parent): array
+    {
+        $pages = $this->where('parent', $parent)
+            ->where('publish', 1)
+            ->orderBy('priority', 'ASC')
+            ->orderBy('name', 'ASC')
+            ->findAll();
+
+        foreach ($pages as &$page) {
+            $page['children'] = $this->getTreeForDisplay($page['id']);
+        }
+
+        return $pages;
+    }
+
+    /**
+     * Проверить, есть ли у страницы дочерние страницы
+     *
+     * @param int $id ID страницы
+     * @return bool
+     */
+    public function hasChildren(int $id): bool
+    {
+        return $this->where('parent', $id)
+                ->where('publish', 1)
+                ->countAllResults() > 0;
+    }
+
 }

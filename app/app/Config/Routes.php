@@ -81,3 +81,5 @@ $routes->get('news/(:any)', 'SiteController::newsDetail/$1');
 
 // Произвольные страницы (должен быть последним, чтобы не перехватывать другие маршруты)
 $routes->get('/(:any)', 'SiteController::page/$1');
+$routes->get('/(:any)/(:any)', 'SiteController::page/$1/$2');
+$routes->get('/(:any)/(:any)/(:any)', 'SiteController::page/$1/$2/$3');

@@ -429,26 +429,31 @@ class PagesController extends BaseController
     }
 
     /**
-     * Генерация пути из названия
+     * Генерация пути из названия с учётом родителя (иерархический)
      *
-     * @param string $name Название
+     * @param string $name Название страницы
      * @param int $parent Родительская страница
      * @return string
      */
     private function generatePath(string $name, int $parent = 0): string
     {
-        $path = mb_strtolower($name, 'UTF-8');
-        $path = str_replace([' ', '_', '.'], '-', $path);
-        $path = preg_replace('/[^a-zа-я0-9-]/ui', '', $path);
-        $path = preg_replace('/-+/', '-', $path);
-        $path = trim($path, '-');
+        // Генерируем slug из названия
+        $slug = mb_strtolower($name, 'UTF-8');
+        $slug = str_replace([' ', '_', '.'], '-', $slug);
+        $slug = preg_replace('/[^a-zа-я0-9-]/ui', '', $slug);
+        $slug = preg_replace('/-+/', '-', $slug);
+        $slug = trim($slug, '-');
 
-        // Если есть родитель, добавляем его путь
+        // Если есть родитель, получаем его полный путь
         if ($parent > 0) {
             $parentPage = $this->pagesModel->find($parent);
             if ($parentPage && !empty($parentPage['path'])) {
-                $path = $parentPage['path'] . '/' . $path;
+                $path = $parentPage['path'] . '/' . $slug;
+            } else {
+                $path = $slug;
             }
+        } else {
+            $path = $slug;
         }
 
         // Проверяем уникальность
