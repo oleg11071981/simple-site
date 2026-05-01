@@ -48,14 +48,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     middle: [],
                     right: ['zoom', 'thumbs', 'close'],
                 },
+                responsive: {
+                    '(max-width: 768px)': {
+                        display: {
+                            left: [],
+                            middle: [],
+                            right: ['close'],
+                        },
+                    },
+                },
             },
             closeOnOutsideClick: true,
-            // Правильный способ задания подписи в FancyBox v5
-            caption: function(instance, slide) {
-                const caption = slide.triggerEl?.getAttribute('data-caption') ||
+            caption: function(fancybox, slide) {
+                return slide.triggerEl?.getAttribute('data-caption') ||
                     slide.triggerEl?.getAttribute('title') ||
+                    slide.triggerEl?.querySelector('img')?.getAttribute('alt') ||
                     '';
-                return caption;
             },
         });
     }
