@@ -106,34 +106,67 @@ class PagesController extends BaseController
         $pages = $builder->paginate($perPage, 'default', null, (int)['page' => $this->request->getGet('page') ?? 1]);
         $pager = $this->pagesModel->pager;
 
-        // Получаем хлебные крошки для навигации
+        // Получаем хлебные крошки для навигации (только родители, без текущего раздела)
         $breadcrumbs = [];
         $current_page_name = '';
         if ($parent > 0) {
-            $breadcrumbs = $this->getBreadcrumbs($parent);
             // Получаем название текущего раздела
             $currentPage = $this->pagesModel->find($parent);
             if ($currentPage) {
                 $current_page_name = $currentPage['name'];
+                // Получаем только родителей (без текущего раздела)
+                $breadcrumbs = $this->getParentBreadcrumbs($parent);
             }
         }
 
         $data = [
-            'title'            => 'Управление страницами',
-            'activeMenu'       => 'pages',
-            'pages'            => $pages,
-            'show'             => $show,
-            'sort'             => $sort,
-            'per_page'         => $perPage,
-            'parent_id'        => $parent,
-            'breadcrumbs'      => $breadcrumbs,
+            'title'             => 'Управление страницами',
+            'activeMenu'        => 'pages',
+            'pages'             => $pages,
+            'show'              => $show,
+            'sort'              => $sort,
+            'per_page'          => $perPage,
+            'parent_id'         => $parent,
+            'breadcrumbs'       => $breadcrumbs,
             'current_page_name' => $current_page_name,
-            'pager'            => $pager,
-            //'additionalCss'    => '/admin/css/pages.css',
-            'additionalJs'     => '/admin/js/pages.js',
+            'pager'             => $pager,
+            'additionalJs'      => '/admin/js/pages.js',
         ];
 
         return view('admin/pages/index', $data);
+    }
+
+    /**
+     * Получить хлебные крошки только для родителей (без текущей страницы)
+     *
+     * @param int $id ID страницы
+     * @return array
+     */
+    private function getParentBreadcrumbs(int $id): array
+    {
+        $breadcrumbs = [];
+        $current = $this->pagesModel->find($id);
+
+        // Собираем всех родителей (рекурсивно, до корня)
+        $parents = [];
+        while ($current && $current['parent'] > 0) {
+            $parent = $this->pagesModel->find($current['parent']);
+            if ($parent) {
+                array_unshift($parents, $parent);
+                $current = $parent;
+            } else {
+                break;
+            }
+        }
+
+        foreach ($parents as $parent) {
+            $breadcrumbs[] = [
+                'id'   => $parent['id'],
+                'name' => $parent['name'],
+            ];
+        }
+
+        return $breadcrumbs;
     }
 
     /**
@@ -141,28 +174,13 @@ class PagesController extends BaseController
      *
      * @param int $id ID страницы
      * @return array
+     * @deprecated Use getParentBreadcrumbs instead
      */
     private function getBreadcrumbs(int $id): array
     {
-        $breadcrumbs = [];
-        $current = $this->pagesModel->find($id);
-
-        // Собираем цепочку родителей (без самой текущей страницы)
-        while ($current && $current['parent'] > 0) {
-            array_unshift($breadcrumbs, $current);
-            $current = $this->pagesModel->find($current['parent']);
-        }
-
-        return $breadcrumbs;
+        return $this->getParentBreadcrumbs($id);
     }
 
-    /**
-     * Форма создания страницы
-     *
-     * @route GET /admin-panel/pages/create
-     *
-     * @return string
-     */
     /**
      * Форма создания страницы
      *

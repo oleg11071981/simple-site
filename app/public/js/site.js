@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.toggle('active');
             mobileMenu.classList.toggle('active');
 
-            // Блокируем прокрутку body при открытом меню
             if (mobileMenu.classList.contains('active')) {
                 document.body.style.overflow = 'hidden';
             } else {
@@ -21,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Закрываем меню при клике вне его
         document.addEventListener('click', function(event) {
             if (mobileMenu.classList.contains('active') &&
                 !burgerBtn.contains(event.target) &&
@@ -32,13 +30,33 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Закрываем меню при ресайзе окна (если стало десктопом)
         window.addEventListener('resize', function() {
             if (window.innerWidth > 768 && mobileMenu.classList.contains('active')) {
                 burgerBtn.classList.remove('active');
                 mobileMenu.classList.remove('active');
                 document.body.style.overflow = '';
             }
+        });
+    }
+
+    // FancyBox для изображений с классом bigfoto
+    if (typeof Fancybox !== 'undefined') {
+        Fancybox.bind('.bigfoto', {
+            Toolbar: {
+                display: {
+                    left: ['infobar'],
+                    middle: [],
+                    right: ['zoom', 'thumbs', 'close'],
+                },
+            },
+            closeOnOutsideClick: true,
+            // Правильный способ задания подписи в FancyBox v5
+            caption: function(instance, slide) {
+                const caption = slide.triggerEl?.getAttribute('data-caption') ||
+                    slide.triggerEl?.getAttribute('title') ||
+                    '';
+                return caption;
+            },
         });
     }
 });

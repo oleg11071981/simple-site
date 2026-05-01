@@ -12,6 +12,8 @@
     <?php endif; ?>
     <link rel="stylesheet" href="/css/site.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- FancyBox CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css" />
 </head>
 <body>
 
@@ -48,6 +50,7 @@
 
 <?= view('site/partials/footer') ?>
 
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
 <script src="/js/site.js"></script>
 </body>
 </html>

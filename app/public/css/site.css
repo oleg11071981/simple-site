@@ -224,7 +224,6 @@ main {
    СТРАНИЦЫ (PAGES)
    ======================================== */
 
-/* Заголовок страницы на сером фоне */
 .page-header {
     margin: 1rem 0;
 }
@@ -252,16 +251,27 @@ main {
     padding: 2rem;
     margin: 1.5rem 0;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 .page-text {
     color: #4b5563;
     line-height: 1.8;
     font-size: 1.0625rem;
+    overflow-x: auto;
+}
+
+/* Очистка float - универсально */
+.page-text:after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 .page-text p {
     margin-bottom: 1.5rem;
+    overflow: hidden;
 }
 
 .page-text h2 {
@@ -269,6 +279,7 @@ main {
     font-weight: 600;
     margin: 2rem 0 1rem;
     color: #1f2937;
+    clear: both;
 }
 
 .page-text h3 {
@@ -276,6 +287,7 @@ main {
     font-weight: 600;
     margin: 1.5rem 0 0.75rem;
     color: #1f2937;
+    clear: both;
 }
 
 /* Списки внутри карточек */
@@ -283,18 +295,21 @@ main {
 .page-text ol {
     margin: 1rem 0 1.5rem 1.8rem;
     padding-left: 0;
+    clear: both;
+    overflow: hidden;
 }
 
 .page-text li {
     margin-bottom: 0.5rem;
     line-height: 1.6;
+    overflow: hidden;
 }
 
 .page-text img {
-    max-width: 100%;
-    height: auto;
+    max-width: 100% !important;
+    height: auto !important;
     border-radius: 0.75rem;
-    margin: 1.5rem 0;
+    margin: 1rem 0;
 }
 
 .page-text blockquote {
@@ -305,12 +320,15 @@ main {
     color: #4b5563;
     background: #f9fafb;
     border-radius: 0 0.75rem 0.75rem 0;
+    clear: both;
+    overflow: hidden;
 }
 
 .page-text table {
     width: 100%;
     border-collapse: collapse;
     margin: 1.5rem 0;
+    clear: both;
 }
 
 .page-text th,
@@ -329,7 +347,6 @@ main {
    ГЛАВНАЯ СТРАНИЦА (HOME)
    ======================================== */
 
-/* Заголовок на сером фоне */
 .home-header {
     margin: 1rem 0;
 }
@@ -349,16 +366,26 @@ main {
     padding: 2rem;
     margin: 1.5rem 0;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 .home-text {
     color: #4b5563;
     line-height: 1.8;
     font-size: 1.0625rem;
+    overflow-x: auto;
+}
+
+.home-text:after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 .home-text p {
     margin-bottom: 1.5rem;
+    overflow: hidden;
 }
 
 .home-text h2 {
@@ -366,6 +393,7 @@ main {
     font-weight: 600;
     margin: 2rem 0 1rem;
     color: #1f2937;
+    clear: both;
 }
 
 .home-text h3 {
@@ -373,6 +401,7 @@ main {
     font-weight: 600;
     margin: 1.5rem 0 0.75rem;
     color: #1f2937;
+    clear: both;
 }
 
 /* Списки внутри карточек */
@@ -380,18 +409,21 @@ main {
 .home-text ol {
     margin: 1rem 0 1.5rem 1.8rem;
     padding-left: 0;
+    clear: both;
+    overflow: hidden;
 }
 
 .home-text li {
     margin-bottom: 0.5rem;
     line-height: 1.6;
+    overflow: hidden;
 }
 
 .home-text img {
-    max-width: 100%;
-    height: auto;
+    max-width: 100% !important;
+    height: auto !important;
     border-radius: 0.75rem;
-    margin: 1.5rem 0;
+    margin: 1rem 0;
 }
 
 .home-text blockquote {
@@ -402,6 +434,8 @@ main {
     color: #4b5563;
     background: #f9fafb;
     border-radius: 0 0.75rem 0.75rem 0;
+    clear: both;
+    overflow: hidden;
 }
 
 /* ========================================
@@ -439,7 +473,6 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 4rem;
     overflow: hidden;
 }
 
@@ -447,10 +480,12 @@ main {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 0.75rem;
 }
 
 .news-content {
     padding: 1.5rem;
+    overflow: hidden;
 }
 
 .news-date {
@@ -537,16 +572,26 @@ main {
     padding: 2rem;
     margin: 1.5rem 0;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 .news-detail-content {
     color: #4b5563;
     line-height: 1.8;
     font-size: 1.0625rem;
+    overflow-x: auto;
+}
+
+.news-detail-content:after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 .news-detail-content p {
     margin-bottom: 1.5rem;
+    overflow: hidden;
 }
 
 .news-detail-content h2 {
@@ -554,6 +599,7 @@ main {
     font-weight: 600;
     margin: 2rem 0 1rem;
     color: #1f2937;
+    clear: both;
 }
 
 .news-detail-content h3 {
@@ -561,6 +607,7 @@ main {
     font-weight: 600;
     margin: 1.5rem 0 0.75rem;
     color: #1f2937;
+    clear: both;
 }
 
 /* Списки внутри детальной новости */
@@ -568,18 +615,21 @@ main {
 .news-detail-content ol {
     margin: 1rem 0 1.5rem 1.8rem;
     padding-left: 0;
+    clear: both;
+    overflow: hidden;
 }
 
 .news-detail-content li {
     margin-bottom: 0.5rem;
     line-height: 1.6;
+    overflow: hidden;
 }
 
 .news-detail-content img {
-    max-width: 100%;
-    height: auto;
+    max-width: 100% !important;
+    height: auto !important;
     border-radius: 0.75rem;
-    margin: 1.5rem 0;
+    margin: 1rem 0;
 }
 
 .news-detail-content blockquote {
@@ -590,6 +640,8 @@ main {
     color: #4b5563;
     background: #f9fafb;
     border-radius: 0 0.75rem 0.75rem 0;
+    clear: both;
+    overflow: hidden;
 }
 
 /* Другие новости */
@@ -731,96 +783,6 @@ main {
     background: #2563eb;
     color: white;
     border-color: #2563eb;
-}
-
-/* ========================================
-   АДАПТИВНОСТЬ (RESPONSIVE)
-   ======================================== */
-
-@media (max-width: 992px) {
-    .container {
-        padding: 0 20px;
-    }
-
-    .news-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .navbar {
-        height: 64px;
-    }
-
-    .nav-menu {
-        display: none;
-    }
-
-    .burger {
-        display: flex;
-    }
-
-    .container {
-        padding: 0 16px;
-    }
-
-    .page-title,
-    .news-detail-title,
-    .home-title {
-        font-size: 1.5rem;
-    }
-
-    .page-card,
-    .home-card,
-    .news-detail-card {
-        padding: 1.5rem;
-        border-radius: 1rem;
-    }
-
-    .news-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .news-section .section-title {
-        font-size: 1.35rem;
-    }
-
-    .footer-inner {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .breadcrumbs-item {
-        font-size: 0.75rem;
-    }
-
-    .pagination a, .pagination span {
-        padding: 0.35rem 0.75rem;
-        font-size: 0.85rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .page-card,
-    .home-card,
-    .news-detail-card {
-        padding: 1rem;
-    }
-
-    .news-image {
-        height: 160px;
-    }
-
-    .page-text ul,
-    .page-text ol,
-    .home-text ul,
-    .home-text ol,
-    .news-detail-content ul,
-    .news-detail-content ol {
-        margin: 1rem 0 1.5rem 1.5rem;
-    }
 }
 
 /* ========================================
@@ -991,35 +953,6 @@ main {
     background: #1d4ed8;
 }
 
-/* Адаптивность для контактов */
-@media (max-width: 992px) {
-    .contacts-grid {
-        gap: 1.5rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .contacts-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .feedback-form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-
-    .contacts-info-card,
-    .contacts-map-card,
-    .feedback-card {
-        padding: 1.25rem;
-    }
-
-    .map-container iframe {
-        height: 300px;
-    }
-}
-
 /* ========================================
    ВЛОЖЕННЫЕ СТРАНИЦЫ (SUBPAGES NAVIGATION)
    ======================================== */
@@ -1057,8 +990,99 @@ main {
     text-decoration: underline;
 }
 
-/* Адаптивность */
+/* ========================================
+   АДАПТИВНОСТЬ (RESPONSIVE)
+   ======================================== */
+
+@media (max-width: 992px) {
+    .container {
+        padding: 0 20px;
+    }
+
+    .news-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    .contacts-grid {
+        gap: 1.5rem;
+    }
+}
+
 @media (max-width: 768px) {
+    .navbar {
+        height: 64px;
+    }
+
+    .nav-menu {
+        display: none;
+    }
+
+    .burger {
+        display: flex;
+    }
+
+    .container {
+        padding: 0 16px;
+    }
+
+    .page-title,
+    .news-detail-title,
+    .home-title {
+        font-size: 1.5rem;
+    }
+
+    .page-card,
+    .home-card,
+    .news-detail-card {
+        padding: 1.5rem;
+        border-radius: 1rem;
+    }
+
+    .news-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .news-section .section-title {
+        font-size: 1.35rem;
+    }
+
+    .footer-inner {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .breadcrumbs-item {
+        font-size: 0.75rem;
+    }
+
+    .pagination a,
+    .pagination span {
+        padding: 0.35rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .contacts-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .feedback-form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .contacts-info-card,
+    .contacts-map-card,
+    .feedback-card {
+        padding: 1.25rem;
+    }
+
+    .map-container iframe {
+        height: 300px;
+    }
+
     .subpages-section {
         padding: 1rem;
     }
@@ -1069,5 +1093,26 @@ main {
 
     .subpages-link {
         font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-card,
+    .home-card,
+    .news-detail-card {
+        padding: 1rem;
+    }
+
+    .news-image {
+        height: 160px;
+    }
+
+    .page-text ul,
+    .page-text ol,
+    .home-text ul,
+    .home-text ol,
+    .news-detail-content ul,
+    .news-detail-content ol {
+        margin: 1rem 0 1.5rem 1.5rem;
     }
 }
