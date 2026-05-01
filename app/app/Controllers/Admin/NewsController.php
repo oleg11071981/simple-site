@@ -87,9 +87,14 @@ class NewsController extends BaseController
      */
     public function create(): string
     {
+        // Получаем список категорий для галереи
+        $categoriesModel = new \App\Models\NFileManagerCategoriesModel();
+        $mediaCategories = $categoriesModel->getForSelect();
+
         $data = [
-            'title'      => 'Создание новости',
-            'activeMenu' => 'news',
+            'title'          => 'Создание новости',
+            'activeMenu'     => 'news',
+            'mediaCategories'=> $mediaCategories,
         ];
         return view('admin/news/form', $data);
     }
@@ -142,20 +147,15 @@ class NewsController extends BaseController
             return redirect()->to('/admin-panel/news')->with('error', 'Новость не найдена');
         }
 
-        // Загружаем информацию о фото, если есть
-        $fotoFile = '';
-        if ($news['foto'] > 0) {
-            $fileModel = new \App\Models\NFileManagerModel();
-            $file = $fileModel->find($news['foto']);
-            if ($file) {
-                $news['foto_file'] = $file['file_name'];
-            }
-        }
+        // Получаем список категорий для галереи
+        $categoriesModel = new \App\Models\NFileManagerCategoriesModel();
+        $mediaCategories = $categoriesModel->getForSelect();
 
         $data = [
-            'title'      => 'Редактирование новости',
-            'activeMenu' => 'news',
-            'news'       => $news,
+            'title'          => 'Редактирование новости',
+            'activeMenu'     => 'news',
+            'news'           => $news,
+            'mediaCategories'=> $mediaCategories,
         ];
         return view('admin/news/form', $data);
     }

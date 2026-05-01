@@ -80,17 +80,27 @@
 
                 <div class="form-group">
                     <label for="category">Категория</label>
-                    <select id="category" name="category" class="form-control">
-                        <option value="0">— Без категории —</option>
-                        <?php if (!empty($categories)): ?>
-                            <?php foreach ($categories as $cat): ?>
-                                <option value="<?= $cat['id'] ?>" <?= (isset($file) && $file['category'] == $cat['id']) ? 'selected' : '' ?>>
-                                    <?= esc($cat['name']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </select>
-                    <small>Выберите категорию для файла</small>
+                    <div class="category-select-wrapper">
+                        <input type="text"
+                               id="categorySearch"
+                               class="form-control"
+                               placeholder="🔍 Поиск категории..."
+                               autocomplete="off">
+                        <select id="category" name="category" class="form-control" size="8" style="margin-top: 8px;">
+                            <option value="0">— Без категории —</option>
+                            <?php if (!empty($categories)): ?>
+                                <?php foreach ($categories as $cat): ?>
+                                    <option value="<?= $cat['id'] ?>"
+                                            data-name="<?= esc(strtolower($cat['name'])) ?>"
+                                        <?= (isset($file) && $file['category'] == $cat['id']) ? 'selected' : '' ?>
+                                        <?= (isset($parent_id) && $parent_id == $cat['id'] && !isset($file)) ? 'selected' : '' ?>>
+                                        <?= str_repeat('—', $cat['level'] ?? 0) ?> <?= esc($cat['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                    <small>Выберите категорию для файла. Можно использовать поиск.</small>
                 </div>
             </div>
 
@@ -389,6 +399,62 @@
                             }, 3000);
                         }
                         <?php endif; ?>
+                    }
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // Поиск по категориям
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('categorySearch');
+            const selectEl = document.getElementById('category');
+
+            if (searchInput && selectEl) {
+                function filterCategories() {
+                    const searchTerm = searchInput.value.toLowerCase().trim();
+                    const options = selectEl.querySelectorAll('option');
+
+                    let hasVisible = false;
+
+                    options.forEach(option => {
+                        const text = option.textContent.toLowerCase();
+                        const categoryName = option.getAttribute('data-name') || text;
+
+                        if (searchTerm === '') {
+                            option.style.display = '';
+                            hasVisible = true;
+                        } else if (categoryName.includes(searchTerm) || text.includes(searchTerm)) {
+                            option.style.display = '';
+                            hasVisible = true;
+                        } else {
+                            option.style.display = 'none';
+                        }
+                    });
+
+                    if (!hasVisible) {
+                        const emptyOption = Array.from(options).find(opt => opt.value === '0');
+                        if (emptyOption) {
+                            emptyOption.style.display = '';
+                            emptyOption.textContent = '🔍 Ничего не найдено';
+                        }
+                    } else {
+                        const emptyOption = Array.from(options).find(opt => opt.value === '0');
+                        if (emptyOption && emptyOption.textContent !== '— Без категории —') {
+                            emptyOption.textContent = '— Без категории —';
+                        }
+                    }
+                }
+
+                searchInput.addEventListener('input', filterCategories);
+                searchInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const firstVisible = Array.from(selectEl.options).find(opt => opt.style.display !== 'none');
+                        if (firstVisible) {
+                            firstVisible.selected = true;
+                        }
                     }
                 });
             }

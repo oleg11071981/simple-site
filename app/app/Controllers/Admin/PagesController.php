@@ -190,16 +190,20 @@ class PagesController extends BaseController
      */
     public function create(): string
     {
-        // Получаем parent из GET параметра
         $parent = $this->request->getGet('parent') ?? 0;
 
+        // Получаем список категорий для галереи
+        $categoriesModel = new \App\Models\NFileManagerCategoriesModel();
+        $mediaCategories = $categoriesModel->getForSelect();
+
         $data = [
-            'title'         => 'Создание страницы',
-            'activeMenu'    => 'pages',
-            'parent_id'     => $parent,
-            'parents'       => $this->pagesModel->where('publish', 1)->findAll(),
-            'additionalCss' => '/admin/css/pages.css',
-            'additionalJs'  => '/admin/js/pages.js',
+            'title'          => 'Создание страницы',
+            'activeMenu'     => 'pages',
+            'parent_id'      => $parent,
+            'parents'        => $this->pagesModel->where('publish', 1)->findAll(),
+            'mediaCategories'=> $mediaCategories,
+            'additionalCss'  => '/admin/css/pages.css',
+            'additionalJs'   => '/admin/js/pages.js',
         ];
 
         return view('admin/pages/form', $data);
@@ -308,15 +312,20 @@ class PagesController extends BaseController
                 ->with('error', 'Страница не найдена');
         }
 
+        // Получаем список категорий для галереи
+        $categoriesModel = new \App\Models\NFileManagerCategoriesModel();
+        $mediaCategories = $categoriesModel->getForSelect();
+
         $data = [
-            'title'         => 'Редактирование страницы',
-            'activeMenu'    => 'pages',
-            'page'          => $page,
-            'parents'       => $this->pagesModel->where('publish', 1)
+            'title'          => 'Редактирование страницы',
+            'activeMenu'     => 'pages',
+            'page'           => $page,
+            'parents'        => $this->pagesModel->where('publish', 1)
                 ->where('id !=', $id)
                 ->findAll(),
-            'additionalCss' => '/admin/css/pages.css',
-            'additionalJs'  => '/admin/js/pages.js',
+            'mediaCategories'=> $mediaCategories,
+            'additionalCss'  => '/admin/css/pages.css',
+            'additionalJs'   => '/admin/js/pages.js',
         ];
 
         return view('admin/pages/form', $data);

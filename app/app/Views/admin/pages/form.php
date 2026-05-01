@@ -220,6 +220,37 @@
                 </div>
             </div>
 
+            <div class="settings-section">
+                <h2>Галерея (медиа)</h2>
+
+                <div class="form-group">
+                    <label for="media">Привязать галерею</label>
+                    <div class="media-select-wrapper">
+                        <input type="text"
+                               id="mediaSearch"
+                               class="form-control"
+                               placeholder="🔍 Поиск галереи..."
+                               autocomplete="off">
+                        <select id="media" name="media" class="form-control" size="8" style="margin-top: 8px;">
+                            <option value="0">— Без галереи —</option>
+                            <?php if (!empty($mediaCategories)): ?>
+                                <?php foreach ($mediaCategories as $cat): ?>
+                                    <option value="<?= $cat['id'] ?>"
+                                            data-name="<?= esc(strtolower($cat['name'])) ?>"
+                                        <?= (isset($page) && $page['media'] == $cat['id']) ? 'selected' : '' ?>>
+                                        <?= str_repeat('—', $cat['level'] ?? 0) ?> 📁 <?= esc($cat['name']) ?>
+                                        <?php if ($cat['files_count'] > 0): ?>
+                                            (<?= $cat['files_count'] ?> файлов)
+                                        <?php endif; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                    <small>Выберите галерею для отображения на странице</small>
+                </div>
+            </div>
+
             <!-- ======================================== -->
             <!-- АНОНС -->
             <!-- ======================================== -->
@@ -263,5 +294,61 @@
             </div>
         </form>
     </div>
+
+    <script>
+        // Поиск по категориям галереи
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('mediaSearch');
+            const selectEl = document.getElementById('media');
+
+            if (searchInput && selectEl) {
+                function filterCategories() {
+                    const searchTerm = searchInput.value.toLowerCase().trim();
+                    const options = selectEl.querySelectorAll('option');
+
+                    let hasVisible = false;
+
+                    options.forEach(option => {
+                        const text = option.textContent.toLowerCase();
+                        const categoryName = option.getAttribute('data-name') || text;
+
+                        if (searchTerm === '') {
+                            option.style.display = '';
+                            hasVisible = true;
+                        } else if (categoryName.includes(searchTerm) || text.includes(searchTerm)) {
+                            option.style.display = '';
+                            hasVisible = true;
+                        } else {
+                            option.style.display = 'none';
+                        }
+                    });
+
+                    if (!hasVisible) {
+                        const emptyOption = Array.from(options).find(opt => opt.value === '0');
+                        if (emptyOption) {
+                            emptyOption.style.display = '';
+                            emptyOption.textContent = '🔍 Ничего не найдено';
+                        }
+                    } else {
+                        const emptyOption = Array.from(options).find(opt => opt.value === '0');
+                        if (emptyOption && emptyOption.textContent !== '— Без галереи —') {
+                            emptyOption.textContent = '— Без галереи —';
+                        }
+                    }
+                }
+
+                searchInput.addEventListener('input', filterCategories);
+                searchInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const firstVisible = Array.from(selectEl.options).find(opt => opt.style.display !== 'none');
+                        if (firstVisible) {
+                            firstVisible.selected = true;
+                        }
+                    }
+                });
+            }
+        });
+    </script>
 
 <?= $this->endSection() ?>

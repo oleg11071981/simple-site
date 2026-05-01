@@ -31,37 +31,42 @@ class CategoriesController extends BaseController
     }
 
     /**
-     * Список категорий
-     *
-     * @route GET /admin-panel/categories
-     * @return string
+     * Список категорий (деревом)
      */
     public function index(): string
     {
-        $perPage = $this->request->getGet('per_page') ?? 50;
-        $search = $this->request->getGet('search') ?? '';
+        $parent = $this->request->getGet('parent') ?? 0;
 
-        $builder = $this->categoriesModel;
+        // Получаем категории для текущего уровня
+        $categories = $this->categoriesModel->where('parent', $parent)
+            ->orderBy('priority', 'ASC')
+            ->orderBy('name', 'ASC')
+            ->findAll();
 
-        if (!empty($search)) {
-            $builder = $builder->like('name', $search);
+        // Добавляем количество файлов
+        foreach ($categories as &$cat) {
+            $cat['files_count'] = $this->categoriesModel->getFilesCount($cat['id']);
+            $cat['has_children'] = $this->categoriesModel->hasChildren($cat['id']);
         }
 
-        $categories = $builder->orderBy('name', 'ASC')->paginate($perPage);
-        $pager = $this->categoriesModel->pager;
-
-        // Подсчитываем количество файлов в каждой категории
-        foreach ($categories as &$cat) {
-            $cat['files_count'] = $this->filesModel->where('category', $cat['id'])->countAllResults();
+        // Получаем хлебные крошки
+        $breadcrumbs = [];
+        $current_category_name = '';
+        if ($parent > 0) {
+            $currentCategory = $this->categoriesModel->find($parent);
+            if ($currentCategory) {
+                $current_category_name = $currentCategory['name'];
+                $breadcrumbs = $this->getBreadcrumbs($parent);
+            }
         }
 
         $data = [
-            'title'         => 'Категории файлов',
-            'activeMenu'    => 'categories',
-            'categories'    => $categories,
-            'search'        => $search,
-            'per_page'      => $perPage,
-            'pager'         => $pager,
+            'title'                => 'Категории файлов',
+            'activeMenu'           => 'categories',
+            'categories'           => $categories,
+            'parent_id'            => $parent,
+            'breadcrumbs'          => $breadcrumbs,
+            'current_category_name' => $current_category_name,
         ];
 
         return view('admin/categories/index', $data);
@@ -69,24 +74,22 @@ class CategoriesController extends BaseController
 
     /**
      * Форма создания категории
-     *
-     * @route GET /admin-panel/categories/create
-     * @return string
      */
     public function create(): string
     {
+        $parent = $this->request->getGet('parent') ?? 0;
+
         $data = [
             'title'      => 'Создание категории',
             'activeMenu' => 'categories',
+            'parent_id'  => $parent,
+            'categories' => $this->categoriesModel->getForSelect(),
         ];
         return view('admin/categories/form', $data);
     }
 
     /**
      * Сохранение категории
-     *
-     * @route POST /admin-panel/categories/store
-     * @return RedirectResponse
      * @throws ReflectionException
      */
     public function store(): RedirectResponse
@@ -94,7 +97,7 @@ class CategoriesController extends BaseController
         $postData = $this->request->getPost();
 
         $rules = [
-            'name' => 'required|min_length[2]|max_length[255]|is_unique[n_file_manager_categories.name]',
+            'name' => 'required|min_length[2]|max_length[255]',
         ];
 
         if (!$this->validate($rules)) {
@@ -103,8 +106,16 @@ class CategoriesController extends BaseController
                 ->withInput();
         }
 
+        // Устанавливаем parent
+        $postData['parent'] = $postData['parent'] ?? 0;
+        $postData['priority'] = $postData['priority'] ?? 0;
+
         if ($this->categoriesModel->save($postData)) {
-            return redirect()->to('/admin-panel/categories')
+            $redirectUrl = '/admin-panel/categories';
+            if ($postData['parent'] > 0) {
+                $redirectUrl .= '?parent=' . $postData['parent'];
+            }
+            return redirect()->to($redirectUrl)
                 ->with('success', 'Категория успешно создана');
         }
 
@@ -115,9 +126,6 @@ class CategoriesController extends BaseController
 
     /**
      * Форма редактирования категории
-     *
-     * @param int $id ID категории
-     * @return string|RedirectResponse
      */
     public function edit(int $id)
     {
@@ -130,15 +138,13 @@ class CategoriesController extends BaseController
             'title'      => 'Редактирование категории',
             'activeMenu' => 'categories',
             'category'   => $category,
+            'categories' => $this->categoriesModel->getForSelect($id),
         ];
         return view('admin/categories/form', $data);
     }
 
     /**
      * Обновление категории
-     *
-     * @param int $id ID категории
-     * @return RedirectResponse
      * @throws ReflectionException
      */
     public function update(int $id): RedirectResponse
@@ -146,7 +152,7 @@ class CategoriesController extends BaseController
         $postData = $this->request->getPost();
 
         $rules = [
-            'name' => "required|min_length[2]|max_length[255]|is_unique[n_file_manager_categories.name,id,$id]",
+            'name' => "required|min_length[2]|max_length[255]",
         ];
 
         if (!$this->validate($rules)) {
@@ -156,7 +162,11 @@ class CategoriesController extends BaseController
         }
 
         if ($this->categoriesModel->update($id, $postData)) {
-            return redirect()->to('/admin-panel/categories')
+            $redirectUrl = '/admin-panel/categories';
+            if ($postData['parent'] > 0) {
+                $redirectUrl .= '?parent=' . $postData['parent'];
+            }
+            return redirect()->to($redirectUrl)
                 ->with('success', 'Категория успешно обновлена');
         }
 
@@ -167,14 +177,19 @@ class CategoriesController extends BaseController
 
     /**
      * Удаление категории
-     *
-     * @param int $id ID категории
-     * @return RedirectResponse
      */
     public function delete(int $id): RedirectResponse
     {
+        // Проверяем, есть ли дочерние категории
+        $children = $this->categoriesModel->where('parent', $id)->countAllResults();
+
+        if ($children > 0) {
+            return redirect()->back()
+                ->with('error', 'Невозможно удалить категорию. Сначала удалите или переместите дочерние категории.');
+        }
+
         // Проверяем, есть ли файлы в категории
-        $filesCount = $this->filesModel->where('category', $id)->countAllResults();
+        $filesCount = $this->categoriesModel->getFilesCount($id);
 
         if ($filesCount > 0) {
             return redirect()->back()
@@ -189,4 +204,30 @@ class CategoriesController extends BaseController
         return redirect()->back()
             ->with('error', 'Ошибка при удалении');
     }
+
+    /**
+     * Получить хлебные крошки для навигации (без текущего раздела)
+     *
+     * @param int $id ID категории
+     * @return array
+     */
+    private function getBreadcrumbs(int $id): array
+    {
+        $breadcrumbs = [];
+        $current = $this->categoriesModel->find($id);
+
+        // Собираем цепочку родителей (без самой текущей категории)
+        while ($current && $current['parent'] > 0) {
+            $parent = $this->categoriesModel->find($current['parent']);
+            if ($parent) {
+                array_unshift($breadcrumbs, $parent);
+                $current = $parent;
+            } else {
+                break;
+            }
+        }
+
+        return $breadcrumbs;
+    }
+
 }

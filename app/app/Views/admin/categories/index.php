@@ -5,12 +5,11 @@
     <div class="page-header">
         <div class="header-actions">
             <h1>Категории файлов</h1>
-            <a href="/admin-panel/categories/create" class="btn-create">➕ Добавить категорию</a>
+            <a href="/admin-panel/categories/create?parent=<?= $parent_id ?? 0 ?>" class="btn-create">➕ Добавить категорию</a>
         </div>
-        <p>Управление категориями для файлового менеджера</p>
+        <p>Управление категориями для файлового менеджера (поддерживается вложенность)</p>
     </div>
 
-    <!-- Flash сообщения -->
 <?php if (session()->getFlashdata('success')): ?>
     <div class="alert alert-success" id="successAlert">
         <span class="alert-icon">✓</span>
@@ -27,29 +26,28 @@
     </div>
 <?php endif; ?>
 
-    <!-- Поиск -->
-    <div class="filters-bar">
-        <form action="/admin-panel/categories" method="get" class="filters-form">
-            <div class="filter-group">
-                <label>Поиск:</label>
-                <input type="text" name="search" class="filter-select" style="width: 250px;" value="<?= esc($search ?? '') ?>" placeholder="Название категории...">
-            </div>
-            <div class="filter-group">
-                <label>На странице:</label>
-                <select name="per_page" class="filter-select" onchange="this.form.submit()">
-                    <option value="10" <?= ($per_page ?? 50) == 10 ? 'selected' : '' ?>>10</option>
-                    <option value="20" <?= ($per_page ?? 50) == 20 ? 'selected' : '' ?>>20</option>
-                    <option value="30" <?= ($per_page ?? 50) == 30 ? 'selected' : '' ?>>30</option>
-                    <option value="50" <?= ($per_page ?? 50) == 50 ? 'selected' : '' ?>>50</option>
-                    <option value="100" <?= ($per_page ?? 50) == 100 ? 'selected' : '' ?>>100</option>
-                </select>
-            </div>
-            <button type="submit" class="btn-apply">Найти</button>
-            <?php if (!empty($search)): ?>
-                <a href="/admin-panel/categories" class="btn-cancel" style="padding: 6px 16px;">Сбросить</a>
-            <?php endif; ?>
-        </form>
+    <!-- Хлебные крошки -->
+<?php if (!empty($breadcrumbs)): ?>
+    <div class="breadcrumbs">
+        <a href="/admin-panel/categories">📁 Все категории</a>
+        <?php foreach ($breadcrumbs as $crumb): ?>
+            <span class="breadcrumb-separator">/</span>
+            <a href="/admin-panel/categories?parent=<?= $crumb['id'] ?>">
+                <?= esc($crumb['name']) ?>
+            </a>
+        <?php endforeach; ?>
+        <?php if ($parent_id > 0): ?>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current"><?= esc($current_category_name) ?></span>
+        <?php endif; ?>
     </div>
+<?php elseif ($parent_id > 0): ?>
+    <div class="breadcrumbs">
+        <a href="/admin-panel/categories">📁 Все категории</a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current"><?= esc($current_category_name) ?></span>
+    </div>
+<?php endif; ?>
 
     <!-- Таблица категорий -->
     <div class="table-container">
@@ -59,6 +57,7 @@
                 <th style="width: 60px">ID</th>
                 <th>Название категории</th>
                 <th style="width: 100px">Файлов</th>
+                <th style="width: 80px">Приоритет</th>
                 <th style="width: 140px">Дата создания</th>
                 <th style="width: 100px">Действия</th>
             </tr>
@@ -66,22 +65,38 @@
             <tbody>
             <?php if (!empty($categories) && is_array($categories)): ?>
                 <?php foreach ($categories as $cat): ?>
-                    <tr>
+                    <tr class="<?= $cat['has_children'] ? 'has-children' : '' ?>">
                         <td class="text-center"><?= esc($cat['id']) ?></td>
                         <td>
-                            <div class="page-name">
-                                <span class="page-link">📁 <?= esc($cat['name']) ?></span>
+                            <div class="category-name">
+                                <?php if ($cat['has_children']): ?>
+                                    📁
+                                <?php else: ?>
+                                    📂
+                                <?php endif; ?>
+                                <a href="/admin-panel/categories?parent=<?= $cat['id'] ?>" class="category-link">
+                                    <?= esc($cat['name']) ?>
+                                </a>
                             </div>
+                            <?php if ($cat['has_children']): ?>
+                                <div class="category-children-hint">
+                                    <small>📁 есть подкатегории</small>
+                                </div>
+                            <?php endif; ?>
                         </td>
                         <td class="text-center">
                             <a href="/admin-panel/files?category=<?= $cat['id'] ?>" class="badge badge-info">
                                 <?= $cat['files_count'] ?> файлов
                             </a>
                         </td>
+                        <td class="text-center"><?= esc($cat['priority'] ?? 0) ?></td>
                         <td class="date-cell"><?= date('d.m.Y H:i', strtotime($cat['create'])) ?></td>
                         <td class="actions">
                             <a href="/admin-panel/categories/edit/<?= $cat['id'] ?>" class="btn-icon" title="Редактировать">
                                 <span class="icon-edit">✏️</span>
+                            </a>
+                            <a href="/admin-panel/categories/create?parent=<?= $cat['id'] ?>" class="btn-icon" title="Добавить подкатегорию">
+                                <span class="icon-add">➕</span>
                             </a>
                             <a href="/admin-panel/categories/delete/<?= $cat['id'] ?>" class="btn-icon" title="Удалить" onclick="return confirm('Удалить категорию «<?= esc($cat['name']) ?>»?')">
                                 <span class="icon-delete">🗑️</span>
@@ -91,17 +106,11 @@
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="5" class="text-center">Категории не найдены</td>
+                    <td colspan="6" class="text-center">Категории не найдены</td>
                 </tr>
             <?php endif; ?>
             </tbody>
         </table>
-
-        <?php if (isset($pager) && $pager->getPageCount() > 1): ?>
-            <div class="pagination">
-                <?= $pager->links() ?>
-            </div>
-        <?php endif; ?>
     </div>
 
 <?= $this->endSection() ?>

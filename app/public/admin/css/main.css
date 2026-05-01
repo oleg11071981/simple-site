@@ -1232,3 +1232,101 @@ body {
         width: 50px;
     }
 }
+
+/* Выбор категории с поиском */
+.category-select-wrapper {
+    position: relative;
+}
+
+#categorySearch {
+    margin-bottom: 8px;
+}
+
+#category {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+#category option {
+    padding: 6px 8px;
+    cursor: pointer;
+}
+
+#category option:hover {
+    background-color: #e9ecef;
+}
+
+#category option:checked {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Таблица файлов - полный фон */
+.table-container {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+}
+
+.data-table thead th {
+    background: #f8f9fa;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.data-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+}
+
+.data-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+/* Чтобы фон header был на всю ширину */
+.table-container {
+    overflow-x: auto;
+}
+
+.data-table {
+    min-width: 800px;
+}
+
+/* Выбор галереи */
+.media-select-wrapper {
+    position: relative;
+}
+
+#mediaSearch {
+    margin-bottom: 8px;
+}
+
+#media {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+#media option {
+    padding: 6px 8px;
+    cursor: pointer;
+}
+
+#media option:hover {
+    background-color: #e9ecef;
+}
+
+#media option:checked {
+    background-color: #007bff;
+    color: white;
+}

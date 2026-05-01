@@ -8,7 +8,6 @@
             <p><?= isset($category) ? 'Редактирование «' . esc($category['name']) . '»' : 'Добавление новой категории для файлов' ?></p>
         </div>
 
-        <!-- Flash сообщения -->
         <?php if (session()->getFlashdata('errors')): ?>
             <div class="alert alert-error">
                 <?php foreach (session()->getFlashdata('errors') as $error): ?>
@@ -17,15 +16,6 @@
             </div>
         <?php endif; ?>
 
-        <?php if (session()->getFlashdata('error')): ?>
-            <div class="alert alert-error">
-                <span class="alert-icon">⚠</span>
-                <span class="alert-message"><?= esc(session()->getFlashdata('error')) ?></span>
-                <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
-            </div>
-        <?php endif; ?>
-
-        <!-- Форма -->
         <form action="<?= isset($category) ? '/admin-panel/categories/update/' . $category['id'] : '/admin-panel/categories/store' ?>" method="post" class="settings-form">
             <?= csrf_field() ?>
 
@@ -34,7 +24,7 @@
             <?php endif; ?>
 
             <div class="settings-section">
-                <h2>Информация о категории</h2>
+                <h2>Основная информация</h2>
 
                 <?php if (isset($category)): ?>
                     <div class="form-group">
@@ -52,6 +42,39 @@
                            required autofocus>
                     <small>Например: Изображения, Документы, Баннеры и т.д.</small>
                 </div>
+
+                <div class="form-group">
+                    <label for="parent">Родительская категория</label>
+                    <select id="parent" name="parent" class="form-control">
+                        <option value="0">— Корневая категория —</option>
+                        <?php if (!empty($categories)): ?>
+                            <?php foreach ($categories as $cat): ?>
+                                <?php if (isset($category) && $category['id'] == $cat['id']) continue; ?>
+                                <option value="<?= $cat['id'] ?>"
+                                    <?= (isset($category) && $category['parent'] == $cat['id']) ? 'selected' : '' ?>
+                                    <?= (isset($parent_id) && $parent_id == $cat['id'] && !isset($category)) ? 'selected' : '' ?>>
+                                    <?= str_repeat('—', $cat['level'] ?? 0) ?> <?= esc($cat['name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                    <small>Выберите родительскую категорию для создания вложенности</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="priority">Приоритет (порядок сортировки)</label>
+                    <input type="number" id="priority" name="priority"
+                           value="<?= esc($category['priority'] ?? 0) ?>"
+                           class="form-control">
+                    <small>Чем меньше число, тем выше в списке</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Описание категории</label>
+                    <textarea id="description" name="description" rows="4"
+                              class="form-control"
+                              placeholder="Описание категории (необязательно)"><?= esc($category['description'] ?? '') ?></textarea>
+                </div>
             </div>
 
             <?php if (isset($category)): ?>
@@ -68,7 +91,7 @@
             <?php endif; ?>
 
             <div class="form-actions">
-                <a href="/admin-panel/categories" class="btn-cancel">Отмена</a>
+                <a href="/admin-panel/categories<?= (isset($parent_id) && $parent_id > 0) ? '?parent=' . $parent_id : '' ?>" class="btn-cancel">Отмена</a>
                 <button type="submit" class="btn-save">💾 <?= isset($category) ? 'Сохранить' : 'Создать' ?></button>
             </div>
         </form>
