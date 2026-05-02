@@ -3,11 +3,11 @@
 <?= $this->section('content') ?>
 
     <!-- Основной контент в белой карточке -->
-    <div class="home-card">
+    <!--div class="home-card">
         <div class="home-text">
             <?= $mainText ?>
         </div>
-    </div>
+    </div-->
 
     <!-- Блок последних новостей -->
 <?php if (!empty($latestNews)): ?>
