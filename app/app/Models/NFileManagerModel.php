@@ -81,4 +81,23 @@ class NFileManagerModel extends Model
     {
         return '/uploads/thumb_' . $id;
     }
+
+    /**
+     * Получить файлы по ID категории
+     *
+     * @param int $categoryId ID категории
+     * @return array
+     */
+    public function getFilesByCategory(int $categoryId): array
+    {
+        if ($categoryId <= 0) {
+            return [];
+        }
+
+        return $this->where('category', $categoryId)
+            ->orderBy('priority', 'ASC')
+            ->orderBy('id', 'DESC')
+            ->findAll();
+    }
+
 }

@@ -116,9 +116,7 @@ class SiteController extends BaseController
 
         // Проверяем, правильный ли URL
         $correctPath = $this->pagesModel->getFullPath($page['id']);
-
         if ($fullPath !== $correctPath) {
-            // Перенаправляем на правильный URL
             return redirect()->to('/' . $correctPath);
         }
 
@@ -130,6 +128,19 @@ class SiteController extends BaseController
         // Получаем хлебные крошки
         $breadcrumbs = $this->getBreadcrumbs($page['id']);
 
+        // Получаем файлы галереи, если привязана
+        $galleryFiles = [];
+        if ($page['media'] > 0) {
+            $fileModel = new NFileManagerModel();
+            $files = $fileModel->getFilesByCategory($page['media']);
+
+            // Форматируем размер для каждого файла
+            foreach ($files as &$file) {
+                $file['size_formatted'] = $this->formatFileSize($file['file_size']);
+            }
+            $galleryFiles = $files;
+        }
+
         $data = [
             'title'         => $page['name'] . ' | ' . ($settings['SiteName'] ?? 'n-cms'),
             'description'   => $page['description'] ?: ($settings['Description'] ?? ''),
@@ -137,6 +148,7 @@ class SiteController extends BaseController
             'page'          => $page,
             'childrenTree'  => $childrenTree,
             'breadcrumbs'   => $breadcrumbs,
+            'galleryFiles'  => $galleryFiles,
             'menuPages'     => $this->pagesModel->getMenuPages(),
             'activePage'    => 'page_' . $page['id'],
             'currentPage'   => $page['name'],
@@ -244,6 +256,7 @@ class SiteController extends BaseController
             throw PageNotFoundException::forPageNotFound();
         }
 
+        // Добавляем информацию о фото
         if ($news['foto'] > 0) {
             $file = $fileModel->find($news['foto']);
             if ($file) {
@@ -251,6 +264,19 @@ class SiteController extends BaseController
             }
         }
 
+        // Получаем файлы галереи, если привязана
+        $galleryFiles = [];
+        if ($news['media'] > 0) {
+            $files = $fileModel->getFilesByCategory($news['media']);
+
+            // Форматируем размер для каждого файла
+            foreach ($files as &$file) {
+                $file['size_formatted'] = $this->formatFileSize($file['file_size']);
+            }
+            $galleryFiles = $files;
+        }
+
+        // Получаем другие новости
         $otherNews = $newsModel->where('publish', 1)
             ->where('id !=', $news['id'])
             ->orderBy('date', 'DESC')
@@ -271,6 +297,7 @@ class SiteController extends BaseController
             'description' => $news['description'] ?: $news['anons_text'],
             'keywords'    => $news['keywords'],
             'news'        => $news,
+            'galleryFiles'=> $galleryFiles,
             'otherNews'   => $otherNews,
             'menuPages'   => $this->pagesModel->getMenuPages(),
             'activePage'  => 'news',
@@ -312,4 +339,19 @@ class SiteController extends BaseController
 
         return view('site/contacts', $data);
     }
+
+    /**
+     * Форматировать размер файла
+     *
+     * @param int $bytes
+     * @return string
+     */
+    private function formatFileSize(int $bytes): string
+    {
+        if ($bytes < 1024) return $bytes . ' Б';
+        if ($bytes < 1048576) return round($bytes / 1024, 1) . ' КБ';
+        if ($bytes < 1073741824) return round($bytes / 1048576, 1) . ' МБ';
+        return round($bytes / 1073741824, 1) . ' ГБ';
+    }
+
 }
