@@ -14,6 +14,32 @@
         <a href="/news?category=2" class="filter-btn <?= ($activeCategory ?? 0) == 2 ? 'active' : '' ?>">🌍 Новости в РФ и мире</a>
     </div>
 
+    <!-- Фильтр по дате -->
+    <div class="date-filter">
+        <form method="get" action="/news" class="date-filter-form">
+            <!-- Сохраняем текущую категорию -->
+            <?php if (($activeCategory ?? 0) > 0): ?>
+                <input type="hidden" name="category" value="<?= $activeCategory ?>">
+            <?php endif; ?>
+
+            <div class="date-inputs">
+                <input type="date"
+                       name="date_from"
+                       value="<?= esc($_GET['date_from'] ?? '') ?>"
+                       placeholder="с"
+                       class="date-input">
+                <span class="date-separator">—</span>
+                <input type="date"
+                       name="date_to"
+                       value="<?= esc($_GET['date_to'] ?? '') ?>"
+                       placeholder="по"
+                       class="date-input">
+                <button type="submit" class="filter-apply-btn">Применить</button>
+                <a href="/news?<?= ($activeCategory ?? 0) > 0 ? 'category=' . $activeCategory : '' ?>" class="filter-clear-btn">Сбросить</a>
+            </div>
+        </form>
+    </div>
+
     <!-- Список новостей (карточки на белом фоне) -->
     <div class="news-grid">
         <?php if (!empty($news) && is_array($news)): ?>

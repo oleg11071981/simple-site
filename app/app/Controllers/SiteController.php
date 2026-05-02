@@ -200,7 +200,9 @@ class SiteController extends BaseController
     {
         $perPage = 9;
         $page = $this->request->getGet('page') ?? 1;
-        $category = $this->request->getGet('category') ?? 0;  // Добавляем фильтр по категории
+        $category = $this->request->getGet('category') ?? 0;
+        $date_from = $this->request->getGet('date_from') ?? '';
+        $date_to = $this->request->getGet('date_to') ?? '';
 
         $newsModel = new NNewsArticlesModel();
         $settings = $this->settingsModel->getAll();
@@ -211,6 +213,14 @@ class SiteController extends BaseController
         // Фильтр по категории
         if ($category > 0) {
             $builder = $builder->where('category_news', $category);
+        }
+
+        // Фильтр по дате (диапазон)
+        if (!empty($date_from)) {
+            $builder = $builder->where('date >=', $date_from);
+        }
+        if (!empty($date_to)) {
+            $builder = $builder->where('date <=', $date_to);
         }
 
         $news = $builder->orderBy('date', 'DESC')
@@ -229,15 +239,17 @@ class SiteController extends BaseController
         $pager = $newsModel->pager;
 
         $data = [
-            'title'       => 'Новости | ' . ($settings['SiteName'] ?? 'n-cms'),
-            'description' => 'Новости и события компании. Актуальные новости, проекты и достижения.',
-            'keywords'    => 'новости, события, проекты, достижения',
-            'news'        => $news,
-            'pager'       => $pager,
-            'currentPage' => 'Новости',
-            'activeCategory' => $category,  // Передаём активную категорию
-            'menuPages'   => $this->pagesModel->getMenuPages(),
-            'activePage'  => 'news',
+            'title'         => 'Новости | ' . ($settings['SiteName'] ?? 'n-cms'),
+            'description'   => 'Новости и события компании. Актуальные новости, проекты и достижения.',
+            'keywords'      => 'новости, события, проекты, достижения',
+            'news'          => $news,
+            'pager'         => $pager,
+            'currentPage'   => 'Новости',
+            'activeCategory'=> $category,
+            'date_from'     => $date_from,
+            'date_to'       => $date_to,
+            'menuPages'     => $this->pagesModel->getMenuPages(),
+            'activePage'    => 'news',
         ];
 
         return view('site/news', $data);
