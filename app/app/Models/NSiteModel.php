@@ -30,6 +30,7 @@ class NSiteModel extends Model
         'name', 'path', 'publish', 'more_info',
         'keywords', 'description', 'anons_text',
         'show_in_menu', 'priority', 'new_on_site', 'parent',
+        'media',
         'create', 'modify', 'create_by_user', 'modify_by_user'
     ];
 

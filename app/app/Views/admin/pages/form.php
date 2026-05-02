@@ -239,9 +239,6 @@
                                             data-name="<?= esc(strtolower($cat['name'])) ?>"
                                         <?= (isset($page) && $page['media'] == $cat['id']) ? 'selected' : '' ?>>
                                         <?= str_repeat('—', $cat['level'] ?? 0) ?> 📁 <?= esc($cat['name']) ?>
-                                        <?php if ($cat['files_count'] > 0): ?>
-                                            (<?= $cat['files_count'] ?> файлов)
-                                        <?php endif; ?>
                                     </option>
                                 <?php endforeach; ?>
                             <?php endif; ?>
