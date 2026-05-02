@@ -7,6 +7,13 @@
         <h1 class="page-title">Новости</h1>
     </div>
 
+    <!-- Фильтр по категориям -->
+    <div class="news-filter">
+        <a href="/news" class="filter-btn <?= ($activeCategory ?? 0) == 0 ? 'active' : '' ?>">Все новости</a>
+        <a href="/news?category=1" class="filter-btn <?= ($activeCategory ?? 0) == 1 ? 'active' : '' ?>">📋 Новости комитета</a>
+        <a href="/news?category=2" class="filter-btn <?= ($activeCategory ?? 0) == 2 ? 'active' : '' ?>">🌍 Новости в РФ и мире</a>
+    </div>
+
     <!-- Список новостей (карточки на белом фоне) -->
     <div class="news-grid">
         <?php if (!empty($news) && is_array($news)): ?>

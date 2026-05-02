@@ -191,7 +191,7 @@ class SiteController extends BaseController
     }
 
     /**
-     * Список новостей
+     * Список новостей с фильтрацией по категории
      *
      * @route GET /news
      * @return string
@@ -200,13 +200,20 @@ class SiteController extends BaseController
     {
         $perPage = 9;
         $page = $this->request->getGet('page') ?? 1;
+        $category = $this->request->getGet('category') ?? 0;  // Добавляем фильтр по категории
 
         $newsModel = new NNewsArticlesModel();
         $settings = $this->settingsModel->getAll();
         $fileModel = new NFileManagerModel();
 
-        $news = $newsModel->where('publish', 1)
-            ->orderBy('date', 'DESC')
+        $builder = $newsModel->where('publish', 1);
+
+        // Фильтр по категории
+        if ($category > 0) {
+            $builder = $builder->where('category_news', $category);
+        }
+
+        $news = $builder->orderBy('date', 'DESC')
             ->orderBy('id', 'DESC')
             ->paginate($perPage, 'default', $page);
 
@@ -228,6 +235,7 @@ class SiteController extends BaseController
             'news'        => $news,
             'pager'       => $pager,
             'currentPage' => 'Новости',
+            'activeCategory' => $category,  // Передаём активную категорию
             'menuPages'   => $this->pagesModel->getMenuPages(),
             'activePage'  => 'news',
         ];
