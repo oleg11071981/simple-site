@@ -14,6 +14,8 @@
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
+use App\Models\NFileManagerCategoriesModel;
+use App\Models\NFileManagerModel;
 use App\Models\NNewsArticlesModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use ReflectionException;
@@ -88,7 +90,7 @@ class NewsController extends BaseController
     public function create(): string
     {
         // Получаем список категорий для галереи
-        $categoriesModel = new \App\Models\NFileManagerCategoriesModel();
+        $categoriesModel = new NFileManagerCategoriesModel();
         $mediaCategories = $categoriesModel->getForSelect();
 
         $data = [
@@ -147,15 +149,29 @@ class NewsController extends BaseController
             return redirect()->to('/admin-panel/news')->with('error', 'Новость не найдена');
         }
 
+        // Получаем информацию о фото, если есть
+        if ($news['foto'] > 0) {
+            $fileModel = new NFileManagerModel();
+            $file = $fileModel->find($news['foto']);
+            if ($file) {
+                $news['foto_file'] = $file['file_name'];
+            }
+        }
+
         // Получаем список категорий для галереи
-        $categoriesModel = new \App\Models\NFileManagerCategoriesModel();
+        $categoriesModel = new NFileManagerCategoriesModel();
         $mediaCategories = $categoriesModel->getForSelect();
 
+        // Добавляем количество файлов для каждой категории
+        foreach ($mediaCategories as &$cat) {
+            $cat['files_count'] = $categoriesModel->getFilesCount($cat['id']);
+        }
+
         $data = [
-            'title'          => 'Редактирование новости',
-            'activeMenu'     => 'news',
-            'news'           => $news,
-            'mediaCategories'=> $mediaCategories,
+            'title'           => 'Редактирование новости',
+            'activeMenu'      => 'news',
+            'news'            => $news,
+            'mediaCategories' => $mediaCategories,
         ];
         return view('admin/news/form', $data);
     }
