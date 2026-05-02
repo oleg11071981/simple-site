@@ -1340,11 +1340,8 @@ main {
 
 /* Мета-информация новости (дата + категория) */
 .news-meta {
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
-    flex-wrap: wrap;
     margin-bottom: 0.75rem;
+    overflow: hidden;
 }
 
 .news-date {
@@ -1353,14 +1350,18 @@ main {
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.03em;
+    float: left;
+    line-height: 24px;
 }
 
-/* Категории новостей */
 .news-category {
     font-size: 0.7rem;
-    padding: 0.25rem 0.75rem;
+    padding: 0 0.7rem;
     border-radius: 1rem;
     display: inline-block;
+    line-height: 24px;
+    margin-left: 0.75rem;
+    float: left;
 }
 
 .news-category.committee {
@@ -1371,4 +1372,11 @@ main {
 .news-category.world {
     background: #e8f5e9;
     color: #388e3c;
+}
+
+/* Clearfix для родителя */
+.news-meta:after {
+    content: "";
+    display: table;
+    clear: both;
 }
