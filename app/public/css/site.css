@@ -1337,3 +1337,38 @@ main {
     background: #e8f5e9;
     color: #388e3c;
 }
+
+/* Мета-информация новости (дата + категория) */
+.news-meta {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+}
+
+.news-date {
+    font-size: 0.75rem;
+    color: #2563eb;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* Категории новостей */
+.news-category {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    display: inline-block;
+}
+
+.news-category.committee {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.news-category.world {
+    background: #e8f5e9;
+    color: #388e3c;
+}
