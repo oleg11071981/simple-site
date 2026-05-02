@@ -69,22 +69,17 @@
                         <td class="text-center"><?= esc($cat['id']) ?></td>
                         <td>
                             <div class="category-name">
-                                <?php if ($cat['has_children']): ?>
-                                    📁
-                                <?php else: ?>
-                                    📂
-                                <?php endif; ?>
                                 <div class="category-name">
+                                    <?php if ($cat['has_children']): ?>
+                                        <span class="category-icon">📁</span>
+                                    <?php else: ?>
+                                        <span class="category-icon">📂</span>
+                                    <?php endif; ?>
                                     <a href="/admin-panel/categories?parent=<?= $cat['id'] ?>" class="category-link">
                                         <?= esc($cat['name']) ?>
                                     </a>
                                 </div>
                             </div>
-                            <?php if ($cat['has_children']): ?>
-                                <div class="category-children-hint">
-                                    <small>📁 есть подкатегории</small>
-                                </div>
-                            <?php endif; ?>
                         </td>
                         <td class="text-center">
                             <a href="/admin-panel/files?category=<?= $cat['id'] ?>" class="badge badge-info">

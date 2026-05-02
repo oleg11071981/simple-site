@@ -123,8 +123,9 @@
                             <td class="text-center"><?= esc($page['id']) ?></td>
                             <td>
                                 <div class="page-name">
+                                    <span class="page-icon">📄</span>
                                     <a href="/admin-panel/pages?parent=<?= $page['id'] ?>" class="page-link">
-                                        📄 <?= esc($page['name']) ?>
+                                        <?= esc($page['name']) ?>
                                     </a>
                                 </div>
                                 <div class="page-path">

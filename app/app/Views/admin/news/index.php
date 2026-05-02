@@ -96,6 +96,7 @@
                             <td class="text-center"><?= esc($item['id']) ?></td>
                             <td>
                                 <div class="news-name">
+                                    <span class="news-icon">📰</span>
                                     <a href="/admin-panel/news/edit/<?= $item['id'] ?>" class="news-link">
                                         <?= esc($item['name']) ?>
                                     </a>
