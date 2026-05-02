@@ -38,6 +38,15 @@
             </div>
 
             <div class="filter-group">
+                <label>Категория:</label>
+                <select name="category_news" class="filter-select" onchange="this.form.submit()">
+                    <option value="0" <?= ($category_news ?? 0) == 0 ? 'selected' : '' ?>>Все категории</option>
+                    <option value="1" <?= ($category_news ?? 0) == 1 ? 'selected' : '' ?>>📋 Новости комитета</option>
+                    <option value="2" <?= ($category_news ?? 0) == 2 ? 'selected' : '' ?>>🌍 Новости в РФ и мире</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
                 <label>Сортировка:</label>
                 <select name="sort" class="filter-select" onchange="this.form.submit()">
                     <option value="1" <?= ($sort ?? 2) == 1 ? 'selected' : '' ?>>ID (возрастание)</option>
@@ -81,6 +90,7 @@
                     </th>
                     <th style="width: 60px">ID</th>
                     <th>Заголовок</th>
+                    <th style="width: 100px">Категория</th>
                     <th style="width: 100px">Статус</th>
                     <th style="width: 110px">Дата</th>
                     <th style="width: 140px">Дата создания</th>
@@ -102,6 +112,15 @@
                                         <?= esc($item['name']) ?>
                                     </a>
                                 </div>
+                            </td>
+                            <td class="text-center">
+                                <?php if ($item['category_news'] == 1): ?>
+                                    <span class="badge badge-committee">📋 Новости комитета</span>
+                                <?php elseif ($item['category_news'] == 2): ?>
+                                    <span class="badge badge-world">🌍 Новости в РФ и мире</span>
+                                <?php else: ?>
+                                    <span class="badge badge-default">❓ Не указана</span>
+                                <?php endif; ?>
                             </td>
                             <td>
                                 <?php if ($item['publish'] == 1): ?>

@@ -35,22 +35,26 @@ class NewsController extends BaseController
     public function index(): string
     {
         $show = $this->request->getGet('show') ?? 1;
+        $categoryNews = $this->request->getGet('category_news') ?? 0;  // Добавляем
         $sort = $this->request->getGet('sort') ?? 2;
         $perPage = $this->request->getGet('per_page') ?? 50;
         $search = $this->request->getGet('search') ?? '';
 
         $builder = $this->newsModel;
 
-        // Поиск по названию
         if (!empty($search)) {
             $builder = $builder->like('name', $search);
         }
 
-        // Фильтр по статусу
         if ($show == 2) {
             $builder = $builder->where('publish', 1);
         } elseif ($show == 3) {
             $builder = $builder->where('publish', 0);
+        }
+
+        // Фильтр по категории новостей
+        if ($categoryNews > 0) {
+            $builder = $builder->where('category_news', $categoryNews);
         }
 
         // Сортировка
@@ -71,14 +75,15 @@ class NewsController extends BaseController
         $pager = $this->newsModel->pager;
 
         $data = [
-            'title'      => 'Управление новостями',
-            'activeMenu' => 'news',
-            'news'       => $news,
-            'show'       => $show,
-            'sort'       => $sort,
-            'per_page'   => $perPage,
-            'search'     => $search,
-            'pager'      => $pager,
+            'title'         => 'Управление новостями',
+            'activeMenu'    => 'news',
+            'news'          => $news,
+            'show'          => $show,
+            'category_news' => $categoryNews,  // Добавляем
+            'sort'          => $sort,
+            'per_page'      => $perPage,
+            'search'        => $search,
+            'pager'         => $pager,
         ];
 
         return view('admin/news/index', $data);

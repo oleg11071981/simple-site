@@ -1317,3 +1317,23 @@ main {
         font-size: 1.25rem;
     }
 }
+
+.news-category,
+.news-detail-category {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    display: inline-block;
+}
+
+.news-category.committee,
+.news-detail-category.committee {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.news-category.world,
+.news-detail-category.world {
+    background: #e8f5e9;
+    color: #388e3c;
+}

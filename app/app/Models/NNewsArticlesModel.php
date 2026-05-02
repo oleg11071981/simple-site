@@ -17,6 +17,13 @@ use CodeIgniter\Model;
 
 class NNewsArticlesModel extends Model
 {
+
+    /**
+     * Категории новостей
+     */
+    const CATEGORY_COMMITTEE = 1;      // Новости комитета
+    const CATEGORY_RUSSIA_WORLD = 2;   // Новости в РФ и мир
+
     protected $table = 'n_news_articles';
     protected $primaryKey = 'id';
     protected $useAutoIncrement = true;
@@ -26,7 +33,7 @@ class NNewsArticlesModel extends Model
     protected $allowedFields = [
         'name', 'anons_text', 'more_info', 'publish', 'date',
         'path', 'keywords', 'description', 'author', 'source',
-        'source_href', 'href', 'foto', 'media', 'type', 'form',
+        'source_href', 'href', 'foto', 'media', 'type', 'category_news',  // добавляем category_news
         'show_all', 'target', 'publish_time', 'morder',
         'create', 'modify', 'create_by_user', 'modify_by_user'
     ];

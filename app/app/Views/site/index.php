@@ -25,6 +25,11 @@
                     <?php endif; ?>
                     <div class="news-content">
                         <div class="news-date"><?= date('d.m.Y', strtotime($item['date'])) ?></div>
+                        <?php if ($item['category_news'] == 1): ?>
+                            <div class="news-category committee">📋 Новости комитета</div>
+                        <?php elseif ($item['category_news'] == 2): ?>
+                            <div class="news-category world">🌍 Новости в РФ и мире</div>
+                        <?php endif; ?>
                         <h3 class="news-title"><?= esc($item['name']) ?></h3>
                         <p class="news-excerpt"><?= esc(substr(strip_tags($item['anons_text']), 0, 120)) ?>...</p>
                         <a href="/news/<?= esc($item['path']) ?>" class="read-more">Подробнее →</a>

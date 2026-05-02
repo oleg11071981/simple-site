@@ -168,6 +168,15 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="category_news">Категория новости</label>
+                    <select id="category_news" name="category_news" class="form-control">
+                        <option value="1" <?= (isset($news) && $news['category_news'] == 1) ? 'selected' : '' ?>>📋 Новости комитета</option>
+                        <option value="2" <?= (isset($news) && $news['category_news'] == 2) ? 'selected' : '' ?>>🌍 Новости в РФ и мире</option>
+                    </select>
+                    <small>Выберите категорию для отображения на сайте</small>
+                </div>
+
+                <div class="form-group">
                     <label for="type">Тип новости</label>
                     <select id="type" name="type" class="form-control">
                         <option value="0" <?= (isset($news) && $news['type'] == 0) ? 'selected' : '' ?>>Обычная</option>
