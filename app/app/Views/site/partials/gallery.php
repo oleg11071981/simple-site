@@ -33,10 +33,6 @@
                         </div>
                     <?php endif; ?>
                     <div class="gallery-caption"><?= esc($file['title'] ?: $file['name']) ?></div>
-                    <!--div class="gallery-meta">
-                        <?= strtoupper(esc($file['file_type'])) ?> •
-                        <?= $file['size_formatted'] ?>
-                    </div-->
                 </div>
             <?php endforeach; ?>
         </div>
