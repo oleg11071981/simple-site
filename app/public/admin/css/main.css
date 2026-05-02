@@ -1330,3 +1330,46 @@ body {
     background-color: #007bff;
     color: white;
 }
+
+/* ========================================
+   ЕДИНЫЕ СТИЛИ ДЛЯ СПИСКОВ
+   ======================================== */
+
+/* Общие стили для ссылок в таблицах */
+.page-link,
+.file-link,
+.news-link,
+.category-link {
+    color: #2c3e50;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.page-link:hover,
+.file-link:hover,
+.news-link:hover,
+.category-link:hover {
+    color: #007bff;
+    text-decoration: underline;
+}
+
+/* Название страницы */
+.page-name {
+    margin-bottom: 4px;
+}
+
+/* Название файла */
+.file-name {
+    margin-bottom: 4px;
+}
+
+/* Название новости */
+.news-name {
+    margin-bottom: 4px;
+}
+
+/* Название категории */
+.category-name {
+    margin-bottom: 4px;
+}

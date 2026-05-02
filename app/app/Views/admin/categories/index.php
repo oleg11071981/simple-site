@@ -74,9 +74,11 @@
                                 <?php else: ?>
                                     📂
                                 <?php endif; ?>
-                                <a href="/admin-panel/categories?parent=<?= $cat['id'] ?>" class="category-link">
-                                    <?= esc($cat['name']) ?>
-                                </a>
+                                <div class="category-name">
+                                    <a href="/admin-panel/categories?parent=<?= $cat['id'] ?>" class="category-link">
+                                        <?= esc($cat['name']) ?>
+                                    </a>
+                                </div>
                             </div>
                             <?php if ($cat['has_children']): ?>
                                 <div class="category-children-hint">

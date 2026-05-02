@@ -95,9 +95,11 @@
                             </td>
                             <td class="text-center"><?= esc($item['id']) ?></td>
                             <td>
-                                <a href="/admin-panel/news/edit/<?= $item['id'] ?>" class="news-link">
-                                    <?= esc($item['name']) ?>
-                                </a>
+                                <div class="news-name">
+                                    <a href="/admin-panel/news/edit/<?= $item['id'] ?>" class="news-link">
+                                        <?= esc($item['name']) ?>
+                                    </a>
+                                </div>
                             </td>
                             <td>
                                 <?php if ($item['publish'] == 1): ?>
