@@ -51,7 +51,7 @@
 
             <div class="filter-group">
                 <label>Поиск:</label>
-                <input type="text" name="search" class="filter-input" value="<?= esc($search ?? '') ?>" placeholder="Название...">
+                <input type="text" name="search" class="filter-select" value="<?= esc($search ?? '') ?>" placeholder="Название...">
             </div>
 
             <div class="filter-group">
@@ -64,6 +64,7 @@
                     <option value="100" <?= ($per_page ?? 50) == 100 ? 'selected' : '' ?>>100</option>
                 </select>
             </div>
+
             <button type="submit" class="btn-apply">Применить</button>
         </form>
     </div>

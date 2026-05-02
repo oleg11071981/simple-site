@@ -82,8 +82,8 @@
                             </div>
                         </td>
                         <td class="text-center">
-                            <a href="/admin-panel/files?category=<?= $cat['id'] ?>" class="badge badge-info">
-                                <?= $cat['files_count'] ?> файлов
+                            <a href="/admin-panel/files?category=<?= $cat['id'] ?>" class="files-count-link">
+                                <?= $cat['files_count'] ?>
                             </a>
                         </td>
                         <td class="text-center"><?= esc($cat['priority'] ?? 0) ?></td>

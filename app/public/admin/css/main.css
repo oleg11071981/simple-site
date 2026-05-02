@@ -1395,3 +1395,74 @@ body {
     width: 24px;
     text-align: center;
 }
+
+/* Стили для ссылки "файлов" в категориях */
+.files-count-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 13px;
+    padding: 4px 8px;
+    background: #e7f1ff;
+    border-radius: 4px;
+    display: inline-block;
+    transition: all 0.2s;
+}
+
+.files-count-link:hover {
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+}
+
+/* Фильтры и сортировка */
+.filters-bar {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filters-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #495057;
+}
+
+/* Единый стиль для select и input в фильтрах */
+.filter-select,
+.filter-input {
+    padding: 6px 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.filter-input {
+    cursor: text;
+    width: 200px;
+}
+
+.filter-select:focus,
+.filter-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
