@@ -7,45 +7,51 @@
         <h1 class="page-title">Новости</h1>
     </div>
 
-    <!-- Фильтр по категориям -->
-    <div class="news-filter">
-        <a href="/news" class="filter-btn <?= ($activeCategory ?? 0) == 0 ? 'active' : '' ?>">Все новости</a>
-        <?php if (!empty($allCategories)): ?>
-            <?php foreach ($allCategories as $cat): ?>
-                <a href="/news?category=<?= $cat['id'] ?>" class="filter-btn <?= ($activeCategory ?? 0) == $cat['id'] ? 'active' : '' ?>">
-                    <?= esc($cat['name']) ?>
-                </a>
-            <?php endforeach; ?>
-        <?php endif; ?>
+    <!-- Кнопка поиска (по левому краю) -->
+    <div class="search-toggle">
+        <button type="button" id="toggleFiltersBtn" class="search-toggle-btn">🔍 Поиск</button>
     </div>
 
-    <!-- Фильтр по дате -->
-    <div class="date-filter">
-        <form method="get" action="/news" class="date-filter-form">
-            <!-- Сохраняем текущую категорию -->
-            <?php if (($activeCategory ?? 0) > 0): ?>
-                <input type="hidden" name="category" value="<?= $activeCategory ?>">
-            <?php endif; ?>
+    <!-- Фильтры (скрыты по умолчанию) -->
+    <div id="filtersPanel" class="filters-panel" style="display: none;">
+        <form method="get" action="/news" class="filters-form">
+            <!-- Категория (селект) -->
+            <div class="filter-group">
+                <label for="category">Категория</label>
+                <select name="category" id="category" class="filter-select">
+                    <option value="0">Все категории</option>
+                    <?php if (!empty($allCategories)): ?>
+                        <?php foreach ($allCategories as $cat): ?>
+                            <option value="<?= $cat['id'] ?>" <?= ($activeCategory ?? 0) == $cat['id'] ? 'selected' : '' ?>>
+                                <?= str_repeat('—', $cat['level'] ?? 0) ?> <?= esc($cat['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </select>
+            </div>
 
-            <div class="date-inputs">
-                <input type="date"
-                       name="date_from"
-                       value="<?= esc($_GET['date_from'] ?? '') ?>"
-                       placeholder="с"
-                       class="date-input">
-                <span class="date-separator">—</span>
-                <input type="date"
-                       name="date_to"
-                       value="<?= esc($_GET['date_to'] ?? '') ?>"
-                       placeholder="по"
-                       class="date-input">
+            <!-- Дата с -->
+            <div class="filter-group">
+                <label for="date_from">Дата с</label>
+                <input type="date" name="date_from" id="date_from" class="filter-input" value="<?= esc($date_from ?? '') ?>">
+            </div>
+
+            <!-- Дата по -->
+            <div class="filter-group">
+                <label for="date_to">Дата по</label>
+                <input type="date" name="date_to" id="date_to" class="filter-input" value="<?= esc($date_to ?? '') ?>">
+            </div>
+
+            <!-- Кнопки -->
+            <div class="filter-actions">
                 <button type="submit" class="filter-apply-btn">Применить</button>
-                <a href="/news?<?= ($activeCategory ?? 0) > 0 ? 'category=' . $activeCategory : '' ?>" class="filter-clear-btn">Сбросить</a>
+                <a href="/news" class="filter-reset-btn">Сбросить</a>
             </div>
         </form>
     </div>
 
-    <!-- Список новостей (карточки на белом фоне) -->
+    <!-- Список новостей -->
+    <!-- Список новостей -->
     <div class="news-grid">
         <?php if (!empty($news) && is_array($news)): ?>
             <?php foreach ($news as $item): ?>
@@ -61,17 +67,7 @@
                         <div class="news-meta">
                             <span class="news-date"><?= date('d.m.Y', strtotime($item['date'])) ?></span>
                             <?php if (!empty($item['category_name'])): ?>
-                                <?php
-                                $categoryClass = '';
-                                if ($item['category_news'] == 1) {
-                                    $categoryClass = 'committee';
-                                } elseif ($item['category_news'] == 2) {
-                                    $categoryClass = 'world';
-                                }
-                                ?>
-                                <span class="news-category <?= $categoryClass ?>">
-                                    <?= esc($item['category_name']) ?>
-                                </span>
+                                <span class="news-category category-badge"><?= esc($item['category_name']) ?></span>
                             <?php endif; ?>
                         </div>
                         <h3 class="news-title"><?= esc($item['name']) ?></h3>
@@ -81,8 +77,9 @@
                 </article>
             <?php endforeach; ?>
         <?php else: ?>
-            <div class="empty-news">
-                <p>Новости не найдены</p>
+            <div class="empty-news-card">
+                <h3 class="empty-news-title">Новости не найдены</h3>
+                <p class="empty-news-text">Попробуйте изменить параметры фильтра или вернуться позже.</p>
             </div>
         <?php endif; ?>
     </div>
@@ -93,5 +90,36 @@
         <?= $pager->links() ?>
     </div>
 <?php endif; ?>
+
+    <script>
+        // Переключение фильтров
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleBtn = document.getElementById('toggleFiltersBtn');
+            const filtersPanel = document.getElementById('filtersPanel');
+
+            // Проверяем, есть ли активные фильтры
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasActiveFilters = urlParams.has('category') || urlParams.has('date_from') || urlParams.has('date_to');
+
+            // Если есть активные фильтры - показываем панель и меняем кнопку
+            if (hasActiveFilters) {
+                filtersPanel.style.display = 'block';
+                toggleBtn.textContent = '✕ Скрыть фильтры';
+                toggleBtn.classList.add('close-btn');  // Добавляем класс для серого цвета
+            }
+
+            toggleBtn.addEventListener('click', function() {
+                if (filtersPanel.style.display === 'none') {
+                    filtersPanel.style.display = 'block';
+                    toggleBtn.textContent = '✕ Скрыть фильтры';
+                    toggleBtn.classList.add('close-btn');
+                } else {
+                    filtersPanel.style.display = 'none';
+                    toggleBtn.textContent = '🔍 Поиск';
+                    toggleBtn.classList.remove('close-btn');
+                }
+            });
+        });
+    </script>
 
 <?= $this->endSection() ?>
