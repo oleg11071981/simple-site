@@ -9,16 +9,16 @@
                 </p>
             </div>
 
-            <!-- Колонка 2: Меню -->
+            <!-- Колонка 2: Меню с иконками -->
             <div class="footer-column">
                 <div class="footer-title">Меню</div>
                 <ul class="footer-menu">
-                    <li><a href="/">Главная</a></li>
-                    <li><a href="/news">Новости</a></li>
+                    <li><a href="/">→ Главная</a></li>
+                    <li><a href="/news">→ Новости</a></li>
                     <?php foreach ($menuPages as $menuPage): ?>
-                        <li><a href="/<?= esc($menuPage['path']) ?>"><?= esc($menuPage['name']) ?></a></li>
+                        <li><a href="/<?= esc($menuPage['path']) ?>">→ <?= esc($menuPage['name']) ?></a></li>
                     <?php endforeach; ?>
-                    <li><a href="/contacts">Контакты</a></li>
+                    <li><a href="/contacts">→ Контакты</a></li>
                 </ul>
             </div>
 
