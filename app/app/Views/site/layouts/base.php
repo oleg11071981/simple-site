@@ -10,9 +10,15 @@
     <?php if (!empty($keywords)): ?>
         <meta name="keywords" content="<?= esc($keywords) ?>">
     <?php endif; ?>
-    <link rel="stylesheet" href="/css/site.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <!-- FancyBox CDN -->
+
+    <?php
+    // Cache busting: версия = время изменения файла
+    $cssVersion = filemtime(FCPATH . 'css/site.css');
+    $jsVersion = filemtime(FCPATH . 'js/site.js');
+    ?>
+
+    <link rel="stylesheet" href="/css/site.css?v=<?= $cssVersion ?>">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css" />
 </head>
 <body>
@@ -51,6 +57,6 @@
 <?= view('site/partials/footer') ?>
 
 <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
-<script src="/js/site.js"></script>
+<script src="/js/site.js?v=<?= $jsVersion ?>"></script>
 </body>
 </html>
