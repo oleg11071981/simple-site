@@ -67,7 +67,17 @@
                         <div class="news-meta">
                             <span class="news-date"><?= date('d.m.Y', strtotime($item['date'])) ?></span>
                             <?php if (!empty($item['category_name'])): ?>
-                                <span class="news-category category-badge"><?= esc($item['category_name']) ?></span>
+                                <?php
+                                $categoryClass = '';
+                                if ($item['category_news'] == 1) {
+                                    $categoryClass = 'committee';
+                                } elseif ($item['category_news'] == 2) {
+                                    $categoryClass = 'world';
+                                }
+                                ?>
+                                <span class="news-category <?= $categoryClass ?>">
+            <?= esc($item['category_name']) ?>
+        </span>
                             <?php endif; ?>
                         </div>
                         <h3 class="news-title"><?= esc($item['name']) ?></h3>
