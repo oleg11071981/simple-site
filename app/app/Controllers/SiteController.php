@@ -96,7 +96,11 @@ class SiteController extends BaseController
             'menuPages'   => $this->pagesModel->getMenuPages(),
             'latestNews'  => $latestNews,
             'activePage'  => 'home',
-            'currentPage' => ''
+            'currentPage' => '',
+            // Контакты для футера
+            'email'       => $settings['Email'] ?? '',
+            'phone'       => $settings['Phone'] ?? '',
+            'address'     => $settings['Adress'] ?? ''
         ];
 
         return view('site/index', $data);
@@ -162,6 +166,10 @@ class SiteController extends BaseController
             'menuPages'     => $this->pagesModel->getMenuPages(),
             'activePage'    => 'page_' . $page['id'],
             'currentPage'   => $page['name'],
+            // Контакты для футера
+            'email'       => $settings['Email'] ?? '',
+            'phone'       => $settings['Phone'] ?? '',
+            'address'     => $settings['Adress'] ?? ''
         ];
 
         return view('site/page', $data);
@@ -272,6 +280,10 @@ class SiteController extends BaseController
             'date_to'        => $date_to,
             'menuPages'      => $this->pagesModel->getMenuPages(),
             'activePage'     => 'news',
+            // Контакты для футера
+            'email'       => $settings['Email'] ?? '',
+            'phone'       => $settings['Phone'] ?? '',
+            'address'     => $settings['Adress'] ?? ''
         ];
 
         return view('site/news', $data);
@@ -356,6 +368,10 @@ class SiteController extends BaseController
                 ['name' => 'Новости', 'url' => '/news']
             ],
             'currentPage' => $news['name'],
+            // Контакты для футера
+            'email'       => $settings['Email'] ?? '',
+            'phone'       => $settings['Phone'] ?? '',
+            'address'     => $settings['Adress'] ?? ''
         ];
 
         return view('site/news_detail', $data);
@@ -385,7 +401,7 @@ class SiteController extends BaseController
             'additional_field2' => $settings['additional_field2'] ?? '',
             'menuPages'   => $this->pagesModel->getMenuPages(),
             'activePage'  => 'contacts',
-            'currentPage' => 'Контакты',
+            'currentPage' => 'Контакты'
         ];
 
         return view('site/contacts', $data);
