@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title><?= $title ?? 'Админ-панель' ?> | n-cms</title>
-    <link rel="stylesheet" href="/admin/css/main.css">
+    <?php
+    // Cache busting для админки
+    $adminCssVersion = filemtime(FCPATH . 'admin/css/main.css');
+    $adminJsVersion = filemtime(FCPATH . 'admin/js/main.js');
+    ?>
+    <link rel="stylesheet" href="/admin/css/main.css?v=<?= $adminCssVersion ?>">
     <!-- Cropper.js для редактирования изображений -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <?php if (isset($additionalCss)): ?>
@@ -64,7 +69,7 @@
     <?= $this->renderSection('content') ?>
 </div>
 
-<script src="/admin/js/main.js"></script>
+<script src="/admin/js/main.js?v=<?= $adminJsVersion ?>"></script>
 <?php if (isset($additionalJs)): ?>
     <script src="<?= $additionalJs ?>"></script>
 <?php endif; ?>
