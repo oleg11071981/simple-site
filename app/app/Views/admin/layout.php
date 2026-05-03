@@ -27,8 +27,9 @@
         <a href="/admin-panel/dashboard" class="<?= $activeMenu === 'dashboard' ? 'active' : '' ?>">📊 Дашборд</a>
         <a href="/admin-panel/pages" class="<?= $activeMenu === 'pages' ? 'active' : '' ?>">📄 Страницы</a>
         <a href="/admin-panel/news" class="<?= $activeMenu === 'news' ? 'active' : '' ?>">📰 Новости</a>
+        <a href="/admin-panel/news-categories" class="<?= $activeMenu === 'news_categories' ? 'active' : '' ?>">📂 Категории новостей</a>
         <a href="/admin-panel/files" class="<?= $activeMenu === 'files' ? 'active' : '' ?>">📁 Файлы</a>
-        <a href="/admin-panel/categories" class="<?= $activeMenu === 'categories' ? 'active' : '' ?>">📂 Категории</a>
+        <a href="/admin-panel/categories" class="<?= $activeMenu === 'categories' ? 'active' : '' ?>">📂 Категории файлов</a>
         <a href="/admin-panel/settings" class="<?= $activeMenu === 'settings' ? 'active' : '' ?>">⚙️ Настройки</a>
         <a href="/admin-panel/logout" class="logout-link">🚪 Выйти</a>
     </div>
@@ -47,8 +48,9 @@
         <li><a href="/admin-panel/dashboard">📊 Дашборд</a></li>
         <li><a href="/admin-panel/pages">📄 Страницы</a></li>
         <li><a href="/admin-panel/news">📰 Новости</a></li>
+        <li><a href="/admin-panel/news-categories">📂 Категории новостей</a></li>
         <li><a href="/admin-panel/files">📁 Файлы</a></li>
-        <li><a href="/admin-panel/categories">📂 Категории</a></li>
+        <li><a href="/admin-panel/categories">📂 Категории файлов</a></li>
         <li><a href="/admin-panel/settings">⚙️ Настройки</a></li>
         <li><a href="/admin-panel/logout">🚪 Выйти</a></li>
     </ul>

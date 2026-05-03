@@ -17,6 +17,7 @@ use App\Controllers\BaseController;
 use App\Models\NFileManagerCategoriesModel;
 use App\Models\NFileManagerModel;
 use App\Models\NNewsArticlesModel;
+use App\Models\NNewsCategoriesModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use ReflectionException;
 
@@ -35,7 +36,7 @@ class NewsController extends BaseController
     public function index(): string
     {
         $show = $this->request->getGet('show') ?? 1;
-        $categoryNews = $this->request->getGet('category_news') ?? 0;  // Добавляем
+        $categoryNews = $this->request->getGet('category_news') ?? 0;
         $sort = $this->request->getGet('sort') ?? 2;
         $perPage = $this->request->getGet('per_page') ?? 50;
         $search = $this->request->getGet('search') ?? '';
@@ -74,12 +75,23 @@ class NewsController extends BaseController
         $news = $builder->paginate($perPage, 'default', $currentPage);
         $pager = $this->newsModel->pager;
 
+        // Получаем названия категорий для каждой новости
+        $categoriesModel = new NNewsCategoriesModel();
+        foreach ($news as &$item) {
+            if ($item['category_news'] > 0) {
+                $category = $categoriesModel->find($item['category_news']);
+                $item['category_name'] = $category ? $category['name'] : '';
+            } else {
+                $item['category_name'] = '';
+            }
+        }
+
         $data = [
             'title'         => 'Управление новостями',
             'activeMenu'    => 'news',
             'news'          => $news,
             'show'          => $show,
-            'category_news' => $categoryNews,  // Добавляем
+            'category_news' => $categoryNews,
             'sort'          => $sort,
             'per_page'      => $perPage,
             'search'        => $search,
@@ -98,10 +110,15 @@ class NewsController extends BaseController
         $categoriesModel = new NFileManagerCategoriesModel();
         $mediaCategories = $categoriesModel->getForSelect();
 
+        // Получаем список категорий новостей
+        $newsCategoriesModel = new NNewsCategoriesModel();
+        $newsCategories = $newsCategoriesModel->getForSelect();
+
         $data = [
-            'title'          => 'Создание новости',
-            'activeMenu'     => 'news',
-            'mediaCategories'=> $mediaCategories,
+            'title'           => 'Создание новости',
+            'activeMenu'      => 'news',
+            'mediaCategories' => $mediaCategories,
+            'newsCategories'  => $newsCategories,
         ];
         return view('admin/news/form', $data);
     }
@@ -133,6 +150,7 @@ class NewsController extends BaseController
         $postData['publish'] = $postData['publish'] ?? 0;
         $postData['type'] = $postData['type'] ?? 0;
         $postData['morder'] = $postData['morder'] ?? 0;
+        $postData['category_news'] = $postData['category_news'] ?? 0;
 
         if ($this->newsModel->save($postData)) {
             return redirect()->to('/admin-panel/news')
@@ -167,7 +185,11 @@ class NewsController extends BaseController
         $categoriesModel = new NFileManagerCategoriesModel();
         $mediaCategories = $categoriesModel->getForSelect();
 
-        // Добавляем количество файлов для каждой категории
+        // Получаем список категорий новостей
+        $newsCategoriesModel = new NNewsCategoriesModel();
+        $newsCategories = $newsCategoriesModel->getForSelect();
+
+        // Добавляем количество файлов для каждой категории галереи
         foreach ($mediaCategories as &$cat) {
             $cat['files_count'] = $categoriesModel->getFilesCount($cat['id']);
         }
@@ -177,6 +199,7 @@ class NewsController extends BaseController
             'activeMenu'      => 'news',
             'news'            => $news,
             'mediaCategories' => $mediaCategories,
+            'newsCategories'  => $newsCategories,
         ];
         return view('admin/news/form', $data);
     }

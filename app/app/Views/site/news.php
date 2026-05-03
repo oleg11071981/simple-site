@@ -10,8 +10,13 @@
     <!-- Фильтр по категориям -->
     <div class="news-filter">
         <a href="/news" class="filter-btn <?= ($activeCategory ?? 0) == 0 ? 'active' : '' ?>">Все новости</a>
-        <a href="/news?category=1" class="filter-btn <?= ($activeCategory ?? 0) == 1 ? 'active' : '' ?>">📋 Новости комитета</a>
-        <a href="/news?category=2" class="filter-btn <?= ($activeCategory ?? 0) == 2 ? 'active' : '' ?>">🌍 Новости в РФ и мире</a>
+        <?php if (!empty($allCategories)): ?>
+            <?php foreach ($allCategories as $cat): ?>
+                <a href="/news?category=<?= $cat['id'] ?>" class="filter-btn <?= ($activeCategory ?? 0) == $cat['id'] ? 'active' : '' ?>">
+                    <?= esc($cat['name']) ?>
+                </a>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 
     <!-- Фильтр по дате -->
@@ -55,10 +60,18 @@
                     <div class="news-content">
                         <div class="news-meta">
                             <span class="news-date"><?= date('d.m.Y', strtotime($item['date'])) ?></span>
-                            <?php if ($item['category_news'] == 1): ?>
-                                <span class="news-category committee">📋 Новости комитета</span>
-                            <?php elseif ($item['category_news'] == 2): ?>
-                                <span class="news-category world">🌍 Новости в РФ и мире</span>
+                            <?php if (!empty($item['category_name'])): ?>
+                                <?php
+                                $categoryClass = '';
+                                if ($item['category_news'] == 1) {
+                                    $categoryClass = 'committee';
+                                } elseif ($item['category_news'] == 2) {
+                                    $categoryClass = 'world';
+                                }
+                                ?>
+                                <span class="news-category <?= $categoryClass ?>">
+                                    <?= esc($item['category_name']) ?>
+                                </span>
                             <?php endif; ?>
                         </div>
                         <h3 class="news-title"><?= esc($item['name']) ?></h3>

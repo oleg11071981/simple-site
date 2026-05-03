@@ -167,13 +167,21 @@
                     </div>
                 </div>
 
+                <!-- Категория новости -->
                 <div class="form-group">
                     <label for="category_news">Категория новости</label>
                     <select id="category_news" name="category_news" class="form-control">
-                        <option value="1" <?= (isset($news) && $news['category_news'] == 1) ? 'selected' : '' ?>>📋 Новости комитета</option>
-                        <option value="2" <?= (isset($news) && $news['category_news'] == 2) ? 'selected' : '' ?>>🌍 Новости в РФ и мире</option>
+                        <option value="0">— Без категории —</option>
+                        <?php if (!empty($newsCategories)): ?>
+                            <?php foreach ($newsCategories as $cat): ?>
+                                <option value="<?= $cat['id'] ?>"
+                                    <?= (isset($news) && $news['category_news'] == $cat['id']) ? 'selected' : '' ?>>
+                                    <?= str_repeat('—', $cat['level'] ?? 0) ?> <?= esc($cat['name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </select>
-                    <small>Выберите категорию для отображения на сайте</small>
+                    <small>Выберите категорию для новости</small>
                 </div>
 
                 <div class="form-group">

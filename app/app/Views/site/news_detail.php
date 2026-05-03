@@ -7,10 +7,18 @@
             <h1 class="news-detail-title"><?= esc($news['name']) ?></h1>
             <div class="news-detail-meta">
                 <span class="news-detail-date">📅 <?= date('d.m.Y', strtotime($news['date'])) ?></span>
-                <?php if ($news['category_news'] == 1): ?>
-                    <span class="news-detail-category committee">📋 Новости комитета</span>
-                <?php elseif ($news['category_news'] == 2): ?>
-                    <span class="news-detail-category world">🌍 Новости в РФ и мире</span>
+                <?php if (!empty($news['category_name'])): ?>
+                    <?php
+                    $categoryClass = '';
+                    if ($news['category_news'] == 1) {
+                        $categoryClass = 'committee';
+                    } elseif ($news['category_news'] == 2) {
+                        $categoryClass = 'world';
+                    }
+                    ?>
+                    <span class="news-detail-category <?= $categoryClass ?>">
+                        <?= esc($news['category_name']) ?>
+                    </span>
                 <?php endif; ?>
                 <?php if (!empty($news['author'])): ?>
                     <span class="news-detail-author">✍️ <?= esc($news['author']) ?></span>

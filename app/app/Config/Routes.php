@@ -61,6 +61,13 @@ $routes->group('admin-panel', ['namespace' => 'App\Controllers\Admin'], function
     $routes->get('news/delete/(:num)', 'NewsController::delete/$1', ['filter' => 'auth']);
     $routes->get('news/toggle/(:num)', 'NewsController::toggle/$1', ['filter' => 'auth']);
     $routes->post('news/bulk-action', 'NewsController::bulkAction', ['filter' => 'auth']);
+    // Категории новостей
+    $routes->get('news-categories', 'NewsCategoriesController::index', ['filter' => 'auth']);
+    $routes->get('news-categories/create', 'NewsCategoriesController::create', ['filter' => 'auth']);
+    $routes->post('news-categories/store', 'NewsCategoriesController::store', ['filter' => 'auth']);
+    $routes->get('news-categories/edit/(:num)', 'NewsCategoriesController::edit/$1', ['filter' => 'auth']);
+    $routes->post('news-categories/update/(:num)', 'NewsCategoriesController::update/$1', ['filter' => 'auth']);
+    $routes->get('news-categories/delete/(:num)', 'NewsCategoriesController::delete/$1', ['filter' => 'auth']);
 });
 
 /*

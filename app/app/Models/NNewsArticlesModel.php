@@ -17,13 +17,6 @@ use CodeIgniter\Model;
 
 class NNewsArticlesModel extends Model
 {
-
-    /**
-     * Категории новостей
-     */
-    const CATEGORY_COMMITTEE = 1;      // Новости комитета
-    const CATEGORY_RUSSIA_WORLD = 2;   // Новости в РФ и мир
-
     protected $table = 'n_news_articles';
     protected $primaryKey = 'id';
     protected $useAutoIncrement = true;
@@ -33,7 +26,7 @@ class NNewsArticlesModel extends Model
     protected $allowedFields = [
         'name', 'anons_text', 'more_info', 'publish', 'date',
         'path', 'keywords', 'description', 'author', 'source',
-        'source_href', 'href', 'foto', 'media', 'type', 'category_news',  // добавляем category_news
+        'source_href', 'href', 'foto', 'media', 'type', 'category_news',
         'show_all', 'target', 'publish_time', 'morder',
         'create', 'modify', 'create_by_user', 'modify_by_user'
     ];
@@ -112,5 +105,38 @@ class NNewsArticlesModel extends Model
         return $this->where('path', $path)
             ->where('publish', 1)
             ->first();
+    }
+
+    /**
+     * Получить название категории новости
+     *
+     * @param int $categoryId
+     * @return string
+     */
+    public function getCategoryName(int $categoryId): string
+    {
+        if ($categoryId <= 0) {
+            return '';
+        }
+
+        $categoriesModel = new NNewsCategoriesModel();
+        $category = $categoriesModel->find($categoryId);
+        return $category ? $category['name'] : '';
+    }
+
+    /**
+     * Получить категорию новости (объект)
+     *
+     * @param int $categoryId
+     * @return array|null
+     */
+    public function getCategory(int $categoryId): ?array
+    {
+        if ($categoryId <= 0) {
+            return null;
+        }
+
+        $categoriesModel = new NNewsCategoriesModel();
+        return $categoriesModel->find($categoryId);
     }
 }

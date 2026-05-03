@@ -984,6 +984,29 @@ body {
     text-decoration: underline;
 }
 
+.category-children-hint small {
+    font-size: 11px;
+    color: #6c757d;
+}
+
+.badge-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.badge-info:hover {
+    background: #bee5eb;
+    color: #0c5460;
+}
+
+.icon-add {
+    color: #28a745;
+}
+
 .no-category {
     color: #6c757d;
     font-size: 13px;

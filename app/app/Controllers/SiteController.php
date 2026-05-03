@@ -18,6 +18,7 @@ namespace App\Controllers;
 
 use App\Models\NFileManagerModel;
 use App\Models\NNewsArticlesModel;
+use App\Models\NNewsCategoriesModel;
 use App\Models\NSiteModel;
 use App\Models\NSiteconfigModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
@@ -65,14 +66,23 @@ class SiteController extends BaseController
         $newsModel = new NNewsArticlesModel();
         $latestNews = $newsModel->getLatestNews(3);
 
-        // Добавляем информацию о фото для каждой новости
+        // Добавляем информацию о фото и категории для каждой новости
         $fileModel = new NFileManagerModel();
+        $categoriesModel = new \App\Models\NNewsCategoriesModel();
+
         foreach ($latestNews as &$item) {
             if ($item['foto'] > 0) {
                 $file = $fileModel->find($item['foto']);
                 if ($file) {
                     $item['foto_file'] = $file['file_name'];
                 }
+            }
+            // Добавляем название категории
+            if ($item['category_news'] > 0) {
+                $category = $categoriesModel->find($item['category_news']);
+                $item['category_name'] = $category ? $category['name'] : '';
+            } else {
+                $item['category_name'] = '';
             }
         }
 
@@ -207,6 +217,7 @@ class SiteController extends BaseController
         $newsModel = new NNewsArticlesModel();
         $settings = $this->settingsModel->getAll();
         $fileModel = new NFileManagerModel();
+        $categoriesModel = new \App\Models\NNewsCategoriesModel();
 
         $builder = $newsModel->where('publish', 1);
 
@@ -227,6 +238,9 @@ class SiteController extends BaseController
             ->orderBy('id', 'DESC')
             ->paginate($perPage, 'default', $page);
 
+        // Получаем все категории для фильтра
+        $allCategories = $categoriesModel->orderBy('priority', 'ASC')->findAll();
+
         foreach ($news as &$item) {
             if ($item['foto'] > 0) {
                 $file = $fileModel->find($item['foto']);
@@ -234,22 +248,30 @@ class SiteController extends BaseController
                     $item['foto_file'] = $file['file_name'];
                 }
             }
+            // Добавляем название категории
+            if ($item['category_news'] > 0) {
+                $cat = $categoriesModel->find($item['category_news']);
+                $item['category_name'] = $cat ? $cat['name'] : '';
+            } else {
+                $item['category_name'] = '';
+            }
         }
 
         $pager = $newsModel->pager;
 
         $data = [
-            'title'         => 'Новости | ' . ($settings['SiteName'] ?? 'n-cms'),
-            'description'   => 'Новости и события компании. Актуальные новости, проекты и достижения.',
-            'keywords'      => 'новости, события, проекты, достижения',
-            'news'          => $news,
-            'pager'         => $pager,
-            'currentPage'   => 'Новости',
-            'activeCategory'=> $category,
-            'date_from'     => $date_from,
-            'date_to'       => $date_to,
-            'menuPages'     => $this->pagesModel->getMenuPages(),
-            'activePage'    => 'news',
+            'title'          => 'Новости | ' . ($settings['SiteName'] ?? 'n-cms'),
+            'description'    => 'Новости и события компании. Актуальные новости, проекты и достижения.',
+            'keywords'       => 'новости, события, проекты, достижения',
+            'news'           => $news,
+            'pager'          => $pager,
+            'currentPage'    => 'Новости',
+            'activeCategory' => $category,
+            'allCategories'  => $allCategories,
+            'date_from'      => $date_from,
+            'date_to'        => $date_to,
+            'menuPages'      => $this->pagesModel->getMenuPages(),
+            'activePage'     => 'news',
         ];
 
         return view('site/news', $data);
@@ -267,6 +289,7 @@ class SiteController extends BaseController
         $newsModel = new NNewsArticlesModel();
         $settings = $this->settingsModel->getAll();
         $fileModel = new NFileManagerModel();
+        $categoriesModel = new \App\Models\NNewsCategoriesModel();
 
         $news = $newsModel->where('path', $slug)
             ->where('publish', 1)
@@ -282,6 +305,14 @@ class SiteController extends BaseController
             if ($file) {
                 $news['foto_file'] = $file['file_name'];
             }
+        }
+
+        // Добавляем название категории
+        if ($news['category_news'] > 0) {
+            $category = $categoriesModel->find($news['category_news']);
+            $news['category_name'] = $category ? $category['name'] : '';
+        } else {
+            $news['category_name'] = '';
         }
 
         // Получаем файлы галереи, если привязана
