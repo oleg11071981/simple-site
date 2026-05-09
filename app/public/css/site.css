@@ -1748,6 +1748,212 @@ main {
 }
 
 /* ========================================
+   16. PROJECT DETAIL (ДЕТАЛЬНАЯ ПРОЕКТА)
+   ======================================== */
+
+.project-detail-image {
+    margin: 1.5rem 0;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    line-height: 0;
+}
+
+.project-detail-image img {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: 1rem;
+    display: block;
+}
+
+.project-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.info-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid #edf2f7;
+}
+
+.info-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #001e78;
+    display: inline-block;
+    color: #1f2937;
+}
+
+.info-card-content {
+    color: #4b5563;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+/* Мероприятия в проекте */
+.project-events-section {
+    margin: 3rem 0;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.01em;
+    color: #1f2937;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title:after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 56px;
+    height: 4px;
+    background: #001e78;
+    border-radius: 4px;
+}
+
+.events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.event-item {
+    display: flex;
+    gap: 1.5rem;
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid #edf2f7;
+    transition: all 0.3s ease;
+}
+
+.event-item:hover {
+    transform: translateX(5px);
+    border-color: #cbd5e1;
+}
+
+/* Изображение мероприятия */
+.event-image {
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.event-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.event-image-placeholder {
+    font-size: 2.5rem;
+    opacity: 0.5;
+}
+
+/* Дата мероприятия в текстовом виде */
+.event-content .event-date {
+    font-size: 0.75rem;
+    color: #001e78;
+    font-weight: 500;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.event-content {
+    flex: 1;
+}
+
+.event-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.event-title a {
+    color: #1f2937;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.event-title a:hover {
+    color: #001e78;
+    text-decoration: underline;
+}
+
+.event-location {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.event-excerpt {
+    color: #4b5563;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+}
+
+@media (max-width: 768px) {
+    .event-item {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .event-image {
+        width: 100%;
+        height: 180px;
+    }
+
+    .event-image-placeholder {
+        font-size: 3rem;
+    }
+
+    .event-content .event-date {
+        text-align: center;
+    }
+
+    .event-title {
+        text-align: center;
+    }
+
+    .event-location {
+        text-align: center;
+    }
+
+    .event-excerpt {
+        text-align: center;
+    }
+
+    .read-more {
+        justify-content: center;
+    }
+
+    .project-info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ========================================
    16.1 EVENTS GRID (СЕТКА МЕРОПРИЯТИЙ)
    ======================================== */
 
