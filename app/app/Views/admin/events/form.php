@@ -92,10 +92,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="description">Полное описание</label>
-                    <textarea id="description" name="description" rows="12"
+                    <label for="more_info">Полное описание</label>
+                    <textarea id="more_info" name="more_info" rows="15"
                               class="form-control"
-                              placeholder="Подробное описание мероприятия (HTML)"><?= htmlspecialchars($event['description'] ?? '') ?></textarea>
+                              placeholder="Подробное описание мероприятия (HTML)"><?= htmlspecialchars($event['more_info'] ?? '') ?></textarea>
                     <small>Поддерживается HTML разметка. Используйте визуальный редактор.</small>
                 </div>
             </div>
@@ -271,6 +271,26 @@
                 searchInput.addEventListener('input', filterCategories);
             }
         });
+
+        // Инициализация CKEditor для поля more_info
+        if (typeof CKEDITOR !== 'undefined' && document.getElementById('more_info')) {
+            CKEDITOR.replace('more_info', {
+                language: 'ru',
+                height: 400,
+                toolbar: [
+                    ['Source', '-', 'Bold', 'Italic', 'Underline', 'Strike'],
+                    ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', 'Blockquote'],
+                    ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+                    ['Link', 'Unlink', 'Anchor'],
+                    ['Image', 'Table', 'HorizontalRule'],
+                    ['Styles', 'Format', 'Font', 'FontSize'],
+                    ['TextColor', 'BGColor'],
+                    ['Maximize', 'ShowBlocks']
+                ],
+                filebrowserBrowseUrl: '/admin-panel/editor/ckeditor-browse',
+                filebrowserUploadUrl: '/admin-panel/editor/upload-image'
+            });
+        }
     </script>
 
 <?= $this->endSection() ?>

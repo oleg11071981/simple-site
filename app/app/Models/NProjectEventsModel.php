@@ -17,7 +17,7 @@ class NProjectEventsModel extends Model
         'name',
         'path',
         'anons_text',
-        'description',
+        'more_info',      // изменено с description
         'foto',
         'media',
         'date_start',

@@ -57,10 +57,10 @@
         <?php endif; ?>
 
         <!-- Полное описание -->
-        <?php if (!empty($event['description'])): ?>
+        <?php if (!empty($event['more_info'])): ?>
             <div class="event-card">
                 <div class="event-description">
-                    <?= $event['description'] ?>
+                    <?= $event['more_info'] ?>
                 </div>
             </div>
         <?php endif; ?>

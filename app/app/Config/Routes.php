@@ -105,8 +105,8 @@ $routes->get('news/(:any)', 'SiteController::newsDetail/$1');
 
 // ПРОЕКТЫ
 $routes->get('projects', 'ProjectsController::index');
-$routes->get('projects/(:any)', 'ProjectsController::detail/$1');
 $routes->get('projects/(:any)/(:any)', 'ProjectsController::eventDetail/$1/$2');
+$routes->get('projects/(:any)', 'ProjectsController::detail/$1');
 
 // Произвольные страницы (должен быть последним, чтобы не перехватывать другие маршруты)
 $routes->get('/(:any)', 'SiteController::page/$1');

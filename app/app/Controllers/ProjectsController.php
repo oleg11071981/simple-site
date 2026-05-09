@@ -146,10 +146,8 @@ class ProjectsController extends BaseController
             throw PageNotFoundException::forPageNotFound();
         }
 
-        // Получаем проект
         $project = $this->projectsModel->find($event['project_id']);
 
-        // Получаем главное изображение мероприятия
         $fileModel = new NFileManagerModel();
         if ($event['foto'] > 0) {
             $file = $fileModel->find($event['foto']);
@@ -158,7 +156,6 @@ class ProjectsController extends BaseController
             }
         }
 
-        // Получаем галерею мероприятия
         $galleryFiles = [];
         if ($event['media'] > 0) {
             $files = $fileModel->getFilesByCategory($event['media']);
@@ -168,7 +165,6 @@ class ProjectsController extends BaseController
             $galleryFiles = $files;
         }
 
-        // Получаем другие мероприятия этого проекта
         $otherEvents = $this->eventsModel->where('project_id', $project['id'])
             ->where('id !=', $event['id'])
             ->where('publish', 1)
@@ -187,7 +183,7 @@ class ProjectsController extends BaseController
 
         $data = [
             'title'       => $event['name'] . ' | ' . ($settings['SiteName'] ?? 'n-cms'),
-            'description' => $event['description'] ?: $event['anons_text'],
+            'description' => $event['more_info'] ? strip_tags(substr($event['more_info'], 0, 200)) : ($event['anons_text'] ?? ''),
             'keywords'    => '',
             'event'       => $event,
             'project'     => $project,
@@ -203,7 +199,7 @@ class ProjectsController extends BaseController
             // Контакты для подвала
             'email'       => $settings['Email'] ?? '',
             'phone'       => $settings['Phone'] ?? '',
-            'address'     => $settings['Adress'] ?? ''
+            'address'     => $settings['Adress'] ?? '',
         ];
 
         return view('site/projects/event_detail', $data);
