@@ -106,9 +106,9 @@
                             <?php endif; ?>
                         </td>
                         <td>
-                            <div class="project-name">
-                                <span class="project-icon">📁</span>
-                                <a href="/admin-panel/projects/edit/<?= $event['project_id'] ?>" class="project-link">
+                            <div class="page-name">
+                                <span class="page-icon">📄</span>
+                                <a href="/admin-panel/projects/edit/<?= $event['project_id'] ?>" class="page-link">
                                     <?= esc($event['project_name'] ?? '—') ?>
                                 </a>
                             </div>
