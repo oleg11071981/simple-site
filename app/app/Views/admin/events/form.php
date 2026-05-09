@@ -278,11 +278,14 @@
                 language: 'ru',
                 height: 400,
                 toolbar: [
-                    ['Source', '-', 'Bold', 'Italic', 'Underline', 'Strike'],
+                    ['Source', '-', 'NewPage', 'Preview'],
+                    ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord'],
+                    ['Undo', 'Redo', '-', 'Find', 'Replace', '-', 'SelectAll', 'RemoveFormat'],
+                    ['Bold', 'Italic', 'Underline', 'Strike'],
                     ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', 'Blockquote'],
                     ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
                     ['Link', 'Unlink', 'Anchor'],
-                    ['Image', 'Table', 'HorizontalRule'],
+                    ['Image', 'Table', 'HorizontalRule', 'SpecialChar'],
                     ['Styles', 'Format', 'Font', 'FontSize'],
                     ['TextColor', 'BGColor'],
                     ['Maximize', 'ShowBlocks']
