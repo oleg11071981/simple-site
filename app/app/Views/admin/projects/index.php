@@ -53,8 +53,10 @@
                 </select>
             </div>
 
-            <button type="submit" class="btn-apply">Применить</button>
-            <a href="/admin-panel/projects" class="filter-clear-btn">Сбросить</a>
+            <div class="filter-actions">
+                <button type="submit" class="btn-apply">Применить</button>
+                <a href="/admin-panel/projects" class="filter-reset-btn">Сбросить</a>
+            </div>
         </form>
     </div>
 
