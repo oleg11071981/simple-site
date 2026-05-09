@@ -74,7 +74,7 @@ class EventsController extends BaseController
     /**
      * Форма создания мероприятия (привязанного к проекту)
      */
-    public function create(): string
+    public function create()
     {
         $projectId = $this->request->getGet('project_id') ?? 0;
 
@@ -90,7 +90,7 @@ class EventsController extends BaseController
                 ->with('error', 'Проект не найден');
         }
 
-        $categoriesModel = new NFileManagerCategoriesModel();
+        $categoriesModel = new \App\Models\NFileManagerCategoriesModel();
 
         $data = [
             'title'           => 'Создание мероприятия',
@@ -159,14 +159,14 @@ class EventsController extends BaseController
 
         // Получаем главное изображение
         if ($event['foto'] > 0) {
-            $fileModel = new NFileManagerModel();
+            $fileModel = new \App\Models\NFileManagerModel();
             $file = $fileModel->find($event['foto']);
             if ($file) {
                 $event['foto_file'] = $file['file_name'];
             }
         }
 
-        $categoriesModel = new NFileManagerCategoriesModel();
+        $categoriesModel = new \App\Models\NFileManagerCategoriesModel();
 
         $data = [
             'title'           => 'Редактирование мероприятия',
