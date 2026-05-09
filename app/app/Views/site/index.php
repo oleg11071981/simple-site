@@ -9,6 +9,51 @@
         </div>
     </div-->
 
+    <!-- Блок проектов -->
+<?php if (!empty($projects)): ?>
+    <section class="projects-section">
+        <h2 class="section-title">Наши проекты</h2>
+        <div class="projects-grid">
+            <?php foreach ($projects as $project): ?>
+                <div class="project-card">
+                    <?php if (!empty($project['foto_file'])): ?>
+                        <div class="project-image">
+                            <img src="/uploads/<?= $project['foto_file'] ?>" alt="<?= esc($project['name']) ?>">
+                        </div>
+                    <?php else: ?>
+                        <div class="project-image project-image-placeholder">
+                            <span>📁</span>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="project-content">
+                        <h3 class="project-title">
+                            <a href="/projects/<?= esc($project['path']) ?>"><?= esc($project['name']) ?></a>
+                        </h3>
+
+                        <?php if (!empty($project['anons_text'])): ?>
+                            <p class="project-excerpt"><?= esc(substr(strip_tags($project['anons_text']), 0, 100)) ?>...</p>
+                        <?php endif; ?>
+
+                        <div class="project-meta">
+                            <?php if ($project['events_count'] > 0): ?>
+                                <span class="project-events-count">
+                                    📋 <?= $project['events_count'] ?> <?= declension($project['events_count'], 'мероприятие', 'мероприятия', 'мероприятий') ?>
+                                </span>
+                            <?php endif; ?>
+                        </div>
+
+                        <a href="/projects/<?= esc($project['path']) ?>" class="read-more">Подробнее о проекте →</a>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <div class="section-footer">
+            <a href="/projects" class="all-link">Все проекты →</a>
+        </div>
+    </section>
+<?php endif; ?>
+
     <!-- Блок последних новостей -->
 <?php if (!empty($latestNews)): ?>
     <section class="news-section">
@@ -46,6 +91,9 @@
                     </div>
                 </article>
             <?php endforeach; ?>
+        </div>
+        <div class="section-footer">
+            <a href="/news" class="all-link">Все новости →</a>
         </div>
     </section>
 <?php endif; ?>

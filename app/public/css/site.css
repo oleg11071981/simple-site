@@ -1608,3 +1608,617 @@ main {
         margin: 1rem 0 1.5rem 1.5rem;
     }
 }
+
+/* ========================================
+   15. PROJECTS (ПРОЕКТЫ)
+   ======================================== */
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.project-card {
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    border: 1px solid #edf2f7;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e1;
+}
+
+.project-image {
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.project-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.project-card:hover .project-image img {
+    transform: scale(1.05);
+}
+
+.project-image-placeholder span {
+    font-size: 4rem;
+    opacity: 0.5;
+}
+
+.project-content {
+    padding: 1.5rem;
+}
+
+.project-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+}
+
+.project-title a {
+    color: #1f2937;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.project-title a:hover {
+    color: #001e78;
+    text-decoration: underline;
+}
+
+.project-excerpt {
+    color: #4b5563;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.project-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.project-date, .project-events-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Пустое состояние */
+.empty-projects {
+    text-align: center;
+    padding: 4rem;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.empty-projects-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-projects-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.empty-projects-text {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+/* Адаптивность */
+@media (max-width: 992px) {
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+/* ========================================
+   16. PROJECT DETAIL (ДЕТАЛЬНАЯ ПРОЕКТА)
+   ======================================== */
+
+.project-detail-image {
+    margin: 1.5rem 0;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.project-detail-image img {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+}
+
+.project-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.info-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid #edf2f7;
+}
+
+.info-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #001e78;
+    display: inline-block;
+    color: #1f2937;
+}
+
+.info-card-content {
+    color: #4b5563;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+/* Мероприятия в проекте */
+.project-events-section {
+    margin: 3rem 0;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.01em;
+    color: #1f2937;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title:after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 56px;
+    height: 4px;
+    background: #001e78;
+    border-radius: 4px;
+}
+
+.events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.event-item {
+    display: flex;
+    gap: 1.5rem;
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid #edf2f7;
+    transition: all 0.3s ease;
+}
+
+.event-item:hover {
+    transform: translateX(5px);
+    border-color: #cbd5e1;
+}
+
+.event-date {
+    min-width: 80px;
+    text-align: center;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 0.75rem;
+}
+
+.event-day {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #001e78;
+    line-height: 1;
+}
+
+.event-month {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+.event-date-separator {
+    display: block;
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin: 4px 0;
+}
+
+.event-content {
+    flex: 1;
+}
+
+.event-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.event-title a {
+    color: #1f2937;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.event-title a:hover {
+    color: #001e78;
+    text-decoration: underline;
+}
+
+.event-location {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.event-excerpt {
+    color: #4b5563;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+}
+
+@media (max-width: 768px) {
+    .event-item {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .event-date {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-width: auto;
+    }
+
+    .event-day {
+        font-size: 1.2rem;
+    }
+
+    .event-date-separator {
+        display: inline;
+        margin: 0 4px;
+    }
+
+    .project-info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ========================================
+   17. EVENT DETAIL (ДЕТАЛЬНАЯ МЕРОПРИЯТИЯ)
+   ======================================== */
+
+/* Информационная панель */
+.event-info-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid #edf2f7;
+}
+
+.event-info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.event-info-icon {
+    font-size: 1.5rem;
+}
+
+.event-info-content {
+    flex: 1;
+}
+
+.event-info-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #6b7280;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.25rem;
+}
+
+.event-info-value {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #1f2937;
+}
+
+.event-info-value a {
+    color: #001e78;
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.event-info-value a:hover {
+    text-decoration: underline;
+}
+
+.event-detail-image {
+    margin: 1.5rem 0;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.event-detail-image img {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+}
+
+.event-card {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+.event-description {
+    color: #4b5563;
+    line-height: 1.8;
+    font-size: 1.0625rem;
+}
+
+.event-description:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.event-description p {
+    margin-bottom: 1.5rem;
+}
+
+.event-description h2,
+.event-description h3 {
+    margin: 2rem 0 1rem;
+    color: #1f2937;
+}
+
+.event-description ul,
+.event-description ol {
+    margin: 1rem 0 1.5rem 1.8rem;
+}
+
+.event-description img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+    margin: 1rem 0;
+}
+
+/* Другие мероприятия */
+.other-events {
+    margin: 3rem 0;
+}
+
+.other-events-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+}
+
+.other-events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.other-event-card {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1px solid #edf2f7;
+}
+
+.other-event-card:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+}
+
+.other-event-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.other-event-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.other-event-image-placeholder {
+    width: 60px;
+    height: 60px;
+    background: #e2e8f0;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.other-event-content {
+    flex: 1;
+}
+
+.other-event-date {
+    font-size: 0.7rem;
+    color: #001e78;
+    font-weight: 500;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.other-event-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.other-event-location {
+    font-size: 0.7rem;
+    color: #6b7280;
+}
+
+/* Ссылка назад к проекту */
+.back-to-project {
+    margin: 2rem 0 1rem;
+    text-align: center;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #001e78;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #6476be;
+    text-decoration: underline;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .event-info-bar {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .event-card {
+        padding: 1.5rem;
+    }
+
+    .other-events-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .other-event-card {
+        padding: 0.75rem;
+    }
+}
+
+/* ========================================
+   18. HOME PAGE PROJECTS (ПРОЕКТЫ НА ГЛАВНОЙ)
+   ======================================== */
+
+.projects-section {
+    margin: 4rem 0;
+}
+
+.section-footer {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.all-link {
+    display: inline-block;
+    background: #001e78;
+    color: white;
+    padding: 0.6rem 1.5rem;
+    border-radius: 2rem;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.all-link:hover {
+    background: #6476be;
+    transform: translateY(-2px);
+}
+
+/* Проекты на главной имеют те же стили, что и на странице проектов */
+.projects-section .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+@media (max-width: 992px) {
+    .projects-section .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .projects-section .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}

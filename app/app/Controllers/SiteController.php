@@ -62,12 +62,28 @@ class SiteController extends BaseController
     {
         $settings = $this->settingsModel->getAll();
 
-        // Получаем последние новости для главной страницы
-        $newsModel = new NNewsArticlesModel();
+        // Получаем проекты
+        $projectsModel = new \App\Models\NProjectsModel();
+        $projects = $projectsModel->getLatestProjects(3);
+
+        // Добавляем информацию о фото для каждого проекта
+        $fileModel = new \App\Models\NFileManagerModel();
+        foreach ($projects as &$project) {
+            if ($project['foto'] > 0) {
+                $file = $fileModel->find($project['foto']);
+                if ($file) {
+                    $project['foto_file'] = $file['file_name'];
+                }
+            }
+            // Добавляем количество мероприятий
+            $eventsModel = new \App\Models\NProjectEventsModel();
+            $project['events_count'] = $eventsModel->getEventsCount($project['id']);
+        }
+
+        // Получаем последние новости
+        $newsModel = new \App\Models\NNewsArticlesModel();
         $latestNews = $newsModel->getLatestNews(3);
 
-        // Добавляем информацию о фото и категории для каждой новости
-        $fileModel = new NFileManagerModel();
         $categoriesModel = new \App\Models\NNewsCategoriesModel();
 
         foreach ($latestNews as &$item) {
@@ -94,13 +110,14 @@ class SiteController extends BaseController
             'slogan'      => $settings['Slogan'] ?? '',
             'mainText'    => $settings['MainText'] ?? '',
             'menuPages'   => $this->pagesModel->getMenuPages(),
+            'projects'    => $projects,
             'latestNews'  => $latestNews,
             'activePage'  => 'home',
             'currentPage' => '',
-            // Контакты для футера
+            // Контакты для подвала
             'email'       => $settings['Email'] ?? '',
             'phone'       => $settings['Phone'] ?? '',
-            'address'     => $settings['Adress'] ?? ''
+            'address'     => $settings['Adress'] ?? '',
         ];
 
         return view('site/index', $data);

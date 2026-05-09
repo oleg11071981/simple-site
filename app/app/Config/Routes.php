@@ -52,6 +52,23 @@ $routes->group('admin-panel', ['namespace' => 'App\Controllers\Admin'], function
     $routes->get('categories/edit/(:num)', 'CategoriesController::edit/$1', ['filter' => 'auth']);
     $routes->post('categories/update/(:num)', 'CategoriesController::update/$1', ['filter' => 'auth']);
     $routes->get('categories/delete/(:num)', 'CategoriesController::delete/$1', ['filter' => 'auth']);
+    // Проекты
+    $routes->get('projects', 'ProjectsController::index', ['filter' => 'auth']);
+    $routes->get('projects/create', 'ProjectsController::create', ['filter' => 'auth']);
+    $routes->post('projects/store', 'ProjectsController::store', ['filter' => 'auth']);
+    $routes->get('projects/edit/(:num)', 'ProjectsController::edit/$1', ['filter' => 'auth']);
+    $routes->post('projects/update/(:num)', 'ProjectsController::update/$1', ['filter' => 'auth']);
+    $routes->get('projects/delete/(:num)', 'ProjectsController::delete/$1', ['filter' => 'auth']);
+    $routes->get('projects/toggle/(:num)', 'ProjectsController::toggle/$1', ['filter' => 'auth']);
+    $routes->post('projects/bulk-action', 'ProjectsController::bulkAction', ['filter' => 'auth']);
+    // Мероприятия
+    $routes->get('events', 'EventsController::index', ['filter' => 'auth']);
+    $routes->get('events/create', 'EventsController::create', ['filter' => 'auth']);
+    $routes->post('events/store', 'EventsController::store', ['filter' => 'auth']);
+    $routes->get('events/edit/(:num)', 'EventsController::edit/$1', ['filter' => 'auth']);
+    $routes->post('events/update/(:num)', 'EventsController::update/$1', ['filter' => 'auth']);
+    $routes->get('events/delete/(:num)', 'EventsController::delete/$1', ['filter' => 'auth']);
+    $routes->get('events/toggle/(:num)', 'EventsController::toggle/$1', ['filter' => 'auth']);
     // Новости
     $routes->get('news', 'NewsController::index', ['filter' => 'auth']);
     $routes->get('news/create', 'NewsController::create', ['filter' => 'auth']);
@@ -85,6 +102,11 @@ $routes->get('contacts', 'SiteController::contacts');
 // Новости
 $routes->get('news', 'SiteController::news');
 $routes->get('news/(:any)', 'SiteController::newsDetail/$1');
+
+// ПРОЕКТЫ
+$routes->get('projects', 'ProjectsController::index');
+$routes->get('projects/(:any)', 'ProjectsController::detail/$1');
+$routes->get('projects/(:any)/(:any)', 'ProjectsController::eventDetail/$1/$2');
 
 // Произвольные страницы (должен быть последним, чтобы не перехватывать другие маршруты)
 $routes->get('/(:any)', 'SiteController::page/$1');

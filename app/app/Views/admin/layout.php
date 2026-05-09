@@ -33,6 +33,8 @@
         <a href="/admin-panel/pages" class="<?= $activeMenu === 'pages' ? 'active' : '' ?>">📄 Страницы</a>
         <a href="/admin-panel/news" class="<?= $activeMenu === 'news' ? 'active' : '' ?>">📰 Новости</a>
         <a href="/admin-panel/news-categories" class="<?= $activeMenu === 'news_categories' ? 'active' : '' ?>">📂 Категории новостей</a>
+        <a href="/admin-panel/projects" class="<?= $activeMenu === 'projects' ? 'active' : '' ?>">📁 Проекты</a>
+        <a href="/admin-panel/events" class="<?= $activeMenu === 'events' ? 'active' : '' ?>">📅 Мероприятия</a>
         <a href="/admin-panel/files" class="<?= $activeMenu === 'files' ? 'active' : '' ?>">📁 Файлы</a>
         <a href="/admin-panel/categories" class="<?= $activeMenu === 'categories' ? 'active' : '' ?>">📂 Категории файлов</a>
         <a href="/admin-panel/settings" class="<?= $activeMenu === 'settings' ? 'active' : '' ?>">⚙️ Настройки</a>
@@ -54,6 +56,8 @@
         <li><a href="/admin-panel/pages">📄 Страницы</a></li>
         <li><a href="/admin-panel/news">📰 Новости</a></li>
         <li><a href="/admin-panel/news-categories">📂 Категории новостей</a></li>
+        <li><a href="/admin-panel/projects">📁 Проекты</a></li>
+        <li><a href="/admin-panel/events">📅 Мероприятия</a></li>
         <li><a href="/admin-panel/files">📁 Файлы</a></li>
         <li><a href="/admin-panel/categories">📂 Категории файлов</a></li>
         <li><a href="/admin-panel/settings">⚙️ Настройки</a></li>
