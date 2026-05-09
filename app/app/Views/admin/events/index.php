@@ -106,9 +106,12 @@
                             <?php endif; ?>
                         </td>
                         <td>
-                            <a href="/admin-panel/projects/edit/<?= $event['project_id'] ?>">
-                                <?= esc($event['project_name'] ?? '—') ?>
-                            </a>
+                            <div class="project-name">
+                                <span class="project-icon">📁</span>
+                                <a href="/admin-panel/projects/edit/<?= $event['project_id'] ?>" class="project-link">
+                                    <?= esc($event['project_name'] ?? '—') ?>
+                                </a>
+                            </div>
                         </td>
                         <td class="date-cell"><?= $event['date_start'] ? date('d.m.Y', strtotime($event['date_start'])) : '—' ?></td>
                         <td class="date-cell"><?= $event['date_end'] ? date('d.m.Y', strtotime($event['date_end'])) : '—' ?></td>
