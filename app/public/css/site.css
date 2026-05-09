@@ -1798,7 +1798,7 @@ main {
     font-size: 0.95rem;
 }
 
-/* Мероприятия в проекте */
+/* СЕКЦИЯ МЕРОПРИЯТИЙ (СЕТКА 3 КОЛОНКИ) */
 .project-events-section {
     margin: 3rem 0;
 }
@@ -1824,139 +1824,7 @@ main {
     border-radius: 4px;
 }
 
-.events-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.event-item {
-    display: flex;
-    gap: 1.5rem;
-    background: white;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    border: 1px solid #edf2f7;
-    transition: all 0.3s ease;
-}
-
-.event-item:hover {
-    transform: translateX(5px);
-    border-color: #cbd5e1;
-}
-
-/* Изображение мероприятия */
-.event-image {
-    width: 120px;
-    height: 120px;
-    flex-shrink: 0;
-    border-radius: 0.75rem;
-    overflow: hidden;
-    background: #f8fafc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.event-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.event-image-placeholder {
-    font-size: 2.5rem;
-    opacity: 0.5;
-}
-
-/* Дата мероприятия в текстовом виде */
-.event-content .event-date {
-    font-size: 0.75rem;
-    color: #001e78;
-    font-weight: 500;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
-}
-
-.event-content {
-    flex: 1;
-}
-
-.event-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-.event-title a {
-    color: #1f2937;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.event-title a:hover {
-    color: #001e78;
-    text-decoration: underline;
-}
-
-.event-location {
-    font-size: 0.8rem;
-    color: #6b7280;
-    margin-bottom: 0.5rem;
-}
-
-.event-excerpt {
-    color: #4b5563;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    margin-bottom: 0.75rem;
-}
-
-@media (max-width: 768px) {
-    .event-item {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .event-image {
-        width: 100%;
-        height: 180px;
-    }
-
-    .event-image-placeholder {
-        font-size: 3rem;
-    }
-
-    .event-content .event-date {
-        text-align: center;
-    }
-
-    .event-title {
-        text-align: center;
-    }
-
-    .event-location {
-        text-align: center;
-    }
-
-    .event-excerpt {
-        text-align: center;
-    }
-
-    .read-more {
-        justify-content: center;
-    }
-
-    .project-info-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* ========================================
-   16.1 EVENTS GRID (СЕТКА МЕРОПРИЯТИЙ)
-   ======================================== */
-
+/* Сетка мероприятий (3 колонки) */
 .events-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -1964,6 +1832,7 @@ main {
     margin: 2rem 0;
 }
 
+/* Карточка мероприятия */
 .event-card {
     background: white;
     border-radius: 1rem;
@@ -1979,15 +1848,12 @@ main {
     border-color: #cbd5e1;
 }
 
-/* Изменения здесь (как в блоке новостей) */
+/* Изображение мероприятия (как в новостях) */
 .event-card-image {
     width: 100%;
     height: 200px;
+    overflow: hidden;
     background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
-    display: flex; /* Добавил flex для выравнивания содержимого */
-    align-items: center;
-    justify-content: center;
-    overflow: hidden; /* Обрезаем, чтобы картинка не вылезала */
 }
 
 .event-card-image img {
@@ -2002,12 +1868,14 @@ main {
     transform: scale(1.05);
 }
 
+/* Плейсхолдер если нет фото */
 .event-card-image-placeholder {
     width: 100%;
-    height: 100%;
+    height: 200px;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
 }
 
 .event-card-image-placeholder span {
@@ -2015,6 +1883,7 @@ main {
     opacity: 0.5;
 }
 
+/* Контент карточки */
 .event-card-content {
     padding: 1.5rem;
 }
@@ -2080,7 +1949,8 @@ main {
         gap: 1rem;
     }
 
-    .event-card-image {
+    .event-card-image,
+    .event-card-image-placeholder {
         height: 180px;
     }
 }
