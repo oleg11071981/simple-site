@@ -1990,8 +1990,8 @@ main {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
     display: block;
+    transition: transform 0.3s ease;
 }
 
 .event-card:hover .event-card-image img {
