@@ -2000,6 +2000,15 @@ main {
     transform: scale(1.05);
 }
 
+.event-card-image-placeholder {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+}
+
 .event-card-image-placeholder span {
     font-size: 4rem;
     opacity: 0.5;
@@ -2070,7 +2079,8 @@ main {
         gap: 1rem;
     }
 
-    .event-card-image {
+    .event-card-image,
+    .event-card-image-placeholder {
         height: 180px;
     }
 }
