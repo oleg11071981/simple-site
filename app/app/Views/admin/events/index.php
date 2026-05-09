@@ -5,7 +5,7 @@
     <div class="page-header">
         <div class="header-actions">
             <h1>Управление мероприятиями</h1>
-            <a href="/admin-panel/events/create?project_id=<?= $project_id ?? 0 ?>" class="btn-create">➕ Добавить мероприятие</a>
+            <!--a href="/admin-panel/events/create?project_id=<?= $project_id ?? 0 ?>" class="btn-create">➕ Добавить мероприятие</a-->
         </div>
         <p>Управление мероприятиями всех проектов</p>
     </div>
@@ -67,8 +67,10 @@
                 </select>
             </div>
 
-            <button type="submit" class="btn-apply">Применить</button>
-            <a href="/admin-panel/events" class="filter-clear-btn">Сбросить</a>
+            <div class="filter-actions">
+                <button type="submit" class="btn-apply">Применить</button>
+                <a href="/admin-panel/events" class="filter-reset-btn">Сбросить</a>
+            </div>
         </form>
     </div>
 
