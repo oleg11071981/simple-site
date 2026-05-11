@@ -24,13 +24,6 @@ use ReflectionException;
 class PagesController extends BaseController
 {
     /**
-     * Модель страниц
-     *
-     * @var NSiteModel
-     */
-    protected NSiteModel $pagesModel;
-
-    /**
      * Конструктор
      */
     public function __construct()
