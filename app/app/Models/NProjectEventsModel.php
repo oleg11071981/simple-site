@@ -29,7 +29,11 @@ class NProjectEventsModel extends Model
         'create',
         'modify',
         'create_by_user',
-        'modify_by_user'
+        'modify_by_user',
+        'name_en',
+        'anons_text_en',
+        'more_info_en',
+        'location_en'
     ];
 
     protected $useTimestamps = false;
@@ -177,4 +181,66 @@ class NProjectEventsModel extends Model
             ->orderBy('date_end', 'DESC')
             ->findAll($limit);
     }
+
+    /**
+     * Получить мероприятия проекта с учетом языка
+     * @param int $projectId
+     * @param string $lang
+     * @return array
+     */
+    public function getByProjectIdWithLang(int $projectId, string $lang = 'ru'): array
+    {
+        $events = $this->where('project_id', $projectId)
+            ->where('publish', 1)
+            ->orderBy('priority', 'ASC')
+            ->orderBy('date_start', 'ASC')
+            ->findAll();
+
+        if ($lang === 'en') {
+            foreach ($events as &$event) {
+                $event['name'] = $event['name_en'] ?? $event['name'];
+                $event['anons_text'] = $event['anons_text_en'] ?? $event['anons_text'];
+                $event['more_info'] = $event['more_info_en'] ?? $event['more_info'];
+                $event['location'] = $event['location_en'] ?? $event['location'];
+            }
+        }
+
+        return $events;
+    }
+
+    /**
+     * Получить мероприятие по slug с учетом языка
+     * @param string $projectPath
+     * @param string $eventPath
+     * @param string $lang
+     * @return array|null
+     */
+    public function getByProjectPathAndEventPathWithLang(string $projectPath, string $eventPath, string $lang = 'ru'): ?array
+    {
+        $projectsModel = new \App\Models\NProjectsModel();
+        $project = $projectsModel->getByPathWithLang($projectPath, $lang);
+
+        if (!$project) {
+            return null;
+        }
+
+        $event = $this->where('project_id', $project['id'])
+            ->where('path', $eventPath)
+            ->where('publish', 1)
+            ->first();
+
+        if (!$event) {
+            return null;
+        }
+
+        if ($lang === 'en') {
+            $event['name'] = $event['name_en'] ?? $event['name'];
+            $event['anons_text'] = $event['anons_text_en'] ?? $event['anons_text'];
+            $event['more_info'] = $event['more_info_en'] ?? $event['more_info'];
+            $event['location'] = $event['location_en'] ?? $event['location'];
+        }
+
+        return $event;
+    }
+
 }

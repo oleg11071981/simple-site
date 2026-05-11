@@ -2246,3 +2246,64 @@ main {
         gap: 1rem;
     }
 }
+
+/* ========================================
+   19. LANGUAGE SWITCHER (ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА)
+   ======================================== */
+
+.language-switcher {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 1rem;
+    padding-left: 1rem;
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.lang-link {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.lang-link:hover {
+    color: #6476be;
+}
+
+.lang-link.active {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.lang-separator {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+}
+
+.mobile-language-switcher {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.mobile-language-switcher .lang-link {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.mobile-language-switcher .lang-link.active {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .language-switcher {
+        margin-left: 0;
+        padding-left: 0;
+        border-left: none;
+    }
+}

@@ -3,7 +3,7 @@
         <a href="/" class="logo">Д<span>емо сайт</span></a>
 
         <!-- Десктопное меню -->
-        <?= view('site/partials/menu', ['menuPages' => $menuPages, 'activePage' => $activePage, 'type' => 'desktop']) ?>
+        <?= view('site/partials/menu', ['menuPages' => $menuPages, 'activePage' => $activePage, 'type' => 'desktop', 'currentLang' => $currentLang ?? 'ru']) ?>
 
         <button class="burger" id="burgerBtn" aria-label="Меню">
             <span></span>
@@ -13,5 +13,5 @@
     </div>
 
     <!-- Мобильное меню -->
-    <?= view('site/partials/menu', ['menuPages' => $menuPages, 'activePage' => $activePage, 'type' => 'mobile']) ?>
+    <?= view('site/partials/menu', ['menuPages' => $menuPages, 'activePage' => $activePage, 'type' => 'mobile', 'currentLang' => $currentLang ?? 'ru']) ?>
 </header>

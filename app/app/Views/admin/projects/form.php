@@ -32,24 +32,29 @@
             </div>
         <?php endif; ?>
 
-        <!-- Вкладки -->
-        <div class="tabs">
-            <button type="button" class="tab-btn active" data-tab="main">📋 Основное</button>
-            <button type="button" class="tab-btn" data-tab="events">📅 Мероприятия</button>
-        </div>
-
-        <!-- Форма проекта -->
-        <form action="<?= isset($project) ? '/admin-panel/projects/update/' . $project['id'] : '/admin-panel/projects/store' ?>" method="post" class="settings-form" id="projectForm">
+        <form action="<?= isset($project) ? '/admin-panel/projects/update/' . $project['id'] : '/admin-panel/projects/store' ?>" method="post" class="settings-form">
             <?= csrf_field() ?>
 
             <?php if (isset($project)): ?>
                 <input type="hidden" name="id" value="<?= $project['id'] ?>">
             <?php endif; ?>
 
-            <!-- Вкладка: Основное -->
-            <div id="tab-main" class="tab-content active">
+            <!-- ======================================== -->
+            <!-- ВКЛАДКИ РУССКИЙ / ENGLISH -->
+            <!-- ======================================== -->
+
+            <div class="tabs">
+                <button type="button" class="tab-btn active" data-tab="ru">🇷🇺 Русский</button>
+                <button type="button" class="tab-btn" data-tab="en">🇬🇧 English</button>
+            </div>
+
+            <!-- ======================================== -->
+            <!-- ВКЛАДКА РУССКИЙ -->
+            <!-- ======================================== -->
+
+            <div id="tab-ru" class="tab-content active">
                 <div class="settings-section">
-                    <h2>Основная информация</h2>
+                    <h2>Основная информация (Русский)</h2>
 
                     <?php if (isset($project)): ?>
                         <div class="form-group">
@@ -64,7 +69,7 @@
                                value="<?= esc($project['name'] ?? '') ?>"
                                class="form-control"
                                placeholder="Введите название проекта"
-                               required autofocus>
+                               required>
                     </div>
 
                     <div class="form-group">
@@ -79,109 +84,29 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="anons_text">Краткое описание</label>
+                        <label for="anons_text">Краткое описание (Русский)</label>
                         <textarea id="anons_text" name="anons_text" rows="4"
                                   class="form-control"
                                   placeholder="Краткое описание проекта"><?= esc($project['anons_text'] ?? '') ?></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label for="organizing_committee">Оргкомитет</label>
+                        <label for="organizing_committee">Оргкомитет (Русский)</label>
                         <textarea id="organizing_committee" name="organizing_committee" rows="6"
                                   class="form-control"
                                   placeholder="Состав организационного комитета"><?= esc($project['organizing_committee'] ?? '') ?></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label for="supported_by">Проводится при поддержке</label>
+                        <label for="supported_by">Проводится при поддержке (Русский)</label>
                         <textarea id="supported_by" name="supported_by" rows="4"
                                   class="form-control"
                                   placeholder="Партнёры и спонсоры"><?= esc($project['supported_by'] ?? '') ?></textarea>
                     </div>
-
-                    <div class="form-row">
-                        <div class="form-group half">
-                            <label for="date_start">Дата начала проекта</label>
-                            <input type="date" id="date_start" name="date_start"
-                                   value="<?= esc($project['date_start'] ?? '') ?>"
-                                   class="form-control">
-                        </div>
-                        <div class="form-group half">
-                            <label for="date_end">Дата окончания проекта</label>
-                            <input type="date" id="date_end" name="date_end"
-                                   value="<?= esc($project['date_end'] ?? '') ?>"
-                                   class="form-control">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="foto">Главное изображение</label>
-                        <div class="foto-preview" id="fotoPreview">
-                            <?php if (isset($project) && $project['foto'] > 0 && !empty($project['foto_file'])): ?>
-                                <img src="/uploads/<?= $project['foto_file'] ?>" style="max-width: 200px; border-radius: 8px;">
-                            <?php else: ?>
-                                <div class="foto-placeholder" style="width: 200px; height: 150px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px dashed #dee2e6;">
-                                    <span style="color: #6c757d;">Нет изображения</span>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                        <div class="foto-actions" style="margin-top: 10px;">
-                            <input type="hidden" name="foto" id="foto" value="<?= esc($project['foto'] ?? 0) ?>">
-                            <input type="hidden" name="foto_file" id="foto_file" value="<?= esc($project['foto_file'] ?? '') ?>">
-                            <button type="button" class="btn-select-foto" onclick="openFileManager('foto')" style="background: #007bff; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">📁 Выбрать изображение</button>
-                            <button type="button" class="btn-clear-foto" onclick="clearFoto()" style="background: #dc3545; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; margin-left: 8px;">🗑️ Удалить</button>
-                        </div>
-                        <small>Рекомендуемый размер: 1200x800px</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="media">Галерея</label>
-                        <div class="media-select-wrapper">
-                            <input type="text"
-                                   id="mediaSearch"
-                                   class="form-control"
-                                   placeholder="🔍 Поиск галереи..."
-                                   autocomplete="off">
-                            <select id="media" name="media" class="form-control" size="6" style="margin-top: 8px;">
-                                <option value="0">— Без галереи —</option>
-                                <?php if (!empty($mediaCategories)): ?>
-                                    <?php foreach ($mediaCategories as $cat): ?>
-                                        <option value="<?= $cat['id'] ?>"
-                                                data-name="<?= esc(strtolower($cat['name'])) ?>"
-                                            <?= (isset($project) && ($project['media'] ?? 0) == $cat['id']) ? 'selected' : '' ?>>
-                                            <?= str_repeat('—', $cat['level'] ?? 0) ?> 📁 <?= esc($cat['name']) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
-                        </div>
-                        <small>Выберите галерею для отображения на странице проекта</small>
-                    </div>
                 </div>
 
                 <div class="settings-section">
-                    <h2>Настройки отображения</h2>
-
-                    <div class="form-row">
-                        <div class="form-group half">
-                            <label for="priority">Приоритет (порядок сортировки)</label>
-                            <input type="number" id="priority" name="priority"
-                                   value="<?= esc($project['priority'] ?? 0) ?>"
-                                   class="form-control">
-                            <small>Чем меньше число, тем выше в списке</small>
-                        </div>
-                        <div class="form-group half">
-                            <label for="publish">Статус</label>
-                            <select id="publish" name="publish" class="form-control">
-                                <option value="0" <?= (isset($project) && $project['publish'] == 0) ? 'selected' : '' ?>>Черновик</option>
-                                <option value="1" <?= (isset($project) && $project['publish'] == 1) ? 'selected' : '' ?>>Опубликовано</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="settings-section">
-                    <h2>SEO настройки</h2>
+                    <h2>SEO настройки (Русский)</h2>
 
                     <div class="form-group">
                         <label for="keywords">Ключевые слова</label>
@@ -200,120 +125,198 @@
                 </div>
             </div>
 
-            <!-- Вкладка: Мероприятия -->
-            <div id="tab-events" class="tab-content">
-                <div class="settings-section">
-                    <div class="section-header">
-                        <h2>Мероприятия проекта</h2>
-                        <?php if (isset($project)): ?>
-                            <a href="/admin-panel/events/create?project_id=<?= $project['id'] ?>" class="btn-create" style="padding: 6px 12px; font-size: 13px;">➕ Добавить мероприятие</a>
-                        <?php endif; ?>
-                    </div>
+            <!-- ======================================== -->
+            <!-- ВКЛАДКА ENGLISH -->
+            <!-- ======================================== -->
 
-                    <?php if (isset($project) && !empty($events)): ?>
-                        <div class="table-container">
-                            <table class="data-table">
-                                <thead>
-                                <tr>
-                                    <th style="width: 60px">ID</th>
-                                    <th>Название мероприятия</th>
-                                    <th style="width: 110px">Дата начала</th>
-                                    <th style="width: 110px">Дата окончания</th>
-                                    <th style="width: 100px">Статус</th>
-                                    <th style="width: 100px">Действия</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php foreach ($events as $event): ?>
-                                    <tr>
-                                        <td class="text-center"><?= esc($event['id']) ?></td>
-                                        <td>
-                                            <strong><?= esc($event['name']) ?></strong>
-                                            <?php if (!empty($event['location'])): ?>
-                                                <div class="event-location" style="font-size: 12px; color: #6c757d; margin-top: 4px;">
-                                                    📍 <?= esc($event['location']) ?>
-                                                </div>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td class="date-cell"><?= $event['date_start'] ? date('d.m.Y', strtotime($event['date_start'])) : '—' ?></td>
-                                        <td class="date-cell"><?= $event['date_end'] ? date('d.m.Y', strtotime($event['date_end'])) : '—' ?></td>
-                                        <td class="text-center">
-                                            <?php if ($event['publish'] == 1): ?>
-                                                <span class="badge badge-success">Опубл.</span>
-                                            <?php else: ?>
-                                                <span class="badge badge-warning">Черновик</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td class="actions">
-                                            <a href="/admin-panel/events/toggle/<?= $event['id'] ?>" class="btn-icon" title="Переключить статус">
-                                                <?php if ($event['publish'] == 1): ?>
-                                                    <span class="icon-eye">👁️</span>
-                                                <?php else: ?>
-                                                    <span class="icon-eye-off">👁️‍🗨️</span>
-                                                <?php endif; ?>
-                                            </a>
-                                            <a href="/admin-panel/events/edit/<?= $event['id'] ?>" class="btn-icon" title="Редактировать">
-                                                <span class="icon-edit">✏️</span>
-                                            </a>
-                                            <a href="/admin-panel/events/delete/<?= $event['id'] ?>" class="btn-icon" title="Удалить" onclick="return confirm('Удалить мероприятие «<?= esc($event['name']) ?>»?')">
-                                                <span class="icon-delete">🗑️</span>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    <?php else: ?>
-                        <div class="alert alert-info" style="text-align: center; padding: 40px;">
-                            <span style="font-size: 48px;">📅</span>
-                            <p style="margin-top: 12px;">Мероприятия не добавлены</p>
-                            <?php if (isset($project)): ?>
-                                <a href="/admin-panel/events/create?project_id=<?= $project['id'] ?>" class="btn-create" style="margin-top: 12px; display: inline-block;">➕ Добавить мероприятие</a>
-                            <?php endif; ?>
+            <div id="tab-en" class="tab-content">
+                <div class="settings-section">
+                    <h2>Basic Information (English)</h2>
+
+                    <?php if (isset($project)): ?>
+                        <div class="form-group">
+                            <label>Project ID</label>
+                            <div class="form-control-static"><?= $project['id'] ?></div>
                         </div>
                     <?php endif; ?>
+
+                    <div class="form-group">
+                        <label for="name_en">Project Title <span class="required">*</span></label>
+                        <input type="text" id="name_en" name="name_en"
+                               value="<?= esc($project['name_en'] ?? '') ?>"
+                               class="form-control"
+                               placeholder="Enter project title">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="anons_text_en">Short description (English)</label>
+                        <textarea id="anons_text_en" name="anons_text_en" rows="4"
+                                  class="form-control"
+                                  placeholder="Short project description"><?= esc($project['anons_text_en'] ?? '') ?></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="organizing_committee_en">Organizing committee (English)</label>
+                        <textarea id="organizing_committee_en" name="organizing_committee_en" rows="6"
+                                  class="form-control"
+                                  placeholder="Organizing committee members"><?= esc($project['organizing_committee_en'] ?? '') ?></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="supported_by_en">Supported by (English)</label>
+                        <textarea id="supported_by_en" name="supported_by_en" rows="4"
+                                  class="form-control"
+                                  placeholder="Partners and sponsors"><?= esc($project['supported_by_en'] ?? '') ?></textarea>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h2>SEO Settings (English)</h2>
+
+                    <div class="form-group">
+                        <label for="keywords_en">Keywords</label>
+                        <textarea id="keywords_en" name="keywords_en" rows="3"
+                                  class="form-control"
+                                  placeholder="Keywords separated by commas"><?= esc($project['keywords_en'] ?? '') ?></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description_en">Meta Description</label>
+                        <textarea id="description_en" name="description_en" rows="4"
+                                  class="form-control"
+                                  placeholder="Brief description for search engines"><?= esc($project['description_en'] ?? '') ?></textarea>
+                        <small>Recommended length: 150-160 characters</small>
+                    </div>
                 </div>
             </div>
 
+            <!-- ======================================== -->
+            <!-- ОБЩИЕ НАСТРОЙКИ (НЕ ЗАВИСЯТ ОТ ЯЗЫКА) -->
+            <!-- ======================================== -->
+
+            <div class="settings-section">
+                <h2>Даты проекта / Project Dates</h2>
+
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label for="date_start">Дата начала / Start date</label>
+                        <input type="date" id="date_start" name="date_start"
+                               value="<?= esc($project['date_start'] ?? '') ?>"
+                               class="form-control">
+                    </div>
+                    <div class="form-group half">
+                        <label for="date_end">Дата окончания / End date</label>
+                        <input type="date" id="date_end" name="date_end"
+                               value="<?= esc($project['date_end'] ?? '') ?>"
+                               class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h2>Изображения / Images</h2>
+
+                <div class="form-group">
+                    <label for="foto">Главное изображение / Main image</label>
+                    <div class="foto-preview" id="fotoPreview">
+                        <?php if (isset($project) && $project['foto'] > 0 && !empty($project['foto_file'])): ?>
+                            <img src="/uploads/<?= $project['foto_file'] ?>" style="max-width: 200px; border-radius: 8px;">
+                        <?php else: ?>
+                            <div class="foto-placeholder" style="width: 200px; height: 150px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px dashed #dee2e6;">
+                                <span style="color: #6c757d;">Нет изображения / No image</span>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="foto-actions" style="margin-top: 10px;">
+                        <input type="hidden" name="foto" id="foto" value="<?= esc($project['foto'] ?? 0) ?>">
+                        <input type="hidden" name="foto_file" id="foto_file" value="<?= esc($project['foto_file'] ?? '') ?>">
+                        <button type="button" class="btn-select-foto" onclick="openFileManager('foto')" style="background: #007bff; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">📁 Выбрать изображение / Select image</button>
+                        <button type="button" class="btn-clear-foto" onclick="clearFoto()" style="background: #dc3545; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; margin-left: 8px;">🗑️ Удалить / Remove</button>
+                    </div>
+                    <small>Рекомендуемый размер: 1200x800px / Recommended size: 1200x800px</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="media">Галерея / Gallery</label>
+                    <div class="media-select-wrapper">
+                        <input type="text"
+                               id="mediaSearch"
+                               class="form-control"
+                               placeholder="🔍 Поиск галереи / Search gallery..."
+                               autocomplete="off">
+                        <select id="media" name="media" class="form-control" size="6" style="margin-top: 8px;">
+                            <option value="0">— Без галереи / No gallery —</option>
+                            <?php if (!empty($mediaCategories)): ?>
+                                <?php foreach ($mediaCategories as $cat): ?>
+                                    <option value="<?= $cat['id'] ?>"
+                                            data-name="<?= esc(strtolower($cat['name'])) ?>"
+                                        <?= (isset($project) && ($project['media'] ?? 0) == $cat['id']) ? 'selected' : '' ?>>
+                                        <?= str_repeat('—', $cat['level'] ?? 0) ?> 📁 <?= esc($cat['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                    <small>Выберите галерею для отображения на странице проекта / Select gallery to display on project page</small>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h2>Настройки отображения / Display Settings</h2>
+
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label for="priority">Приоритет / Priority (порядок сортировки)</label>
+                        <input type="number" id="priority" name="priority"
+                               value="<?= esc($project['priority'] ?? 0) ?>"
+                               class="form-control">
+                        <small>Чем меньше число, тем выше в списке / Smaller number = higher position</small>
+                    </div>
+                    <div class="form-group half">
+                        <label for="publish">Статус / Status</label>
+                        <select id="publish" name="publish" class="form-control">
+                            <option value="0" <?= (isset($project) && $project['publish'] == 0) ? 'selected' : '' ?>>Черновик / Draft</option>
+                            <option value="1" <?= (isset($project) && $project['publish'] == 1) ? 'selected' : '' ?>>Опубликовано / Published</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Время создания/изменения -->
             <?php if (isset($project)): ?>
                 <div class="settings-section">
                     <div class="form-group">
-                        <label>📅 Время создания</label>
+                        <label>📅 Время создания / Created</label>
                         <div class="form-control-static"><?= date('d.m.Y H:i:s', strtotime($project['create'])) ?></div>
                     </div>
                     <div class="form-group">
-                        <label>🔄 Время изменения</label>
+                        <label>🔄 Время изменения / Modified</label>
                         <div class="form-control-static"><?= date('d.m.Y H:i:s', strtotime($project['modify'])) ?></div>
                     </div>
                 </div>
             <?php endif; ?>
 
+            <!-- Кнопки -->
             <div class="form-actions">
-                <a href="/admin-panel/projects" class="btn-cancel">Отмена</a>
-                <button type="submit" class="btn-save">💾 Сохранить проект</button>
+                <a href="/admin-panel/projects" class="btn-cancel">Отмена / Cancel</a>
+                <button type="submit" class="btn-save">💾 Сохранить проект / Save project</button>
             </div>
         </form>
     </div>
 
-    <!-- Скрипты для вкладок и выбора изображений -->
     <script>
         // Переключение вкладок
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const tabId = this.dataset.tab;
-
-                // Убираем активные классы у всех кнопок и вкладок
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-
-                // Добавляем активные классы
                 this.classList.add('active');
                 document.getElementById(`tab-${tabId}`).classList.add('active');
             });
         });
 
-        // Выбор изображения из файлового менеджера
+        // Функции для работы с изображениями
         function openFileManager(fieldName) {
             var url = '/admin-panel/editor/ckeditor-browse?type=image&field=' + fieldName;
             window.open(url, 'FileManager', 'width=1200,height=700,left=100,top=50,toolbar=no,scrollbars=yes,resizable=yes');
@@ -322,7 +325,7 @@
         function clearFoto() {
             document.getElementById('foto').value = 0;
             document.getElementById('foto_file').value = '';
-            document.getElementById('fotoPreview').innerHTML = '<div class="foto-placeholder" style="width: 200px; height: 150px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px dashed #dee2e6;"><span style="color: #6c757d;">Нет изображения</span></div>';
+            document.getElementById('fotoPreview').innerHTML = '<div class="foto-placeholder" style="width: 200px; height: 150px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px dashed #dee2e6;"><span style="color: #6c757d;">Нет изображения / No image</span></div>';
         }
 
         function setSelectedFile(fileId, fileName, fileUrl) {
@@ -354,10 +357,29 @@
                         }
                     });
                 }
-
                 searchInput.addEventListener('input', filterCategories);
             }
         });
+
+        // Транслитерация
+        function rusToTranslit(field, sourceField) {
+            var rus = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
+            var eng = "abvgdeejziyklmnoprstufhccss_yaeuya";
+            var text = sourceField.value;
+            var result = "";
+            for (var i = 0; i < text.length; i++) {
+                var char = text[i].toLowerCase();
+                var index = rus.indexOf(char);
+                if (index >= 0) {
+                    result += eng[index];
+                } else if (char.match(/[a-z0-9]/)) {
+                    result += char;
+                } else if (char.match(/\s/)) {
+                    result += "-";
+                }
+            }
+            document.getElementById(field).value = result;
+        }
     </script>
 
     <style>
@@ -400,21 +422,15 @@
             display: block;
         }
 
-        .section-header {
+        .form-row {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
-        .section-header h2 {
-            margin: 0;
-        }
-
-        .alert-info {
-            background: #d1ecf1;
-            border-color: #bee5eb;
-            color: #0c5460;
+        .form-group.half {
+            flex: 1;
+            min-width: 200px;
         }
     </style>
 

@@ -29,7 +29,13 @@ class NProjectsModel extends Model
         'create',
         'modify',
         'create_by_user',
-        'modify_by_user'
+        'modify_by_user',
+        'name_en',
+        'anons_text_en',
+        'organizing_committee_en',
+        'supported_by_en',
+        'keywords_en',
+        'description_en'
     ];
 
     protected $useTimestamps = false;
@@ -135,4 +141,65 @@ class NProjectsModel extends Model
             ->orderBy('name', 'ASC')
             ->findAll();
     }
+
+    /**
+     * Получить проект по пути с учетом языка
+     * @param string $path
+     * @param string $lang
+     * @return array|null
+     */
+    public function getByPathWithLang(string $path, string $lang = 'ru'): ?array
+    {
+        $project = $this->where('path', $path)
+            ->where('publish', 1)
+            ->first();
+
+        if (!$project) {
+            return null;
+        }
+
+        if ($lang === 'en') {
+            $project['name'] = $project['name_en'] ?? $project['name'];
+            $project['anons_text'] = $project['anons_text_en'] ?? $project['anons_text'];
+            $project['organizing_committee'] = $project['organizing_committee_en'] ?? $project['organizing_committee'];
+            $project['supported_by'] = $project['supported_by_en'] ?? $project['supported_by'];
+            $project['keywords'] = $project['keywords_en'] ?? $project['keywords'];
+            $project['description'] = $project['description_en'] ?? $project['description'];
+        }
+
+        return $project;
+    }
+
+    /**
+     * Получить список проектов с учетом языка
+     * @param int $limit
+     * @param string $lang
+     * @return array
+     */
+    public function getPublishedWithLang(int $limit = 0, string $lang = 'ru'): array
+    {
+        $builder = $this->where('publish', 1)
+            ->orderBy('priority', 'ASC')
+            ->orderBy('date_start', 'DESC');
+
+        if ($limit > 0) {
+            $builder->limit($limit);
+        }
+
+        $projects = $builder->findAll();
+
+        if ($lang === 'en') {
+            foreach ($projects as &$project) {
+                $project['name'] = $project['name_en'] ?? $project['name'];
+                $project['anons_text'] = $project['anons_text_en'] ?? $project['anons_text'];
+                $project['organizing_committee'] = $project['organizing_committee_en'] ?? $project['organizing_committee'];
+                $project['supported_by'] = $project['supported_by_en'] ?? $project['supported_by'];
+                $project['keywords'] = $project['keywords_en'] ?? $project['keywords'];
+                $project['description'] = $project['description_en'] ?? $project['description'];
+            }
+        }
+
+        return $projects;
+    }
+
 }

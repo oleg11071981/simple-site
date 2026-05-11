@@ -24,18 +24,11 @@ use ReflectionException;
 class SettingsController extends BaseController
 {
     /**
-     * Модель настроек
-     *
-     * @var NSiteconfigModel
-     */
-    protected NSiteconfigModel $settingsModel;
-
-    /**
      * Конструктор контроллера
      */
     public function __construct()
     {
-        $this->settingsModel = new NSiteconfigModel();
+        // Модель настроек уже доступна через $this->settingsModel из BaseController
     }
 
     /**
@@ -52,7 +45,6 @@ class SettingsController extends BaseController
         $data = [
             'title'        => 'Настройки сайта',
             'activeMenu'   => 'settings',
-            //'additionalCss' => '/admin/css/settings.css',
             'settings'     => $settings,
         ];
 

@@ -9,6 +9,19 @@
             </a>
         <?php endforeach; ?>
         <a href="/contacts" class="nav-link <?= $activePage === 'contacts' ? 'active' : '' ?>">Контакты</a>
+
+        <!-- Переключатель языка -->
+        <div class="language-switcher">
+            <?php if ($currentLang === 'ru'): ?>
+                <a href="/lang/en" class="lang-link active">RU</a>
+                <span class="lang-separator">|</span>
+                <a href="/lang/en" class="lang-link">EN</a>
+            <?php else: ?>
+                <a href="/lang/ru" class="lang-link">RU</a>
+                <span class="lang-separator">|</span>
+                <a href="/lang/ru" class="lang-link active">EN</a>
+            <?php endif; ?>
+        </div>
     </div>
 <?php else: ?>
     <div class="mobile-nav" id="mobileMenu">
@@ -21,5 +34,18 @@
             </a>
         <?php endforeach; ?>
         <a href="/contacts" class="nav-link <?= $activePage === 'contacts' ? 'active' : '' ?>">Контакты</a>
+
+        <!-- Переключатель языка в мобильном меню -->
+        <div class="mobile-language-switcher">
+            <?php if ($currentLang === 'ru'): ?>
+                <a href="/lang/en" class="lang-link active">RU</a>
+                <span class="lang-separator">|</span>
+                <a href="/lang/en" class="lang-link">EN</a>
+            <?php else: ?>
+                <a href="/lang/ru" class="lang-link">RU</a>
+                <span class="lang-separator">|</span>
+                <a href="/lang/ru" class="lang-link active">EN</a>
+            <?php endif; ?>
+        </div>
     </div>
 <?php endif; ?>

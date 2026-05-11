@@ -93,6 +93,9 @@ $routes->group('admin-panel', ['namespace' => 'App\Controllers\Admin'], function
  * --------------------------------------------------------------------
  */
 
+// Переключение языка
+$routes->get('lang/(:any)', 'LanguageController::switch/$1');
+
 // Главная страница
 $routes->get('/', 'SiteController::index');
 

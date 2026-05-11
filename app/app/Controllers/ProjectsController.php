@@ -13,15 +13,11 @@ class ProjectsController extends BaseController
 {
     protected NProjectsModel $projectsModel;
     protected NProjectEventsModel $eventsModel;
-    protected NSiteconfigModel $settingsModel;
-    protected NSiteModel $pagesModel;
 
     public function __construct()
     {
         $this->projectsModel = new NProjectsModel();
         $this->eventsModel = new NProjectEventsModel();
-        $this->settingsModel = new NSiteconfigModel();
-        $this->pagesModel = new NSiteModel();
     }
 
     /**
@@ -31,11 +27,15 @@ class ProjectsController extends BaseController
     public function index(): string
     {
         $settings = $this->settingsModel->getAll();
+        $lang = $this->currentLang;
 
-        $projects = $this->projectsModel->getPublished();
+        $projectsModel = new \App\Models\NProjectsModel();
+        $projects = $projectsModel->getPublishedWithLang(0, $lang);
 
         // Добавляем информацию о главном изображении для каждого проекта
-        $fileModel = new NFileManagerModel();
+        $fileModel = new \App\Models\NFileManagerModel();
+        $eventsModel = new \App\Models\NProjectEventsModel();
+
         foreach ($projects as &$project) {
             if ($project['foto'] > 0) {
                 $file = $fileModel->find($project['foto']);
@@ -43,22 +43,21 @@ class ProjectsController extends BaseController
                     $project['foto_file'] = $file['file_name'];
                 }
             }
-            // Добавляем количество мероприятий
-            $project['events_count'] = $this->eventsModel->getEventsCount($project['id']);
+            $project['events_count'] = $eventsModel->getEventsCount($project['id']);
         }
 
         $data = [
-            'title'       => 'Проекты | ' . ($settings['SiteName'] ?? 'n-cms'),
-            'description' => 'Проекты и мероприятия организации',
-            'keywords'    => 'проекты, мероприятия, события',
+            'title'       => ($lang === 'en' && !empty($settings['SiteName_en'])) ? 'Projects | ' . $settings['SiteName_en'] : 'Проекты | ' . ($settings['SiteName'] ?? 'n-cms'),
+            'description' => ($lang === 'en' && !empty($settings['Description_en'])) ? $settings['Description_en'] : 'Проекты и мероприятия организации',
+            'keywords'    => ($lang === 'en' && !empty($settings['Keywords_en'])) ? $settings['Keywords_en'] : 'проекты, мероприятия, события',
             'projects'    => $projects,
             'menuPages'   => $this->pagesModel->getMenuPages(),
             'activePage'  => 'projects',
-            'currentPage' => 'Проекты',
-            // Контакты для подвала
-            'email'       => $settings['Email'] ?? '',
-            'phone'       => $settings['Phone'] ?? '',
-            'address'     => $settings['Adress'] ?? ''
+            'currentPage' => ($lang === 'en') ? 'Projects' : 'Проекты',
+            'currentLang' => $lang,
+            'email'       => $this->contacts['email'],
+            'phone'       => $this->contacts['phone'],
+            'address'     => $this->contacts['address'],
         ];
 
         return view('site/projects/index', $data);
@@ -71,15 +70,17 @@ class ProjectsController extends BaseController
     public function detail(string $slug): string
     {
         $settings = $this->settingsModel->getAll();
+        $lang = $this->currentLang;
 
-        $project = $this->projectsModel->getByPath($slug);
+        $projectsModel = new \App\Models\NProjectsModel();
+        $project = $projectsModel->getByPathWithLang($slug, $lang);
 
         if (!$project) {
             throw PageNotFoundException::forPageNotFound();
         }
 
         // Получаем главное изображение
-        $fileModel = new NFileManagerModel();
+        $fileModel = new \App\Models\NFileManagerModel();
         if ($project['foto'] > 0) {
             $file = $fileModel->find($project['foto']);
             if ($file) {
@@ -97,8 +98,9 @@ class ProjectsController extends BaseController
             $galleryFiles = $files;
         }
 
-        // Получаем мероприятия проекта
-        $events = $this->eventsModel->getByProjectId($project['id']);
+        // Получаем мероприятия проекта с учетом языка
+        $eventsModel = new \App\Models\NProjectEventsModel();
+        $events = $eventsModel->getByProjectIdWithLang($project['id'], $lang);
 
         // Добавляем изображения к мероприятиям
         foreach ($events as &$event) {
@@ -111,22 +113,22 @@ class ProjectsController extends BaseController
         }
 
         $data = [
-            'title'       => $project['name'] . ' | ' . ($settings['SiteName'] ?? 'n-cms'),
+            'title'       => ($lang === 'en' && !empty($project['name_en'])) ? $project['name_en'] . ' | ' . ($settings['SiteName_en'] ?? $settings['SiteName']) : $project['name'] . ' | ' . ($settings['SiteName'] ?? 'n-cms'),
             'description' => $project['description'] ?: $project['anons_text'],
-            'keywords'    => $project['keywords'] ?: $settings['Keywords'] ?? '',
+            'keywords'    => $project['keywords'] ?: ($lang === 'en' ? ($settings['Keywords_en'] ?? '') : ($settings['Keywords'] ?? '')),
             'project'     => $project,
             'events'      => $events,
             'galleryFiles'=> $galleryFiles,
             'menuPages'   => $this->pagesModel->getMenuPages(),
             'activePage'  => 'projects',
             'breadcrumbs' => [
-                ['name' => 'Проекты', 'url' => '/projects']
+                ['name' => ($lang === 'en') ? 'Projects' : 'Проекты', 'url' => '/projects']
             ],
-            'currentPage' => $project['name'],
-            // Контакты для подвала
-            'email'       => $settings['Email'] ?? '',
-            'phone'       => $settings['Phone'] ?? '',
-            'address'     => $settings['Adress'] ?? ''
+            'currentPage' => ($lang === 'en' && !empty($project['name_en'])) ? $project['name_en'] : $project['name'],
+            'currentLang' => $lang,
+            'email'       => $this->contacts['email'],
+            'phone'       => $this->contacts['phone'],
+            'address'     => $this->contacts['address'],
         ];
 
         return view('site/projects/detail', $data);
@@ -139,16 +141,21 @@ class ProjectsController extends BaseController
     public function eventDetail(string $projectSlug, string $eventSlug): string
     {
         $settings = $this->settingsModel->getAll();
+        $lang = $this->currentLang;
 
-        $event = $this->eventsModel->getByProjectPathAndEventPath($projectSlug, $eventSlug);
+        $eventsModel = new \App\Models\NProjectEventsModel();
+        $event = $eventsModel->getByProjectPathAndEventPathWithLang($projectSlug, $eventSlug, $lang);
 
         if (!$event) {
             throw PageNotFoundException::forPageNotFound();
         }
 
-        $project = $this->projectsModel->find($event['project_id']);
+        // Получаем проект
+        $projectsModel = new \App\Models\NProjectsModel();
+        $project = $projectsModel->getByPathWithLang($projectSlug, $lang);
 
-        $fileModel = new NFileManagerModel();
+        // Получаем главное изображение мероприятия
+        $fileModel = new \App\Models\NFileManagerModel();
         if ($event['foto'] > 0) {
             $file = $fileModel->find($event['foto']);
             if ($file) {
@@ -156,6 +163,7 @@ class ProjectsController extends BaseController
             }
         }
 
+        // Получаем галерею мероприятия
         $galleryFiles = [];
         if ($event['media'] > 0) {
             $files = $fileModel->getFilesByCategory($event['media']);
@@ -165,7 +173,8 @@ class ProjectsController extends BaseController
             $galleryFiles = $files;
         }
 
-        $otherEvents = $this->eventsModel->where('project_id', $project['id'])
+        // Получаем другие мероприятия этого проекта
+        $otherEvents = $eventsModel->where('project_id', $project['id'])
             ->where('id !=', $event['id'])
             ->where('publish', 1)
             ->orderBy('date_start', 'ASC')
@@ -179,10 +188,14 @@ class ProjectsController extends BaseController
                     $other['foto_file'] = $file['file_name'];
                 }
             }
+            // Локализация названия других мероприятий
+            if ($lang === 'en' && !empty($other['name_en'])) {
+                $other['name'] = $other['name_en'];
+            }
         }
 
         $data = [
-            'title'       => $event['name'] . ' | ' . ($settings['SiteName'] ?? 'n-cms'),
+            'title'       => ($lang === 'en' && !empty($event['name_en'])) ? $event['name_en'] . ' | ' . ($settings['SiteName_en'] ?? $settings['SiteName']) : $event['name'] . ' | ' . ($settings['SiteName'] ?? 'n-cms'),
             'description' => $event['more_info'] ? strip_tags(substr($event['more_info'], 0, 200)) : ($event['anons_text'] ?? ''),
             'keywords'    => '',
             'event'       => $event,
@@ -192,14 +205,14 @@ class ProjectsController extends BaseController
             'menuPages'   => $this->pagesModel->getMenuPages(),
             'activePage'  => 'projects',
             'breadcrumbs' => [
-                ['name' => 'Проекты', 'url' => '/projects'],
-                ['name' => $project['name'], 'url' => '/projects/' . $project['path']]
+                ['name' => ($lang === 'en') ? 'Projects' : 'Проекты', 'url' => '/projects'],
+                ['name' => ($lang === 'en' && !empty($project['name_en'])) ? $project['name_en'] : $project['name'], 'url' => '/projects/' . $project['path']]
             ],
-            'currentPage' => $event['name'],
-            // Контакты для подвала
-            'email'       => $settings['Email'] ?? '',
-            'phone'       => $settings['Phone'] ?? '',
-            'address'     => $settings['Adress'] ?? '',
+            'currentPage' => ($lang === 'en' && !empty($event['name_en'])) ? $event['name_en'] : $event['name'],
+            'currentLang' => $lang,
+            'email'       => $this->contacts['email'],
+            'phone'       => $this->contacts['phone'],
+            'address'     => $this->contacts['address'],
         ];
 
         return view('site/projects/event_detail', $data);

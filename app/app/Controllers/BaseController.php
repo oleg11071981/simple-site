@@ -35,13 +35,35 @@ abstract class BaseController extends Controller
      *
      * @var list<string>
      */
-    protected $helpers = ['url', 'form', 'common'];
+    protected $helpers = ['url', 'form', 'common', 'language'];
 
     /**
-     * Be sure to declare properties for any property fetch you initialized.
-     * The creation of dynamic property is deprecated in PHP 8.2.
+     * Контактные данные для футера
+     *
+     * @var array
      */
-    // protected $session;
+    protected $contacts;
+
+    /**
+     * Текущий язык сайта
+     *
+     * @var string
+     */
+    protected $currentLang;
+
+    /**
+     * Модель настроек сайта
+     *
+     * @var \App\Models\NSiteconfigModel
+     */
+    protected $settingsModel;
+
+    /**
+     * Модель страниц сайта
+     *
+     * @var \App\Models\NSiteModel
+     */
+    protected $pagesModel;
 
     /**
      * @return void
@@ -51,8 +73,18 @@ abstract class BaseController extends Controller
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
 
-        // Preload any models, libraries, etc, here.
+        // Загружаем модели
+        $this->settingsModel = new \App\Models\NSiteconfigModel();
+        $this->pagesModel = new \App\Models\NSiteModel();
 
-        // E.g.: $this->session = \Config\Services::session();
+        // Загружаем контакты для футера
+        $this->contacts = [
+            'email'   => $this->settingsModel->get('Email', ''),
+            'phone'   => $this->settingsModel->get('Phone', ''),
+            'address' => $this->settingsModel->get('Adress', ''),
+        ];
+
+        // Устанавливаем текущий язык
+        $this->currentLang = get_lang();
     }
 }
