@@ -2,7 +2,9 @@
     <nav class="breadcrumbs" aria-label="Хлебные крошки">
         <ul class="breadcrumbs-list">
             <li class="breadcrumbs-item">
-                <a href="/" class="breadcrumbs-link">Главная</a>
+                <a href="/" class="breadcrumbs-link">
+                    <?= ($currentLang ?? 'ru') === 'en' ? 'Home' : 'Главная' ?>
+                </a>
             </li>
             <?php if (!empty($breadcrumbs)): ?>
                 <?php foreach ($breadcrumbs as $crumb): ?>
