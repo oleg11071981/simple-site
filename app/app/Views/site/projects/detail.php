@@ -43,7 +43,7 @@
                 <h2 class="section-title">Мероприятия проекта</h2>
                 <div class="events-grid">
                     <?php foreach ($events as $event): ?>
-                        <div class="event-card">
+                        <div class="event-card-item">
                             <?php if (!empty($event['foto_file'])): ?>
                                 <div class="event-card-image">
                                     <img src="/uploads/<?= $event['foto_file'] ?>" alt="<?= esc($event['name']) ?>">
