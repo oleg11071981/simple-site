@@ -1832,8 +1832,8 @@ main {
     margin: 2rem 0;
 }
 
-/* Карточка мероприятия */
-.event-card {
+/* Карточка мероприятия (переименовано, чтобы не конфликтовать с блоком 17) */
+.event-card-item {
     background: white;
     border-radius: 1rem;
     overflow: hidden;
@@ -1842,7 +1842,7 @@ main {
     border: 1px solid #edf2f7;
 }
 
-.event-card:hover {
+.event-card-item:hover {
     transform: translateY(-5px);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     border-color: #cbd5e1;
@@ -1864,7 +1864,7 @@ main {
     transition: transform 0.3s ease;
 }
 
-.event-card:hover .event-card-image img {
+.event-card-item:hover .event-card-image img {
     transform: scale(1.05);
 }
 
@@ -1928,7 +1928,7 @@ main {
     margin-bottom: 1rem;
 }
 
-.event-card .read-more {
+.event-card-item .read-more {
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -2010,6 +2010,7 @@ main {
     text-decoration: underline;
 }
 
+/* Главное изображение мероприятия */
 .event-detail-image {
     margin: 1.5rem 0;
     border-radius: 1rem;
@@ -2026,7 +2027,8 @@ main {
     display: block;
 }
 
-.event-card {
+/* Карточка с описанием мероприятия (переименовано, чтобы не конфликтовать) */
+.event-detail-card {
     background: white;
     border-radius: 1.5rem;
     padding: 2rem;
@@ -2181,7 +2183,7 @@ main {
         gap: 1rem;
     }
 
-    .event-card {
+    .event-detail-card {
         padding: 1.5rem;
     }
 
