@@ -194,7 +194,7 @@ class SiteController extends BaseController
     }
 
     /**
-     * Получение хлебных крошек для навигации
+     * Получение хлебных крошек для навигации с учетом языка
      *
      * @param int $id ID текущей страницы
      * @return array
@@ -204,6 +204,7 @@ class SiteController extends BaseController
         $breadcrumbs = [];
         $parents = [];
         $current = $this->pagesModel->find($id);
+        $lang = $this->currentLang;
 
         // Собираем всех родителей (исключая текущую страницу)
         while ($current && $current['parent'] > 0) {
@@ -217,8 +218,13 @@ class SiteController extends BaseController
         }
 
         foreach ($parents as $parent) {
+            // Выбираем название с учетом языка
+            $name = ($lang === 'en' && !empty($parent['name_en']))
+                ? $parent['name_en']
+                : $parent['name'];
+
             $breadcrumbs[] = [
-                'name' => $parent['name'],
+                'name' => $name,
                 'url'  => '/' . $this->pagesModel->getFullPath($parent['id'])
             ];
         }
