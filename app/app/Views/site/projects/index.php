@@ -3,7 +3,7 @@
 <?= $this->section('content') ?>
 
     <div class="page-header">
-        <h1 class="page-title">Проекты</h1>
+        <h1 class="page-title"><?= ($currentLang ?? 'ru') === 'en' ? 'Projects' : 'Проекты' ?></h1>
     </div>
 
 <?php if (!empty($projects)): ?>
@@ -41,12 +41,19 @@
 
                         <?php if ($project['events_count'] > 0): ?>
                             <span class="project-events-count">
-                                📋 <?= $project['events_count'] ?> <?= declension($project['events_count'], 'мероприятие', 'мероприятия', 'мероприятий') ?>
+                                📋 <?= $project['events_count'] ?>
+                                <?php if (($currentLang ?? 'ru') === 'en'): ?>
+                                    <?= $project['events_count'] == 1 ? 'event' : 'events' ?>
+                                <?php else: ?>
+                                    <?= declension($project['events_count'], 'мероприятие', 'мероприятия', 'мероприятий') ?>
+                                <?php endif; ?>
                             </span>
                         <?php endif; ?>
                     </div>
 
-                    <a href="/projects/<?= esc($project['path']) ?>" class="read-more">Подробнее о проекте →</a>
+                    <a href="/projects/<?= esc($project['path']) ?>" class="read-more">
+                        <?= ($currentLang ?? 'ru') === 'en' ? 'More about project →' : 'Подробнее о проекте →' ?>
+                    </a>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -54,8 +61,8 @@
 <?php else: ?>
     <div class="empty-projects">
         <div class="empty-projects-icon">📁</div>
-        <h3 class="empty-projects-title">Проекты не найдены</h3>
-        <p class="empty-projects-text">В данный момент нет активных проектов</p>
+        <h3 class="empty-projects-title"><?= ($currentLang ?? 'ru') === 'en' ? 'Projects not found' : 'Проекты не найдены' ?></h3>
+        <p class="empty-projects-text"><?= ($currentLang ?? 'ru') === 'en' ? 'There are no active projects at the moment' : 'В данный момент нет активных проектов' ?></p>
     </div>
 <?php endif; ?>
 

@@ -44,7 +44,7 @@
         <!-- Другие новости -->
         <?php if (!empty($otherNews)): ?>
             <div class="other-news">
-                <h2 class="other-news-title">Читайте также</h2>
+                <h2 class="other-news-title"><?= ($currentLang ?? 'ru') === 'en' ? 'Read also' : 'Читайте также' ?></h2>
                 <div class="other-news-grid">
                     <?php foreach ($otherNews as $item): ?>
                         <a href="/news/<?= esc($item['path']) ?>" class="other-news-card">

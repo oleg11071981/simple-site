@@ -15,7 +15,7 @@
             <div class="event-info-item">
                 <span class="event-info-icon">📅</span>
                 <div class="event-info-content">
-                    <div class="event-info-label">Дата проведения</div>
+                    <div class="event-info-label"><?= ($currentLang ?? 'ru') === 'en' ? 'Date' : 'Дата проведения' ?></div>
                     <div class="event-info-value">
                         <?= date('d.m.Y', strtotime($event['date_start'])) ?>
                         <?php if (!empty($event['date_end']) && $event['date_end'] != $event['date_start']): ?>
@@ -29,7 +29,7 @@
                 <div class="event-info-item">
                     <span class="event-info-icon">📍</span>
                     <div class="event-info-content">
-                        <div class="event-info-label">Место проведения</div>
+                        <div class="event-info-label"><?= ($currentLang ?? 'ru') === 'en' ? 'Location' : 'Место проведения' ?></div>
                         <div class="event-info-value"><?= esc($event['location']) ?></div>
                     </div>
                 </div>
@@ -39,7 +39,7 @@
                 <div class="event-info-item">
                     <span class="event-info-icon">🔗</span>
                     <div class="event-info-content">
-                        <div class="event-info-label">Ссылка</div>
+                        <div class="event-info-label"><?= ($currentLang ?? 'ru') === 'en' ? 'Link' : 'Ссылка' ?></div>
                         <div class="event-info-value">
                             <a href="<?= esc($event['link']) ?>" target="_blank" rel="noopener noreferrer">
                                 <?= esc($event['link']) ?>
@@ -71,7 +71,7 @@
         <!-- Другие мероприятия проекта -->
         <?php if (!empty($otherEvents)): ?>
             <div class="other-events">
-                <h2 class="other-events-title">Другие мероприятия проекта «<?= esc($project['name']) ?>»</h2>
+                <h2 class="other-events-title"><?= ($currentLang ?? 'ru') === 'en' ? 'Other events of the project' : 'Другие мероприятия проекта' ?> «<?= esc($project['name']) ?>»</h2>
                 <div class="other-events-grid">
                     <?php foreach ($otherEvents as $item): ?>
                         <a href="/projects/<?= esc($project['path']) ?>/<?= esc($item['path']) ?>" class="other-event-card">
@@ -98,7 +98,7 @@
         <!-- Ссылка назад к проекту -->
         <div class="back-to-project">
             <a href="/projects/<?= esc($project['path']) ?>" class="back-link">
-                ← Вернуться к проекту «<?= esc($project['name']) ?>»
+                ← <?= ($currentLang ?? 'ru') === 'en' ? 'Back to project' : 'Вернуться к проекту' ?> «<?= esc($project['name']) ?>»
             </a>
         </div>
     </article>

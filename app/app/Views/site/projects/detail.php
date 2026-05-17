@@ -20,7 +20,7 @@
         <div class="project-info-grid">
             <?php if (!empty($project['organizing_committee'])): ?>
                 <div class="info-card">
-                    <h3 class="info-card-title">👥 Оргкомитет</h3>
+                    <h3 class="info-card-title">👥 <?= ($currentLang ?? 'ru') === 'en' ? 'Organizing committee' : 'Оргкомитет' ?></h3>
                     <div class="info-card-content">
                         <?= nl2br(esc($project['organizing_committee'])) ?>
                     </div>
@@ -29,7 +29,7 @@
 
             <?php if (!empty($project['supported_by'])): ?>
                 <div class="info-card">
-                    <h3 class="info-card-title">🤝 Проводится при поддержке</h3>
+                    <h3 class="info-card-title">🤝 <?= ($currentLang ?? 'ru') === 'en' ? 'Supported by' : 'Проводится при поддержке' ?></h3>
                     <div class="info-card-content">
                         <?= nl2br(esc($project['supported_by'])) ?>
                     </div>
@@ -40,7 +40,7 @@
         <!-- Мероприятия проекта (сетка 3 колонки) -->
         <?php if (!empty($events)): ?>
             <div class="project-events-section">
-                <h2 class="section-title">Мероприятия проекта</h2>
+                <h2 class="section-title"><?= ($currentLang ?? 'ru') === 'en' ? 'Project events' : 'Мероприятия проекта' ?></h2>
                 <div class="events-grid">
                     <?php foreach ($events as $event): ?>
                         <div class="event-card-item">
@@ -72,7 +72,7 @@
                                     <p class="event-card-excerpt"><?= esc(substr(strip_tags($event['anons_text']), 0, 100)) ?>...</p>
                                 <?php endif; ?>
                                 <a href="/projects/<?= esc($project['path']) ?>/<?= esc($event['path']) ?>" class="read-more">
-                                    Подробнее →
+                                    <?= ($currentLang ?? 'ru') === 'en' ? 'Details →' : 'Подробнее →' ?>
                                 </a>
                             </div>
                         </div>

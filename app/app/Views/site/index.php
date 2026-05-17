@@ -2,17 +2,10 @@
 
 <?= $this->section('content') ?>
 
-    <!-- Основной контент в белой карточке -->
-    <!--div class="home-card">
-        <div class="home-text">
-            <?= $mainText ?>
-        </div>
-    </div-->
-
     <!-- Блок проектов -->
 <?php if (!empty($projects)): ?>
     <section class="projects-section">
-        <h2 class="section-title">Наши проекты</h2>
+        <h2 class="section-title"><?= ($currentLang ?? 'ru') === 'en' ? 'Our projects' : 'Наши проекты' ?></h2>
         <div class="projects-grid">
             <?php foreach ($projects as $project): ?>
                 <div class="project-card">
@@ -38,18 +31,25 @@
                         <div class="project-meta">
                             <?php if ($project['events_count'] > 0): ?>
                                 <span class="project-events-count">
-                                    📋 <?= $project['events_count'] ?> <?= declension($project['events_count'], 'мероприятие', 'мероприятия', 'мероприятий') ?>
-                                </span>
+                                        📋 <?= $project['events_count'] ?>
+                                    <?php if (($currentLang ?? 'ru') === 'en'): ?>
+                                        <?= $project['events_count'] == 1 ? 'event' : 'events' ?>
+                                    <?php else: ?>
+                                        <?= declension($project['events_count'], 'мероприятие', 'мероприятия', 'мероприятий') ?>
+                                    <?php endif; ?>
+                                    </span>
                             <?php endif; ?>
                         </div>
 
-                        <a href="/projects/<?= esc($project['path']) ?>" class="read-more">Подробнее о проекте →</a>
+                        <a href="/projects/<?= esc($project['path']) ?>" class="read-more">
+                            <?= ($currentLang ?? 'ru') === 'en' ? 'More about project →' : 'Подробнее о проекте →' ?>
+                        </a>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
         <div class="section-footer">
-            <a href="/projects" class="all-link">Все проекты →</a>
+            <a href="/projects" class="all-link"><?= ($currentLang ?? 'ru') === 'en' ? 'All projects →' : 'Все проекты →' ?></a>
         </div>
     </section>
 <?php endif; ?>
@@ -57,7 +57,7 @@
     <!-- Блок последних новостей -->
 <?php if (!empty($latestNews)): ?>
     <section class="news-section">
-        <h2 class="section-title">Последние новости</h2>
+        <h2 class="section-title"><?= ($currentLang ?? 'ru') === 'en' ? 'Latest news' : 'Последние новости' ?></h2>
         <div class="news-grid">
             <?php foreach ($latestNews as $item): ?>
                 <article class="news-card">
@@ -81,19 +81,21 @@
                                 }
                                 ?>
                                 <span class="news-category <?= $categoryClass ?>">
-                                    <?= esc($item['category_name']) ?>
-                                </span>
+                                        <?= esc($item['category_name']) ?>
+                                    </span>
                             <?php endif; ?>
                         </div>
                         <h3 class="news-title"><?= esc($item['name']) ?></h3>
                         <p class="news-excerpt"><?= esc(substr(strip_tags($item['anons_text']), 0, 120)) ?>...</p>
-                        <a href="/news/<?= esc($item['path']) ?>" class="read-more">Подробнее →</a>
+                        <a href="/news/<?= esc($item['path']) ?>" class="read-more">
+                            <?= ($currentLang ?? 'ru') === 'en' ? 'Details →' : 'Подробнее →' ?>
+                        </a>
                     </div>
                 </article>
             <?php endforeach; ?>
         </div>
         <div class="section-footer">
-            <a href="/news" class="all-link">Все новости →</a>
+            <a href="/news" class="all-link"><?= ($currentLang ?? 'ru') === 'en' ? 'All news →' : 'Все новости →' ?></a>
         </div>
     </section>
 <?php endif; ?>
