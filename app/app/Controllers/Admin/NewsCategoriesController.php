@@ -3,9 +3,14 @@
 /**
  * Контроллер управления категориями новостей
  *
+ * Предоставляет методы для CRUD операций с категориями новостей:
+ * - Список категорий с деревом
+ * - Создание/редактирование/удаление категорий
+ * - Управление вложенностью
+ * - Массовые операции с категориями
+ *
  * @package App\Controllers\Admin
  * @category Controllers
- * @author  Your Name
  * @license MIT
  * @link    http://localhost
  * @noinspection PhpUnused
@@ -19,11 +24,32 @@ use App\Models\NNewsArticlesModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use ReflectionException;
 
+/**
+ * Контроллер управления категориями новостей
+ *
+ * @package App\Controllers\Admin
+ */
 class NewsCategoriesController extends BaseController
 {
+    /**
+     * Модель категорий новостей
+     *
+     * @var NNewsCategoriesModel
+     */
     protected NNewsCategoriesModel $categoriesModel;
+
+    /**
+     * Модель новостей
+     *
+     * @var NNewsArticlesModel
+     */
     protected NNewsArticlesModel $newsModel;
 
+    /**
+     * Конструктор контроллера
+     *
+     * Инициализирует модели для работы с категориями и новостями.
+     */
     public function __construct()
     {
         $this->categoriesModel = new NNewsCategoriesModel();
@@ -31,53 +57,65 @@ class NewsCategoriesController extends BaseController
     }
 
     /**
-     * Список категорий (деревом)
+     * Отображение списка категорий (деревом)
+     *
+     * Показывает категории текущего уровня с возможностью навигации по вложенности.
+     * Для каждой категории отображается количество новостей и наличие дочерних категорий.
+     *
+     * @route GET /admin-panel/news-categories
+     *
+     * @return string HTML страница со списком категорий
      */
     public function index(): string
     {
-        $parent = $this->request->getGet('parent') ?? 0;
+        $parent = (int)($this->request->getGet('parent') ?? 0);
 
         // Получаем категории для текущего уровня
-        $categories = $this->categoriesModel->where('parent', $parent)
+        $categories = $this->categoriesModel
+            ->where('parent', $parent)
             ->orderBy('priority', 'ASC')
             ->orderBy('name', 'ASC')
             ->findAll();
 
-        // Добавляем количество новостей
+        // Добавляем количество новостей и флаг наличия дочерних категорий
         foreach ($categories as &$cat) {
             $cat['news_count'] = $this->getNewsCount($cat['id']);
             $cat['has_children'] = $this->categoriesModel->where('parent', $cat['id'])->countAllResults() > 0;
         }
 
-        // Получаем хлебные крошки
+        // Формируем хлебные крошки для навигации
         $breadcrumbs = [];
-        $current_category_name = '';
+        $currentCategoryName = '';
         if ($parent > 0) {
             $currentCategory = $this->categoriesModel->find($parent);
             if ($currentCategory) {
-                $current_category_name = $currentCategory['name'];
+                $currentCategoryName = $currentCategory['name'];
                 $breadcrumbs = $this->getBreadcrumbs($parent);
             }
         }
 
         $data = [
-            'title'                 => 'Категории новостей',
-            'activeMenu'            => 'news_categories',
-            'categories'            => $categories,
-            'parent_id'             => $parent,
-            'breadcrumbs'           => $breadcrumbs,
-            'current_category_name' => $current_category_name,
+            'title'                  => 'Категории новостей',
+            'activeMenu'             => 'news_categories',
+            'categories'             => $categories,
+            'parent_id'              => $parent,
+            'breadcrumbs'            => $breadcrumbs,
+            'current_category_name'  => $currentCategoryName,
         ];
 
         return view('admin/news_categories/index', $data);
     }
 
     /**
-     * Форма создания категории
+     * Отображение формы создания категории
+     *
+     * @route GET /admin-panel/news-categories/create
+     *
+     * @return string HTML форма создания категории
      */
     public function create(): string
     {
-        $parent = $this->request->getGet('parent') ?? 0;
+        $parent = (int)($this->request->getGet('parent') ?? 0);
 
         $data = [
             'title'      => 'Создание категории новостей',
@@ -85,17 +123,23 @@ class NewsCategoriesController extends BaseController
             'parent_id'  => $parent,
             'categories' => $this->categoriesModel->getForSelect(),
         ];
+
         return view('admin/news_categories/form', $data);
     }
 
     /**
-     * Сохранение категории
+     * Сохранение новой категории
+     *
+     * @route POST /admin-panel/news-categories/store
+     *
+     * @return RedirectResponse Редирект на список категорий или назад с ошибкой
      * @throws ReflectionException
      */
     public function store(): RedirectResponse
     {
         $postData = $this->request->getPost();
 
+        // Правила валидации
         $rules = [
             'name' => 'required|min_length[2]|max_length[255]',
         ];
@@ -106,8 +150,8 @@ class NewsCategoriesController extends BaseController
                 ->withInput();
         }
 
-        // Устанавливаем parent
-        $postData['parent'] = $postData['parent'] ?? 0;
+        // Устанавливаем значения по умолчанию
+        $postData['parent']   = $postData['parent'] ?? 0;
         $postData['priority'] = $postData['priority'] ?? 0;
 
         if ($this->categoriesModel->save($postData)) {
@@ -125,13 +169,19 @@ class NewsCategoriesController extends BaseController
     }
 
     /**
-     * Форма редактирования категории
+     * Отображение формы редактирования категории
+     *
+     * @route GET /admin-panel/news-categories/edit/{id}
+     *
+     * @param int $id ID категории
+     * @return RedirectResponse|string HTML форма или редирект при ошибке
      */
     public function edit(int $id)
     {
         $category = $this->categoriesModel->find($id);
         if (!$category) {
-            return redirect()->to('/admin-panel/news-categories')->with('error', 'Категория не найдена');
+            return redirect()->to('/admin-panel/news-categories')
+                ->with('error', 'Категория не найдена');
         }
 
         $data = [
@@ -140,11 +190,17 @@ class NewsCategoriesController extends BaseController
             'category'   => $category,
             'categories' => $this->categoriesModel->getForSelect($id),
         ];
+
         return view('admin/news_categories/form', $data);
     }
 
     /**
      * Обновление категории
+     *
+     * @route POST /admin-panel/news-categories/update/{id}
+     *
+     * @param int $id ID категории
+     * @return RedirectResponse Редирект на список категорий или назад с ошибкой
      * @throws ReflectionException
      */
     public function update(int $id): RedirectResponse
@@ -177,10 +233,18 @@ class NewsCategoriesController extends BaseController
 
     /**
      * Удаление категории
+     *
+     * Перед удалением проверяет наличие дочерних категорий и новостей.
+     * Если они есть - удаление запрещено.
+     *
+     * @route GET /admin-panel/news-categories/delete/{id}
+     *
+     * @param int $id ID категории
+     * @return RedirectResponse Редирект на список категорий с сообщением об успехе/ошибке
      */
     public function delete(int $id): RedirectResponse
     {
-        // Проверяем, есть ли дочерние категории
+        // Проверяем наличие дочерних категорий
         $children = $this->categoriesModel->where('parent', $id)->countAllResults();
 
         if ($children > 0) {
@@ -188,7 +252,7 @@ class NewsCategoriesController extends BaseController
                 ->with('error', 'Невозможно удалить категорию. Сначала удалите или переместите дочерние категории.');
         }
 
-        // Проверяем, есть ли новости в категории
+        // Проверяем наличие новостей в категории
         $newsCount = $this->getNewsCount($id);
 
         if ($newsCount > 0) {
@@ -206,10 +270,10 @@ class NewsCategoriesController extends BaseController
     }
 
     /**
-     * Получить количество новостей в категории
+     * Получение количества новостей в категории
      *
-     * @param int $categoryId
-     * @return int
+     * @param int $categoryId ID категории
+     * @return int Количество новостей
      */
     private function getNewsCount(int $categoryId): int
     {
@@ -217,17 +281,20 @@ class NewsCategoriesController extends BaseController
     }
 
     /**
-     * Получить хлебные крошки для навигации (без текущего раздела)
+     * Получение хлебных крошек для навигации
+     *
+     * Формирует цепочку родителей для указанной категории,
+     * исключая саму категорию.
      *
      * @param int $id ID категории
-     * @return array
+     * @return array Массив родительских категорий
      */
     private function getBreadcrumbs(int $id): array
     {
         $breadcrumbs = [];
         $current = $this->categoriesModel->find($id);
 
-        // Собираем цепочку родителей (без самой текущей категории)
+        // Поднимаемся по дереву родителей
         while ($current && $current['parent'] > 0) {
             $parent = $this->categoriesModel->find($current['parent']);
             if ($parent) {
@@ -244,20 +311,25 @@ class NewsCategoriesController extends BaseController
     /**
      * Массовые действия с категориями
      *
-     * @return RedirectResponse
+     * Поддерживает массовое удаление категорий.
+     * Перед удалением проверяет каждую категорию на наличие дочерних элементов и новостей.
+     *
+     * @route POST /admin-panel/news-categories/bulk-action
+     *
+     * @return RedirectResponse Редирект назад с сообщением об успехе/ошибке
      */
     public function bulkAction(): RedirectResponse
     {
         $action = $this->request->getPost('bulk_action');
         $ids = $this->request->getPost('selected_ids');
-        $parent = $this->request->getPost('parent') ?? 0;
+        $parent = (int)($this->request->getPost('parent') ?? 0);
 
         if (empty($ids) || empty($action)) {
             return redirect()->back()->with('error', 'Выберите действие и категории');
         }
 
         if ($action === 'delete') {
-            // Проверяем, нет ли в категориях дочерних элементов или новостей
+            // Проверяем каждую категорию на наличие дочерних элементов или новостей
             $hasError = false;
             foreach ($ids as $id) {
                 $children = $this->categoriesModel->where('parent', $id)->countAllResults();
@@ -283,5 +355,4 @@ class NewsCategoriesController extends BaseController
 
         return redirect()->back()->with('error', 'Неизвестное действие');
     }
-
 }

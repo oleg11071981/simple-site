@@ -1,11 +1,18 @@
 <?php
 
 /**
- * Контроллер управления файлами
+ * Контроллер управления файлами (Файловый менеджер)
+ *
+ * Предоставляет полный набор методов для работы с файлами:
+ * - Список файлов с фильтрацией и сортировкой
+ * - Загрузка новых файлов
+ * - Редактирование информации о файлах
+ * - Удаление файлов (физическое и из БД)
+ * - Массовые операции
+ * - Обрезка/редактирование изображений
  *
  * @package App\Controllers\Admin
  * @category Controllers
- * @author  Your Name
  * @license MIT
  * @link    http://localhost
  * @noinspection PhpUnused
@@ -19,46 +26,88 @@ use App\Models\NFileManagerCategoriesModel;
 use App\Models\NFileManagerModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use CodeIgniter\HTTP\ResponseInterface;
+use Exception;
 use ReflectionException;
 
+/**
+ * Контроллер управления файлами
+ *
+ * @package App\Controllers\Admin
+ */
 class FilesController extends BaseController
 {
     use FileHelperTrait;
 
+    /**
+     * Модель файлов
+     *
+     * @var NFileManagerModel
+     */
     protected NFileManagerModel $filesModel;
 
+    /**
+     * Максимальный размер загружаемого файла (50 МБ)
+     */
+    private const MAX_FILE_SIZE = 50 * 1024 * 1024;
+
+    /**
+     * Типы файлов, считающиеся изображениями
+     */
+    private const IMAGE_TYPES = ['jpg', 'jpeg', 'png', 'gif'];
+
+    /**
+     * Типы файлов, считающиеся документами
+     */
+    private const DOCUMENT_TYPES = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt'];
+
+    /**
+     * Конструктор контроллера
+     *
+     * Инициализирует модель файлов.
+     */
     public function __construct()
     {
         $this->filesModel = new NFileManagerModel();
     }
 
     /**
-     * Список файлов
+     * Отображение списка файлов
+     *
+     * Поддерживает фильтрацию по категории, типу файлов,
+     * сортировку и пагинацию.
+     *
+     * @route GET /admin-panel/files
+     *
+     * @return string HTML страница со списком файлов
      */
     public function index(): string
     {
-        $show = $this->request->getGet('show') ?? 1;
-        $sort = $this->request->getGet('sort') ?? 2;
-        $perPage = $this->request->getGet('per_page') ?? 50;
-        $category = $this->request->getGet('category') ?? 0;
-        $fileType = $this->request->getGet('file_type') ?? '';
+        $show      = (int)($this->request->getGet('show') ?? 1);
+        $sort      = (int)($this->request->getGet('sort') ?? 2);
+        $perPage   = (int)($this->request->getGet('per_page') ?? 50);
+        $category  = (int)($this->request->getGet('category') ?? 0);
+        $fileType  = $this->request->getGet('file_type') ?? '';
 
         $builder = $this->filesModel;
 
+        // Фильтр по категории
         if ($category > 0) {
             $builder = $builder->where('category', $category);
         }
 
+        // Фильтр по типу файла
         if (!empty($fileType)) {
             $builder = $builder->where('file_type', $fileType);
         }
 
+        // Фильтр "Показывать" (все/изображения/документы)
         if ($show == 2) {
-            $builder = $builder->whereIn('file_type', ['jpg', 'jpeg', 'png', 'gif']);
+            $builder = $builder->whereIn('file_type', self::IMAGE_TYPES);
         } elseif ($show == 3) {
-            $builder = $builder->whereIn('file_type', ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt']);
+            $builder = $builder->whereIn('file_type', self::DOCUMENT_TYPES);
         }
 
+        // Сортировка
         switch ($sort) {
             case 1: $builder = $builder->orderBy('id', 'ASC'); break;
             case 2: $builder = $builder->orderBy('id', 'DESC'); break;
@@ -71,11 +120,11 @@ class FilesController extends BaseController
             default: $builder = $builder->orderBy('id', 'DESC');
         }
 
-        $currentPage = $this->request->getGet('page') ?? 1;
+        $currentPage = (int)($this->request->getGet('page') ?? 1);
         $files = $builder->paginate($perPage, 'default', $currentPage);
         $pager = $this->filesModel->pager;
 
-        // Получаем категории для отображения
+        // Получаем категории для отображения названий
         $categoriesModel = new NFileManagerCategoriesModel();
         $categories = $categoriesModel->findAll();
         $categoriesMap = [];
@@ -83,11 +132,11 @@ class FilesController extends BaseController
             $categoriesMap[$cat['id']] = $cat['name'];
         }
 
-        // Добавляем иконку, форматированный размер и название категории для каждого файла
+        // Обогащаем данные файлов дополнительной информацией
         foreach ($files as &$file) {
-            $file['icon'] = $this->getFileIcon($file['file_type']);
-            $file['size_formatted'] = $this->formatFileSize($file['file_size']);
-            $file['category_name'] = $file['category'] > 0 ? ($categoriesMap[$file['category']] ?? '—') : '—';
+            $file['icon']            = $this->getFileIcon($file['file_type']);
+            $file['size_formatted']  = $this->formatFileSize($file['file_size']);
+            $file['category_name']   = $file['category'] > 0 ? ($categoriesMap[$file['category']] ?? '—') : '—';
         }
 
         $data = [
@@ -107,22 +156,34 @@ class FilesController extends BaseController
     }
 
     /**
-     * Загрузка файла (форма)
+     * Отображение формы загрузки файла
+     *
+     * @route GET /admin-panel/files/upload
+     *
+     * @return string HTML форма загрузки файла
      */
     public function upload(): string
     {
         $categoriesModel = new NFileManagerCategoriesModel();
 
         $data = [
-            'title'         => 'Загрузка файла',
-            'activeMenu'    => 'files',
-            'categories'    => $categoriesModel->orderBy('name', 'ASC')->findAll(),
+            'title'      => 'Загрузка файла',
+            'activeMenu' => 'files',
+            'categories' => $categoriesModel->orderBy('name', 'ASC')->findAll(),
         ];
+
         return view('admin/files/form', $data);
     }
 
     /**
      * Сохранение загруженного файла
+     *
+     * Обрабатывает загрузку файла, сохраняет его на диск
+     * и добавляет запись в базу данных.
+     *
+     * @route POST /admin-panel/files/store
+     *
+     * @return RedirectResponse Редирект на список файлов или назад с ошибкой
      * @throws ReflectionException
      */
     public function store(): RedirectResponse
@@ -130,28 +191,36 @@ class FilesController extends BaseController
         $file = $this->request->getFile('userfile');
         $postData = $this->request->getPost();
 
+        // Валидация наличия файла
         if (!$file || !$file->isValid()) {
             return redirect()->back()->with('error', 'Выберите файл для загрузки');
         }
 
+        // Проверка размера файла
+        if ($file->getSize() > self::MAX_FILE_SIZE) {
+            return redirect()->back()->with('error', 'Размер файла не должен превышать 50 МБ');
+        }
+
+        // Создаём директорию для загрузок, если её нет
         $uploadPath = FCPATH . 'uploads/';
         if (!is_dir($uploadPath)) {
             mkdir($uploadPath, 0755, true);
         }
 
         $originalName = $file->getClientName();
-        $fileType = $file->getExtension();
+        $fileType = strtolower($file->getExtension());
         $mimeType = $file->getMimeType();
         $fileSize = $file->getSize();
 
+        // Сохраняем файл с уникальным именем
         $newName = $file->getRandomName();
-
         if (!$file->move($uploadPath, $newName)) {
             return redirect()->back()->with('error', 'Ошибка при загрузке файла');
         }
 
+        // Для изображений определяем размеры
         $width = $height = 0;
-        if (in_array(strtolower($fileType), ['jpg', 'jpeg', 'png', 'gif'])) {
+        if (in_array($fileType, self::IMAGE_TYPES)) {
             $imageInfo = getimagesize($uploadPath . $newName);
             if ($imageInfo) {
                 $width = $imageInfo[0];
@@ -159,15 +228,16 @@ class FilesController extends BaseController
             }
         }
 
+        // Подготовка данных для сохранения в БД
         $saveData = [
             'file_name' => $newName,
             'file_type' => $fileType,
             'mime_type' => $mimeType,
             'file_size' => $fileSize,
             'name'      => $postData['name'] ?? pathinfo($originalName, PATHINFO_FILENAME),
-            'category'  => $postData['category'] ?? 0,
+            'category'  => (int)($postData['category'] ?? 0),
             'title'     => $postData['title'] ?? '',
-            'priority'  => $postData['priority'] ?? 0,
+            'priority'  => (int)($postData['priority'] ?? 0),
             'width'     => $width,
             'height'    => $height,
         ];
@@ -176,11 +246,18 @@ class FilesController extends BaseController
             return redirect()->to('/admin-panel/files')->with('success', 'Файл успешно загружен');
         }
 
-        return redirect()->back()->with('errors', $this->filesModel->errors())->withInput();
+        return redirect()->back()
+            ->with('errors', $this->filesModel->errors())
+            ->withInput();
     }
 
     /**
-     * Редактирование файла
+     * Отображение формы редактирования файла
+     *
+     * @route GET /admin-panel/files/edit/{id}
+     *
+     * @param int $id ID файла
+     * @return RedirectResponse|string HTML форма или редирект при ошибке
      */
     public function edit(int $id)
     {
@@ -191,20 +268,27 @@ class FilesController extends BaseController
 
         $categoriesModel = new NFileManagerCategoriesModel();
 
-        $file['icon'] = $this->getFileIcon($file['file_type']);
-        $file['size_formatted'] = $this->formatFileSize($file['file_size']);
+        // Добавляем дополнительные данные для отображения
+        $file['icon']            = $this->getFileIcon($file['file_type']);
+        $file['size_formatted']  = $this->formatFileSize($file['file_size']);
 
         $data = [
-            'title'         => 'Редактирование файла',
-            'activeMenu'    => 'files',
-            'file'          => $file,
-            'categories'    => $categoriesModel->orderBy('name', 'ASC')->findAll(),
+            'title'      => 'Редактирование файла',
+            'activeMenu' => 'files',
+            'file'       => $file,
+            'categories' => $categoriesModel->orderBy('name', 'ASC')->findAll(),
         ];
+
         return view('admin/files/form', $data);
     }
 
     /**
-     * Обновление файла
+     * Обновление информации о файле
+     *
+     * @route POST /admin-panel/files/update/{id}
+     *
+     * @param int $id ID файла
+     * @return RedirectResponse Редирект на список файлов или назад с ошибкой
      * @throws ReflectionException
      */
     public function update(int $id): RedirectResponse
@@ -215,15 +299,25 @@ class FilesController extends BaseController
             return redirect()->to('/admin-panel/files')->with('success', 'Файл успешно обновлён');
         }
 
-        return redirect()->back()->with('errors', $this->filesModel->errors())->withInput();
+        return redirect()->back()
+            ->with('errors', $this->filesModel->errors())
+            ->withInput();
     }
 
     /**
      * Удаление файла
+     *
+     * Удаляет файл физически с диска и запись из базы данных.
+     *
+     * @route GET /admin-panel/files/delete/{id}
+     *
+     * @param int $id ID файла
+     * @return RedirectResponse Редирект на список файлов с сообщением об успехе/ошибке
      */
     public function delete(int $id): RedirectResponse
     {
         $file = $this->filesModel->find($id);
+
         if ($file && $this->filesModel->delete($id)) {
             $filePath = FCPATH . 'uploads/' . $file['file_name'];
             if (file_exists($filePath)) {
@@ -231,11 +325,18 @@ class FilesController extends BaseController
             }
             return redirect()->to('/admin-panel/files')->with('success', 'Файл удалён');
         }
+
         return redirect()->back()->with('error', 'Ошибка при удалении');
     }
 
     /**
-     * Массовые действия
+     * Массовые операции с файлами
+     *
+     * Поддерживает массовое удаление выбранных файлов.
+     *
+     * @route POST /admin-panel/files/bulk-action
+     *
+     * @return RedirectResponse Редирект назад с сообщением об успехе/ошибке
      */
     public function bulkAction(): RedirectResponse
     {
@@ -247,6 +348,7 @@ class FilesController extends BaseController
         }
 
         if ($action === 'delete') {
+            // Удаляем файлы физически
             foreach ($ids as $id) {
                 $file = $this->filesModel->find($id);
                 if ($file) {
@@ -256,6 +358,7 @@ class FilesController extends BaseController
                     }
                 }
             }
+            // Удаляем записи из БД
             $this->filesModel->whereIn('id', $ids)->delete();
             return redirect()->back()->with('success', 'Файлы удалены');
         }
@@ -266,12 +369,17 @@ class FilesController extends BaseController
     /**
      * Обрезка изображения
      *
+     * Обрабатывает запрос на обрезку изображения, полученный из Cropper.js.
+     * Принимает base64-данные, сохраняет обрезанное изображение поверх оригинального
+     * и обновляет информацию в базе данных.
+     *
+     * @route POST /admin-panel/files/crop-image/{id}
+     *
      * @param int $id ID файла
-     * @return ResponseInterface
+     * @return ResponseInterface JSON ответ с результатом операции
      */
     public function cropImage(int $id): ResponseInterface
     {
-        // Устанавливаем заголовок JSON
         $this->response->setHeader('Content-Type', 'application/json');
 
         try {
@@ -334,31 +442,30 @@ class FilesController extends BaseController
             if (copy($tempPath, $uploadPath)) {
                 // Обновляем информацию в БД
                 $this->filesModel->update($id, [
-                    'width' => $newWidth,
-                    'height' => $newHeight,
-                    'file_size' => $newSize,
-                    'modify' => date('Y-m-d H:i:s'),
+                    'width'          => $newWidth,
+                    'height'         => $newHeight,
+                    'file_size'      => $newSize,
+                    'modify'         => date('Y-m-d H:i:s'),
                     'modify_by_user' => session()->get('user_id') ?? 0
                 ]);
 
-                // Удаляем временный файл
                 @unlink($tempPath);
 
                 return $this->response->setJSON([
                     'success' => true,
-                    'width' => $newWidth,
-                    'height' => $newHeight,
-                    'size' => $newSize
+                    'width'   => $newWidth,
+                    'height'  => $newHeight,
+                    'size'    => $newSize
                 ]);
             }
 
             @unlink($tempPath);
             return $this->response->setJSON(['success' => false, 'error' => 'Ошибка сохранения файла']);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->response->setJSON([
                 'success' => false,
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ]);
         }
     }

@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Models\NSiteconfigModel;
+use App\Models\NSiteModel;
 use CodeIgniter\Controller;
 use CodeIgniter\HTTP\CLIRequest;
 use CodeIgniter\HTTP\IncomingRequest;
@@ -42,40 +44,46 @@ abstract class BaseController extends Controller
      *
      * @var array
      */
-    protected $contacts;
+    protected array $contacts;
 
     /**
      * Текущий язык сайта
      *
      * @var string
      */
-    protected $currentLang;
+    protected string $currentLang;
 
     /**
      * Модель настроек сайта
      *
-     * @var \App\Models\NSiteconfigModel
+     * @var NSiteconfigModel
      */
-    protected $settingsModel;
+    protected NSiteconfigModel $settingsModel;
 
     /**
      * Модель страниц сайта
      *
-     * @var \App\Models\NSiteModel
+     * @var NSiteModel
      */
-    protected $pagesModel;
+    protected NSiteModel $pagesModel;
 
     /**
+     * Constructor
+     *
+     * @param RequestInterface  $request
+     * @param ResponseInterface $response
+     * @param LoggerInterface   $logger
+     *
      * @return void
      */
-    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
+    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger): void
     {
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
 
         // Загружаем модели
-        $this->settingsModel = new \App\Models\NSiteconfigModel();
-        $this->pagesModel = new \App\Models\NSiteModel();
+        $this->settingsModel = new NSiteconfigModel();
+        $this->pagesModel = new NSiteModel();
 
         // Загружаем контакты для футера
         $this->contacts = [

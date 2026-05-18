@@ -3,9 +3,16 @@
 /**
  * Контроллер управления страницами сайта
  *
+ * Предоставляет методы для CRUD операций со страницами:
+ * - Список страниц с фильтрацией, сортировкой и иерархической навигацией
+ * - Создание/редактирование/удаление страниц
+ * - Управление вложенностью страниц (родитель-потомок)
+ * - Управление статусом публикации
+ * - Массовые операции со страницами
+ * - Генерация иерархических URL-путей
+ *
  * @package App\Controllers\Admin
  * @category Controllers
- * @author  Your Name
  * @license MIT
  * @link    http://localhost
  * @noinspection PhpUnused
@@ -14,37 +21,44 @@
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
-use App\Models\NSiteModel;
+use App\Models\NFileManagerCategoriesModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use ReflectionException;
 
 /**
- * Контроллер страниц
+ * Контроллер управления страницами сайта
+ *
+ * @package App\Controllers\Admin
  */
 class PagesController extends BaseController
 {
     /**
      * Конструктор
+     *
+     * Инициализирует модель страниц (доступна из BaseController).
      */
     public function __construct()
     {
-        $this->pagesModel = new NSiteModel();
+        // Модель страниц уже доступна через $this->pagesModel из BaseController
     }
 
     /**
-     * Список страниц
+     * Отображение списка страниц
+     *
+     * Поддерживает фильтрацию по родительской странице, статусу публикации,
+     * сортировку по различным полям и пагинацию.
      *
      * @route GET /admin-panel/pages
      *
-     * @return string
+     * @return string HTML страница со списком страниц
      */
     public function index(): string
     {
         // Получаем параметры фильтрации из GET
-        $show = $this->request->getGet('show') ?? 1;
-        $sort = $this->request->getGet('sort') ?? 2;
-        $perPage = $this->request->getGet('per_page') ?? 50;
-        $parent = $this->request->getGet('parent') ?? 0;
+        $show    = (int)($this->request->getGet('show') ?? 1);
+        $sort    = (int)($this->request->getGet('sort') ?? 2);
+        $perPage = (int)($this->request->getGet('per_page') ?? 50);
+        $parent  = (int)($this->request->getGet('parent') ?? 0);
 
         // Строим запрос
         $builder = $this->pagesModel;
@@ -61,53 +75,31 @@ class PagesController extends BaseController
 
         // Сортировка
         switch ($sort) {
-            case 1: // по ID возрастание
-                $builder = $builder->orderBy('id', 'ASC');
-                break;
-            case 2: // по ID убывание
-                $builder = $builder->orderBy('id', 'DESC');
-                break;
-            case 3: // по названию А-Я
-                $builder = $builder->orderBy('name', 'ASC');
-                break;
-            case 4: // по названию Я-А
-                $builder = $builder->orderBy('name', 'DESC');
-                break;
-            case 5: // по дате создания (старые)
-                $builder = $builder->orderBy('create', 'ASC');
-                break;
-            case 6: // по дате создания (новые)
-                $builder = $builder->orderBy('create', 'DESC');
-                break;
-            case 7: // по дате изменения (старые)
-                $builder = $builder->orderBy('modify', 'ASC');
-                break;
-            case 8: // по дате изменения (новые)
-                $builder = $builder->orderBy('modify', 'DESC');
-                break;
-            case 9: // по статусу (сначала опубликованные)
-                $builder = $builder->orderBy('publish', 'DESC');
-                break;
-            case 10: // по статусу (сначала черновики)
-                $builder = $builder->orderBy('publish', 'ASC');
-                break;
-            default:
-                $builder = $builder->orderBy('id', 'DESC');
+            case 1:  $builder = $builder->orderBy('id', 'ASC'); break;      // по ID возрастание
+            case 2:  $builder = $builder->orderBy('id', 'DESC'); break;     // по ID убывание
+            case 3:  $builder = $builder->orderBy('name', 'ASC'); break;    // по названию А-Я
+            case 4:  $builder = $builder->orderBy('name', 'DESC'); break;   // по названию Я-А
+            case 5:  $builder = $builder->orderBy('create', 'ASC'); break;  // по дате создания (старые)
+            case 6:  $builder = $builder->orderBy('create', 'DESC'); break; // по дате создания (новые)
+            case 7:  $builder = $builder->orderBy('modify', 'ASC'); break;  // по дате изменения (старые)
+            case 8:  $builder = $builder->orderBy('modify', 'DESC'); break; // по дате изменения (новые)
+            case 9:  $builder = $builder->orderBy('publish', 'DESC'); break; // сначала опубликованные
+            case 10: $builder = $builder->orderBy('publish', 'ASC'); break;  // сначала черновики
+            default: $builder = $builder->orderBy('id', 'DESC');
         }
 
         // Пагинация
-        $pages = $builder->paginate($perPage, 'default', null, (int)['page' => $this->request->getGet('page') ?? 1]);
+        $currentPage = (int)($this->request->getGet('page') ?? 1);
+        $pages = $builder->paginate($perPage, 'default', $currentPage);
         $pager = $this->pagesModel->pager;
 
-        // Получаем хлебные крошки для навигации (только родители, без текущего раздела)
+        // Формируем хлебные крошки для навигации
         $breadcrumbs = [];
-        $current_page_name = '';
+        $currentPageName = '';
         if ($parent > 0) {
-            // Получаем название текущего раздела
-            $currentPage = $this->pagesModel->find($parent);
-            if ($currentPage) {
-                $current_page_name = $currentPage['name'];
-                // Получаем только родителей (без текущего раздела)
+            $currentPageData = $this->pagesModel->find($parent);
+            if ($currentPageData) {
+                $currentPageName = $currentPageData['name'];
                 $breadcrumbs = $this->getParentBreadcrumbs($parent);
             }
         }
@@ -121,7 +113,7 @@ class PagesController extends BaseController
             'per_page'          => $perPage,
             'parent_id'         => $parent,
             'breadcrumbs'       => $breadcrumbs,
-            'current_page_name' => $current_page_name,
+            'current_page_name' => $currentPageName,
             'pager'             => $pager,
             'additionalJs'      => '/admin/js/pages.js',
         ];
@@ -130,10 +122,10 @@ class PagesController extends BaseController
     }
 
     /**
-     * Получить хлебные крошки только для родителей (без текущей страницы)
+     * Получение хлебных крошек только для родителей (без текущей страницы)
      *
      * @param int $id ID страницы
-     * @return array
+     * @return array Массив родительских страниц
      */
     private function getParentBreadcrumbs(int $id): array
     {
@@ -163,30 +155,18 @@ class PagesController extends BaseController
     }
 
     /**
-     * Получить хлебные крошки для навигации (без текущего раздела)
-     *
-     * @param int $id ID страницы
-     * @return array
-     * @deprecated Use getParentBreadcrumbs instead
-     */
-    private function getBreadcrumbs(int $id): array
-    {
-        return $this->getParentBreadcrumbs($id);
-    }
-
-    /**
-     * Форма создания страницы
+     * Отображение формы создания страницы
      *
      * @route GET /admin-panel/pages/create
      *
-     * @return string
+     * @return string HTML форма создания страницы
      */
     public function create(): string
     {
-        $parent = $this->request->getGet('parent') ?? 0;
+        $parent = (int)($this->request->getGet('parent') ?? 0);
 
         // Получаем список категорий для галереи
-        $categoriesModel = new \App\Models\NFileManagerCategoriesModel();
+        $categoriesModel = new NFileManagerCategoriesModel();
         $mediaCategories = $categoriesModel->getForSelect();
 
         $data = [
@@ -206,7 +186,7 @@ class PagesController extends BaseController
      * Очистка SEO полей от лишних пробелов
      *
      * @param array $data Данные для очистки
-     * @return array
+     * @return array Очищенные данные
      */
     private function cleanSeoFields(array $data): array
     {
@@ -222,19 +202,19 @@ class PagesController extends BaseController
     }
 
     /**
-     * Установка значений по умолчанию
+     * Установка значений по умолчанию для полей страницы
      *
      * @param array $data Данные для установки
-     * @return array
+     * @return array Данные с заполненными значениями по умолчанию
      */
     private function setDefaultValues(array $data): array
     {
         $defaults = [
-            'publish'       => 0,
-            'parent'        => 0,
-            'priority'      => 0,
-            'show_in_menu'  => 1,
-            'new_on_site'   => 0,
+            'publish'      => 0,
+            'parent'       => 0,
+            'priority'     => 0,
+            'show_in_menu' => 1,
+            'new_on_site'  => 0,
         ];
 
         foreach ($defaults as $key => $value) {
@@ -251,7 +231,7 @@ class PagesController extends BaseController
      *
      * @route POST /admin-panel/pages/store
      *
-     * @return RedirectResponse
+     * @return RedirectResponse Редирект на список страниц или назад с ошибкой
      * @throws ReflectionException
      */
     public function store(): RedirectResponse
@@ -260,7 +240,7 @@ class PagesController extends BaseController
 
         // Генерация path из name, если не указан
         if (empty($postData['path']) && !empty($postData['name'])) {
-            $postData['path'] = $this->generatePath($postData['name'], $postData['parent'] ?? 0);
+            $postData['path'] = $this->generatePath($postData['name'], (int)($postData['parent'] ?? 0));
         }
 
         // Очищаем SEO поля
@@ -290,13 +270,14 @@ class PagesController extends BaseController
     }
 
     /**
-     * Форма редактирования страницы
+     * Отображение формы редактирования страницы
+     *
+     * @route GET /admin-panel/pages/edit/{id}
      *
      * @param int $id ID страницы
-     *
-     * @return RedirectResponse|string
+     * @return RedirectResponse|string HTML форма или редирект при ошибке
      */
-    public function edit(int $id): string
+    public function edit(int $id)
     {
         $page = $this->pagesModel->find($id);
 
@@ -306,7 +287,7 @@ class PagesController extends BaseController
         }
 
         // Получаем список категорий для галереи
-        $categoriesModel = new \App\Models\NFileManagerCategoriesModel();
+        $categoriesModel = new NFileManagerCategoriesModel();
         $mediaCategories = $categoriesModel->getForSelect();
 
         $data = [
@@ -327,9 +308,10 @@ class PagesController extends BaseController
     /**
      * Обновление страницы
      *
-     * @param int $id ID страницы
+     * @route POST /admin-panel/pages/update/{id}
      *
-     * @return RedirectResponse
+     * @param int $id ID страницы
+     * @return RedirectResponse Редирект на список страниц или назад с ошибкой
      * @throws ReflectionException
      */
     public function update(int $id): RedirectResponse
@@ -362,13 +344,16 @@ class PagesController extends BaseController
     /**
      * Удаление страницы
      *
-     * @param int $id ID страницы
+     * Перед удалением проверяет наличие дочерних страниц.
      *
-     * @return RedirectResponse
+     * @route GET /admin-panel/pages/delete/{id}
+     *
+     * @param int $id ID страницы
+     * @return RedirectResponse Редирект на список страниц с сообщением об успехе/ошибке
      */
     public function delete(int $id): RedirectResponse
     {
-        // Проверяем, есть ли дочерние страницы
+        // Проверяем наличие дочерних страниц
         $children = $this->pagesModel->where('parent', $id)->countAllResults();
 
         if ($children > 0) {
@@ -386,10 +371,12 @@ class PagesController extends BaseController
     }
 
     /**
-     * Переключение статуса публикации
+     * Переключение статуса публикации страницы
+     *
+     * @route GET /admin-panel/pages/toggle/{id}
      *
      * @param int $id ID страницы
-     * @return RedirectResponse
+     * @return RedirectResponse Редирект назад с сообщением об успехе/ошибке
      * @throws ReflectionException
      */
     public function toggle(int $id): RedirectResponse
@@ -407,9 +394,14 @@ class PagesController extends BaseController
     }
 
     /**
-     * Массовые действия
+     * Массовые действия со страницами
      *
-     * @return RedirectResponse
+     * Поддерживает массовую публикацию, снятие с публикации и удаление.
+     * При удалении проверяет отсутствие дочерних страниц.
+     *
+     * @route POST /admin-panel/pages/bulk-action
+     *
+     * @return RedirectResponse Редирект назад с сообщением об успехе/ошибке
      * @throws ReflectionException
      */
     public function bulkAction(): RedirectResponse
@@ -431,7 +423,7 @@ class PagesController extends BaseController
                 $message = 'Страницы сняты с публикации';
                 break;
             case 'delete':
-                // Проверяем дочерние страницы
+                // Проверяем наличие дочерних страниц у каждой
                 foreach ($ids as $id) {
                     $children = $this->pagesModel->where('parent', $id)->countAllResults();
                     if ($children > 0) {
@@ -449,11 +441,15 @@ class PagesController extends BaseController
     }
 
     /**
-     * Генерация пути из названия с учётом родителя (иерархический)
+     * Генерация иерархического пути (slug) из названия страницы
+     *
+     * Транслитерирует русские символы, заменяет пробелы на дефисы,
+     * удаляет недопустимые символы. Учитывает родительскую страницу
+     * для формирования полного пути и проверяет уникальность.
      *
      * @param string $name Название страницы
-     * @param int $parent Родительская страница
-     * @return string
+     * @param int $parent Родительская страница (ID)
+     * @return string Сгенерированный уникальный путь
      */
     private function generatePath(string $name, int $parent = 0): string
     {
@@ -464,7 +460,7 @@ class PagesController extends BaseController
         $slug = preg_replace('/-+/', '-', $slug);
         $slug = trim($slug, '-');
 
-        // Если есть родитель, получаем его полный путь
+        // Если есть родитель, формируем полный иерархический путь
         if ($parent > 0) {
             $parentPage = $this->pagesModel->find($parent);
             if ($parentPage && !empty($parentPage['path'])) {
@@ -476,7 +472,7 @@ class PagesController extends BaseController
             $path = $slug;
         }
 
-        // Проверяем уникальность
+        // Проверяем уникальность пути
         $count = $this->pagesModel->where('path', $path)->countAllResults();
         if ($count > 0) {
             $path .= '-' . ($count + 1);

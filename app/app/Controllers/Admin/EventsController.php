@@ -1,5 +1,20 @@
 <?php
 
+/**
+ * Контроллер управления мероприятиями в админ-панели
+ *
+ * Предоставляет методы для CRUD операций с мероприятиями:
+ * - Список мероприятий с фильтрацией по проекту
+ * - Создание мероприятий в контексте проекта
+ * - Редактирование/удаление/публикация мероприятий
+ *
+ * @package App\Controllers\Admin
+ * @category Controllers
+ * @license MIT
+ * @link    http://localhost
+ * @noinspection PhpUnused
+ */
+
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
@@ -10,11 +25,32 @@ use App\Models\NFileManagerModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use ReflectionException;
 
+/**
+ * Контроллер управления мероприятиями
+ *
+ * @package App\Controllers\Admin
+ */
 class EventsController extends BaseController
 {
+    /**
+     * Модель мероприятий
+     *
+     * @var NProjectEventsModel
+     */
     protected NProjectEventsModel $eventsModel;
+
+    /**
+     * Модель проектов
+     *
+     * @var NProjectsModel
+     */
     protected NProjectsModel $projectsModel;
 
+    /**
+     * Конструктор контроллера
+     *
+     * Инициализирует модели для работы с мероприятиями и проектами.
+     */
     public function __construct()
     {
         $this->eventsModel = new NProjectEventsModel();
@@ -22,18 +58,27 @@ class EventsController extends BaseController
     }
 
     /**
-     * Список мероприятий (опционально)
+     * Отображение списка мероприятий
+     *
+     * Поддерживает фильтрацию по проекту, поиск по названию,
+     * фильтрацию по статусу публикации и пагинацию.
+     *
+     * @route GET /admin-panel/events
+     *
+     * @return string HTML страница со списком мероприятий
      */
     public function index(): string
     {
-        $perPage = $this->request->getGet('per_page') ?? 20;
-        $search = $this->request->getGet('search') ?? '';
-        $projectId = $this->request->getGet('project_id') ?? 0;
-        $publish = $this->request->getGet('publish') ?? '';
+        $perPage   = (int)($this->request->getGet('per_page') ?? 20);
+        $search    = $this->request->getGet('search') ?? '';
+        $projectId = (int)($this->request->getGet('project_id') ?? 0);
+        $publish   = $this->request->getGet('publish') ?? '';
 
+        // Формируем запрос с JOIN для получения названия проекта
         $builder = $this->eventsModel->select('n_project_events.*, n_projects.name as project_name')
             ->join('n_projects', 'n_projects.id = n_project_events.project_id', 'left');
 
+        // Применяем фильтры
         if (!empty($search)) {
             $builder = $builder->like('n_project_events.name', $search);
         }
@@ -72,12 +117,20 @@ class EventsController extends BaseController
     }
 
     /**
-     * Форма создания мероприятия (привязанного к проекту)
+     * Отображение формы создания мероприятия
+     *
+     * Мероприятие всегда создаётся в контексте конкретного проекта.
+     * ID проекта передаётся через GET параметр.
+     *
+     * @route GET /admin-panel/events/create
+     *
+     * @return RedirectResponse|string HTML форма или редирект при ошибке
      */
     public function create()
     {
-        $projectId = $this->request->getGet('project_id') ?? 0;
+        $projectId = (int)($this->request->getGet('project_id') ?? 0);
 
+        // Проверяем, что проект выбран
         if (!$projectId) {
             return redirect()->to('/admin-panel/projects')
                 ->with('error', 'Выберите проект для добавления мероприятия');
@@ -90,7 +143,7 @@ class EventsController extends BaseController
                 ->with('error', 'Проект не найден');
         }
 
-        $categoriesModel = new \App\Models\NFileManagerCategoriesModel();
+        $categoriesModel = new NFileManagerCategoriesModel();
 
         $data = [
             'title'           => 'Создание мероприятия',
@@ -104,13 +157,18 @@ class EventsController extends BaseController
     }
 
     /**
-     * Сохранение мероприятия
+     * Сохранение нового мероприятия
+     *
+     * @route POST /admin-panel/events/store
+     *
+     * @return RedirectResponse Редирект на страницу редактирования проекта
      * @throws ReflectionException
      */
     public function store(): RedirectResponse
     {
         $postData = $this->request->getPost();
 
+        // Правила валидации
         $rules = [
             'name'       => 'required|min_length[3]|max_length[255]',
             'project_id' => 'required|numeric',
@@ -122,13 +180,13 @@ class EventsController extends BaseController
                 ->withInput();
         }
 
-        $postData['publish'] = $postData['publish'] ?? 0;
+        // Устанавливаем значения по умолчанию
+        $postData['publish']  = $postData['publish'] ?? 0;
         $postData['priority'] = $postData['priority'] ?? 0;
-        $postData['foto'] = $postData['foto'] ?? 0;
-        $postData['media'] = $postData['media'] ?? 0;
+        $postData['foto']     = $postData['foto'] ?? 0;
+        $postData['media']    = $postData['media'] ?? 0;
 
         if ($this->eventsModel->save($postData)) {
-            $project = $this->projectsModel->find($postData['project_id']);
             return redirect()->to('/admin-panel/projects/edit/' . $postData['project_id'])
                 ->with('success', 'Мероприятие успешно создано');
         }
@@ -139,7 +197,12 @@ class EventsController extends BaseController
     }
 
     /**
-     * Форма редактирования мероприятия
+     * Отображение формы редактирования мероприятия
+     *
+     * @route GET /admin-panel/events/edit/{id}
+     *
+     * @param int $id ID мероприятия
+     * @return RedirectResponse|string HTML форма или редирект при ошибке
      */
     public function edit(int $id)
     {
@@ -157,16 +220,16 @@ class EventsController extends BaseController
                 ->with('error', 'Проект не найден');
         }
 
-        // Получаем главное изображение
+        // Получаем информацию о главном изображении
         if ($event['foto'] > 0) {
-            $fileModel = new \App\Models\NFileManagerModel();
+            $fileModel = new NFileManagerModel();
             $file = $fileModel->find($event['foto']);
             if ($file) {
                 $event['foto_file'] = $file['file_name'];
             }
         }
 
-        $categoriesModel = new \App\Models\NFileManagerCategoriesModel();
+        $categoriesModel = new NFileManagerCategoriesModel();
 
         $data = [
             'title'           => 'Редактирование мероприятия',
@@ -181,6 +244,11 @@ class EventsController extends BaseController
 
     /**
      * Обновление мероприятия
+     *
+     * @route POST /admin-panel/events/update/{id}
+     *
+     * @param int $id ID мероприятия
+     * @return RedirectResponse Редирект на страницу редактирования проекта
      * @throws ReflectionException
      */
     public function update(int $id): RedirectResponse
@@ -211,6 +279,11 @@ class EventsController extends BaseController
 
     /**
      * Удаление мероприятия
+     *
+     * @route GET /admin-panel/events/delete/{id}
+     *
+     * @param int $id ID мероприятия
+     * @return RedirectResponse Редирект на страницу редактирования проекта
      */
     public function delete(int $id): RedirectResponse
     {
@@ -234,6 +307,11 @@ class EventsController extends BaseController
 
     /**
      * Переключение статуса публикации мероприятия
+     *
+     * @route GET /admin-panel/events/toggle/{id}
+     *
+     * @param int $id ID мероприятия
+     * @return RedirectResponse Редирект назад с сообщением об успехе/ошибке
      * @throws ReflectionException
      */
     public function toggle(int $id): RedirectResponse

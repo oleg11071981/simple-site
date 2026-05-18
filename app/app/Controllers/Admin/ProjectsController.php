@@ -1,5 +1,21 @@
 <?php
 
+/**
+ * Контроллер управления проектами в админ-панели
+ *
+ * Предоставляет методы для CRUD операций с проектами:
+ * - Список проектов с фильтрацией и пагинацией
+ * - Создание/редактирование/удаление проектов
+ * - Управление статусом публикации
+ * - Массовые операции с проектами
+ *
+ * @package App\Controllers\Admin
+ * @category Controllers
+ * @license MIT
+ * @link    http://localhost
+ * @noinspection PhpUnused
+ */
+
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
@@ -10,11 +26,32 @@ use App\Models\NFileManagerModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use ReflectionException;
 
+/**
+ * Контроллер управления проектами
+ *
+ * @package App\Controllers\Admin
+ */
 class ProjectsController extends BaseController
 {
+    /**
+     * Модель проектов
+     *
+     * @var NProjectsModel
+     */
     protected NProjectsModel $projectsModel;
+
+    /**
+     * Модель мероприятий
+     *
+     * @var NProjectEventsModel
+     */
     protected NProjectEventsModel $eventsModel;
 
+    /**
+     * Конструктор контроллера
+     *
+     * Инициализирует модели для работы с проектами и мероприятиями.
+     */
     public function __construct()
     {
         $this->projectsModel = new NProjectsModel();
@@ -22,20 +59,29 @@ class ProjectsController extends BaseController
     }
 
     /**
-     * Список проектов
+     * Отображение списка проектов
+     *
+     * Поддерживает поиск по названию, фильтрацию по статусу публикации
+     * и пагинацию.
+     *
+     * @route GET /admin-panel/projects
+     *
+     * @return string HTML страница со списком проектов
      */
     public function index(): string
     {
-        $perPage = $this->request->getGet('per_page') ?? 20;
-        $search = $this->request->getGet('search') ?? '';
+        $perPage = (int)($this->request->getGet('per_page') ?? 20);
+        $search  = $this->request->getGet('search') ?? '';
         $publish = $this->request->getGet('publish') ?? '';
 
         $builder = $this->projectsModel;
 
+        // Поиск по названию проекта
         if (!empty($search)) {
             $builder = $builder->like('name', $search);
         }
 
+        // Фильтр по статусу публикации
         if ($publish !== '') {
             $builder = $builder->where('publish', $publish);
         }
@@ -65,7 +111,11 @@ class ProjectsController extends BaseController
     }
 
     /**
-     * Форма создания проекта
+     * Отображение формы создания проекта
+     *
+     * @route GET /admin-panel/projects/create
+     *
+     * @return string HTML форма создания проекта
      */
     public function create(): string
     {
@@ -81,13 +131,18 @@ class ProjectsController extends BaseController
     }
 
     /**
-     * Сохранение проекта
+     * Сохранение нового проекта
+     *
+     * @route POST /admin-panel/projects/store
+     *
+     * @return RedirectResponse Редирект на список проектов или назад с ошибкой
      * @throws ReflectionException
      */
     public function store(): RedirectResponse
     {
         $postData = $this->request->getPost();
 
+        // Правила валидации
         $rules = [
             'name' => 'required|min_length[3]|max_length[255]',
         ];
@@ -98,10 +153,11 @@ class ProjectsController extends BaseController
                 ->withInput();
         }
 
-        $postData['publish'] = $postData['publish'] ?? 0;
+        // Устанавливаем значения по умолчанию
+        $postData['publish']  = $postData['publish'] ?? 0;
         $postData['priority'] = $postData['priority'] ?? 0;
-        $postData['foto'] = $postData['foto'] ?? 0;
-        $postData['media'] = $postData['media'] ?? 0;
+        $postData['foto']     = $postData['foto'] ?? 0;
+        $postData['media']    = $postData['media'] ?? 0;
 
         if ($this->projectsModel->save($postData)) {
             return redirect()->to('/admin-panel/projects')
@@ -114,7 +170,14 @@ class ProjectsController extends BaseController
     }
 
     /**
-     * Форма редактирования проекта (с вкладкой мероприятий)
+     * Отображение формы редактирования проекта
+     *
+     * Включает вкладку с мероприятиями проекта.
+     *
+     * @route GET /admin-panel/projects/edit/{id}
+     *
+     * @param int $id ID проекта
+     * @return RedirectResponse|string HTML форма или редирект при ошибке
      */
     public function edit(int $id)
     {
@@ -131,7 +194,7 @@ class ProjectsController extends BaseController
             ->orderBy('date_start', 'ASC')
             ->findAll();
 
-        // Получаем главное изображение
+        // Получаем информацию о главном изображении
         if ($project['foto'] > 0) {
             $fileModel = new NFileManagerModel();
             $file = $fileModel->find($project['foto']);
@@ -156,6 +219,11 @@ class ProjectsController extends BaseController
 
     /**
      * Обновление проекта
+     *
+     * @route POST /admin-panel/projects/update/{id}
+     *
+     * @param int $id ID проекта
+     * @return RedirectResponse Редирект на список проектов или назад с ошибкой
      * @throws ReflectionException
      */
     public function update(int $id): RedirectResponse
@@ -183,7 +251,15 @@ class ProjectsController extends BaseController
     }
 
     /**
-     * Удаление проекта (вместе с мероприятиями)
+     * Удаление проекта
+     *
+     * Перед удалением проверяет наличие связанных мероприятий.
+     * Если мероприятия есть - удаление запрещено.
+     *
+     * @route GET /admin-panel/projects/delete/{id}
+     *
+     * @param int $id ID проекта
+     * @return RedirectResponse Редирект на список проектов с сообщением об успехе/ошибке
      */
     public function delete(int $id): RedirectResponse
     {
@@ -194,12 +270,12 @@ class ProjectsController extends BaseController
                 ->with('error', 'Проект не найден');
         }
 
-        // Проверяем, есть ли мероприятия
+        // Проверяем наличие связанных мероприятий
         $eventsCount = $this->eventsModel->getEventsCount($id);
 
         if ($eventsCount > 0) {
             return redirect()->back()
-                ->with('error', "Сначала удалите {$eventsCount} мероприятий, связанных с этим проектом");
+                ->with('error', "Сначала удалите $eventsCount мероприятий, связанных с этим проектом");
         }
 
         if ($this->projectsModel->delete($id)) {
@@ -212,7 +288,12 @@ class ProjectsController extends BaseController
     }
 
     /**
-     * Переключение статуса публикации
+     * Переключение статуса публикации проекта
+     *
+     * @route GET /admin-panel/projects/toggle/{id}
+     *
+     * @param int $id ID проекта
+     * @return RedirectResponse Редирект назад с сообщением об успехе/ошибке
      * @throws ReflectionException
      */
     public function toggle(int $id): RedirectResponse
@@ -232,7 +313,14 @@ class ProjectsController extends BaseController
     }
 
     /**
-     * Массовые действия
+     * Массовые действия с проектами
+     *
+     * Поддерживает массовую публикацию, снятие с публикации и удаление.
+     * При удалении проверяет отсутствие связанных мероприятий.
+     *
+     * @route POST /admin-panel/projects/bulk-action
+     *
+     * @return RedirectResponse Редирект назад с сообщением об успехе/ошибке
      * @throws ReflectionException
      */
     public function bulkAction(): RedirectResponse
@@ -261,7 +349,7 @@ class ProjectsController extends BaseController
                 break;
 
             case 'delete':
-                // Проверяем, есть ли у проектов мероприятия
+                // Проверяем наличие мероприятий у каждого проекта
                 foreach ($ids as $id) {
                     $eventsCount = $this->eventsModel->getEventsCount($id);
                     if ($eventsCount > 0) {

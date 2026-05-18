@@ -1,11 +1,13 @@
 <?php
 
 /**
- * Контроллер панели управления
+ * Контроллер панели управления (Дашборд)
+ *
+ * Отображает главную страницу административной панели с
+ * информацией о текущем пользователе и общими показателями.
  *
  * @package App\Controllers\Admin
  * @category Controllers
- * @author  Your Name
  * @license MIT
  * @link    http://localhost
  * @noinspection PhpUnused
@@ -17,30 +19,45 @@ use App\Controllers\BaseController;
 
 /**
  * Контроллер дашборда
+ *
+ * Обеспечивает отображение главной страницы админ-панели
+ * после успешной авторизации пользователя.
+ *
+ * @package App\Controllers\Admin
  */
 class DashboardController extends BaseController
 {
     /**
      * Отображение главной страницы админ-панели
      *
+     * Собирает информацию о текущем авторизованном пользователе
+     * из сессии и передаёт её в представление.
+     *
      * @route GET /admin-panel/dashboard
      *
-     * @return string HTML страница дашборда
+     * @return string HTML страница дашборда с информацией о пользователе
      */
     public function index(): string
     {
+        // Получаем данные текущего пользователя из сессии
+        $userId = session()->get('user_id');
+        $userLogin = session()->get('user_login');
+        $userName = session()->get('user_name');
+        $userEmail = session()->get('user_email');
+        $userType = session()->get('user_type');
+        $loggedInAt = session()->get('logged_in_at');
+
         $data = [
             'title'        => 'Панель управления',
             'activeMenu'   => 'dashboard',
-            //'additionalCss' => '/admin/css/dashboard.css',
             'user'         => [
-                'id'    => session()->get('user_id'),
-                'login' => session()->get('user_login'),
-                'name'  => session()->get('user_name'),
-                'email' => session()->get('user_email'),
-                'type'  => session()->get('user_type'),
+                'id'    => $userId,
+                'login' => $userLogin,
+                'name'  => $userName,
+                'email' => $userEmail,
+                'type'  => $userType,
             ],
-            'logged_in_at' => session()->get('logged_in_at'),
+            'logged_in_at' => $loggedInAt,
         ];
 
         return view('admin/dashboard/index', $data);

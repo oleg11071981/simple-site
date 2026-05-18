@@ -5,15 +5,44 @@ namespace App\Controllers;
 use App\Models\NProjectsModel;
 use App\Models\NProjectEventsModel;
 use App\Models\NFileManagerModel;
-use App\Models\NSiteconfigModel;
-use App\Models\NSiteModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 
+/**
+ * Контроллер публичной части проектов и мероприятий
+ *
+ * Обеспечивает отображение:
+ * - Списка проектов
+ * - Детальной страницы проекта с мероприятиями
+ * - Детальной страницы мероприятия
+ * - Поддержку многоязычности (RU/EN)
+ *
+ * @package App\Controllers
+ * @category Controllers
+ * @license MIT
+ * @link    http://localhost
+ * @noinspection PhpUnused
+ */
 class ProjectsController extends BaseController
 {
+    /**
+     * Модель проектов
+     *
+     * @var NProjectsModel
+     */
     protected NProjectsModel $projectsModel;
+
+    /**
+     * Модель мероприятий
+     *
+     * @var NProjectEventsModel
+     */
     protected NProjectEventsModel $eventsModel;
 
+    /**
+     * Конструктор контроллера
+     *
+     * Инициализирует модели для работы с проектами и мероприятиями.
+     */
     public function __construct()
     {
         $this->projectsModel = new NProjectsModel();
@@ -21,20 +50,22 @@ class ProjectsController extends BaseController
     }
 
     /**
-     * Список всех проектов
+     * Отображение списка всех проектов
+     *
      * GET /projects
+     *
+     * @return string HTML страница со списком проектов
      */
     public function index(): string
     {
         $settings = $this->settingsModel->getAll();
         $lang = $this->currentLang;
 
-        $projectsModel = new \App\Models\NProjectsModel();
-        $projects = $projectsModel->getPublishedWithLang(0, $lang);
+        // Получаем проекты с учетом языка
+        $projects = $this->projectsModel->getPublishedWithLang(0, $lang);
 
         // Добавляем информацию о главном изображении для каждого проекта
-        $fileModel = new \App\Models\NFileManagerModel();
-        $eventsModel = new \App\Models\NProjectEventsModel();
+        $fileModel = new NFileManagerModel();
 
         foreach ($projects as &$project) {
             if ($project['foto'] > 0) {
@@ -43,13 +74,19 @@ class ProjectsController extends BaseController
                     $project['foto_file'] = $file['file_name'];
                 }
             }
-            $project['events_count'] = $eventsModel->getEventsCount($project['id']);
+            $project['events_count'] = $this->eventsModel->getEventsCount($project['id']);
         }
 
         $data = [
-            'title'       => ($lang === 'en' && !empty($settings['SiteName_en'])) ? 'Projects | ' . $settings['SiteName_en'] : 'Проекты | ' . ($settings['SiteName'] ?? 'n-cms'),
-            'description' => ($lang === 'en' && !empty($settings['Description_en'])) ? $settings['Description_en'] : 'Проекты и мероприятия организации',
-            'keywords'    => ($lang === 'en' && !empty($settings['Keywords_en'])) ? $settings['Keywords_en'] : 'проекты, мероприятия, события',
+            'title'       => ($lang === 'en' && !empty($settings['SiteName_en']))
+                ? 'Projects | ' . $settings['SiteName_en']
+                : 'Проекты | ' . ($settings['SiteName'] ?? 'n-cms'),
+            'description' => ($lang === 'en' && !empty($settings['Description_en']))
+                ? $settings['Description_en']
+                : 'Проекты и мероприятия организации',
+            'keywords'    => ($lang === 'en' && !empty($settings['Keywords_en']))
+                ? $settings['Keywords_en']
+                : 'проекты, мероприятия, события',
             'projects'    => $projects,
             'menuPages'   => $this->pagesModel->getMenuPages(),
             'activePage'  => 'projects',
@@ -65,22 +102,29 @@ class ProjectsController extends BaseController
 
     /**
      * Детальная страница проекта
+     *
      * GET /projects/{slug}
+     *
+     * @param string $slug URL-путь проекта
+     *
+     * @return string HTML страница проекта
+     * @throws PageNotFoundException Если проект не найден
      */
     public function detail(string $slug): string
     {
         $settings = $this->settingsModel->getAll();
         $lang = $this->currentLang;
 
-        $projectsModel = new \App\Models\NProjectsModel();
-        $project = $projectsModel->getByPathWithLang($slug, $lang);
+        // Получаем проект с учетом языка
+        $project = $this->projectsModel->getByPathWithLang($slug, $lang);
 
         if (!$project) {
             throw PageNotFoundException::forPageNotFound();
         }
 
+        $fileModel = new NFileManagerModel();
+
         // Получаем главное изображение
-        $fileModel = new \App\Models\NFileManagerModel();
         if ($project['foto'] > 0) {
             $file = $fileModel->find($project['foto']);
             if ($file) {
@@ -99,8 +143,7 @@ class ProjectsController extends BaseController
         }
 
         // Получаем мероприятия проекта с учетом языка
-        $eventsModel = new \App\Models\NProjectEventsModel();
-        $events = $eventsModel->getByProjectIdWithLang($project['id'], $lang);
+        $events = $this->eventsModel->getByProjectIdWithLang($project['id'], $lang);
 
         // Добавляем изображения к мероприятиям
         foreach ($events as &$event) {
@@ -113,7 +156,9 @@ class ProjectsController extends BaseController
         }
 
         $data = [
-            'title'       => ($lang === 'en' && !empty($project['name_en'])) ? $project['name_en'] . ' | ' . ($settings['SiteName_en'] ?? $settings['SiteName']) : $project['name'] . ' | ' . ($settings['SiteName'] ?? 'n-cms'),
+            'title'       => ($lang === 'en' && !empty($project['name_en']))
+                ? $project['name_en'] . ' | ' . ($settings['SiteName_en'] ?? $settings['SiteName'])
+                : $project['name'] . ' | ' . ($settings['SiteName'] ?? 'n-cms'),
             'description' => $project['description'] ?: $project['anons_text'],
             'keywords'    => $project['keywords'] ?: ($lang === 'en' ? ($settings['Keywords_en'] ?? '') : ($settings['Keywords'] ?? '')),
             'project'     => $project,
@@ -136,26 +181,34 @@ class ProjectsController extends BaseController
 
     /**
      * Детальная страница мероприятия
+     *
      * GET /projects/{project_slug}/{event_slug}
+     *
+     * @param string $projectSlug URL-путь проекта
+     * @param string $eventSlug   URL-путь мероприятия
+     *
+     * @return string HTML страница мероприятия
+     * @throws PageNotFoundException Если мероприятие не найдено
+     * @noinspection PhpUnused
      */
     public function eventDetail(string $projectSlug, string $eventSlug): string
     {
         $settings = $this->settingsModel->getAll();
         $lang = $this->currentLang;
 
-        $eventsModel = new \App\Models\NProjectEventsModel();
-        $event = $eventsModel->getByProjectPathAndEventPathWithLang($projectSlug, $eventSlug, $lang);
+        // Получаем мероприятие с учетом языка
+        $event = $this->eventsModel->getByProjectPathAndEventPathWithLang($projectSlug, $eventSlug, $lang);
 
         if (!$event) {
             throw PageNotFoundException::forPageNotFound();
         }
 
         // Получаем проект
-        $projectsModel = new \App\Models\NProjectsModel();
-        $project = $projectsModel->getByPathWithLang($projectSlug, $lang);
+        $project = $this->projectsModel->getByPathWithLang($projectSlug, $lang);
+
+        $fileModel = new NFileManagerModel();
 
         // Получаем главное изображение мероприятия
-        $fileModel = new \App\Models\NFileManagerModel();
         if ($event['foto'] > 0) {
             $file = $fileModel->find($event['foto']);
             if ($file) {
@@ -174,7 +227,7 @@ class ProjectsController extends BaseController
         }
 
         // Получаем другие мероприятия этого проекта
-        $otherEvents = $eventsModel->where('project_id', $project['id'])
+        $otherEvents = $this->eventsModel->where('project_id', $project['id'])
             ->where('id !=', $event['id'])
             ->where('publish', 1)
             ->orderBy('date_start', 'ASC')
@@ -195,8 +248,12 @@ class ProjectsController extends BaseController
         }
 
         $data = [
-            'title'       => ($lang === 'en' && !empty($event['name_en'])) ? $event['name_en'] . ' | ' . ($settings['SiteName_en'] ?? $settings['SiteName']) : $event['name'] . ' | ' . ($settings['SiteName'] ?? 'n-cms'),
-            'description' => $event['more_info'] ? strip_tags(substr($event['more_info'], 0, 200)) : ($event['anons_text'] ?? ''),
+            'title'       => ($lang === 'en' && !empty($event['name_en']))
+                ? $event['name_en'] . ' | ' . ($settings['SiteName_en'] ?? $settings['SiteName'])
+                : $event['name'] . ' | ' . ($settings['SiteName'] ?? 'n-cms'),
+            'description' => $event['more_info']
+                ? strip_tags(substr($event['more_info'], 0, 200))
+                : ($event['anons_text'] ?? ''),
             'keywords'    => '',
             'event'       => $event,
             'project'     => $project,
@@ -219,13 +276,23 @@ class ProjectsController extends BaseController
     }
 
     /**
-     * Форматирование размера файла
+     * Форматирование размера файла в человекочитаемый вид
+     *
+     * @param int $bytes Размер в байтах
+     *
+     * @return string Отформатированный размер
      */
     private function formatFileSize(int $bytes): string
     {
-        if ($bytes < 1024) return $bytes . ' Б';
-        if ($bytes < 1048576) return round($bytes / 1024, 1) . ' КБ';
-        if ($bytes < 1073741824) return round($bytes / 1048576, 1) . ' МБ';
+        if ($bytes < 1024) {
+            return $bytes . ' Б';
+        }
+        if ($bytes < 1048576) {
+            return round($bytes / 1024, 1) . ' КБ';
+        }
+        if ($bytes < 1073741824) {
+            return round($bytes / 1048576, 1) . ' МБ';
+        }
         return round($bytes / 1073741824, 1) . ' ГБ';
     }
 }

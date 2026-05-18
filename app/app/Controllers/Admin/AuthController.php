@@ -8,7 +8,6 @@
  *
  * @package App\Controllers\Admin
  * @category Controllers
- * @author  Your Name
  * @license MIT
  * @link    http://localhost/admin-panel
  * @noinspection PhpUnused

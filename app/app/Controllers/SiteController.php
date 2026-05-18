@@ -3,12 +3,13 @@
 /**
  * Контроллер публичной части сайта
  *
- * Отвечает за отображение главной страницы и произвольных страниц
- * на основе данных из базы данных.
+ * Отвечает за отображение главной страницы, произвольных страниц,
+ * новостей, контактов и других публичных разделов сайта.
+ *
+ * Поддерживает многоязычность (RU/EN) с переключением через сессию.
  *
  * @package App\Controllers
  * @category Controllers
- * @author  Your Name
  * @license MIT
  * @link    http://localhost
  * @noinspection PhpUnused
@@ -19,45 +20,54 @@ namespace App\Controllers;
 use App\Models\NFileManagerModel;
 use App\Models\NNewsArticlesModel;
 use App\Models\NNewsCategoriesModel;
+use App\Models\NProjectEventsModel;
+use App\Models\NProjectsModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\RedirectResponse;
 
 /**
  * Контроллер публичной части сайта
+ *
+ * @package App\Controllers
  */
 class SiteController extends BaseController
 {
     /**
      * Конструктор контроллера
-     * Модели pagesModel и settingsModel наследуются от BaseController
+     *
+     * Модели pagesModel и settingsModel наследуются от BaseController.
+     * Дополнительная инициализация не требуется.
      */
     public function __construct()
     {
-        // Модели уже доступны через parent
-        // $this->pagesModel - из BaseController
-        // $this->settingsModel - из BaseController
-        // $this->contacts - из BaseController
-        // $this->currentLang - из BaseController
+        // Модели уже доступны через parent:
+        // $this->pagesModel   - модель страниц
+        // $this->settingsModel - модель настроек
+        // $this->contacts     - контактные данные для футера
+        // $this->currentLang  - текущий язык (ru/en)
     }
 
     /**
      * Отображение главной страницы
      *
+     * Выводит блоки проектов и новостей с учетом текущего языка.
+     *
      * @route GET /
-     * @return string HTML страница
+     *
+     * @return string HTML страница главной
      */
     public function index(): string
     {
         $settings = $this->settingsModel->getAll();
         $lang = $this->currentLang;
 
-        // Получаем проекты с учетом языка
-        $projectsModel = new \App\Models\NProjectsModel();
+        // Получаем проекты с учетом языка (3 последних)
+        $projectsModel = new NProjectsModel();
         $projects = $projectsModel->getPublishedWithLang(3, $lang);
 
         // Добавляем информацию о фото для каждого проекта
-        $fileModel = new \App\Models\NFileManagerModel();
-        $eventsModel = new \App\Models\NProjectEventsModel();
+        $fileModel = new NFileManagerModel();
+        $eventsModel = new NProjectEventsModel();
 
         foreach ($projects as &$project) {
             if ($project['foto'] > 0) {
@@ -68,12 +78,13 @@ class SiteController extends BaseController
             }
             $project['events_count'] = $eventsModel->getEventsCount($project['id']);
         }
+        unset($project); // Разрываем ссылку
 
-        // Получаем последние новости с учетом языка
-        $newsModel = new \App\Models\NNewsArticlesModel();
+        // Получаем последние новости с учетом языка (3 штуки)
+        $newsModel = new NNewsArticlesModel();
         $latestNews = $newsModel->getLatestNewsWithLang(3, $lang);
 
-        $categoriesModel = new \App\Models\NNewsCategoriesModel();
+        $categoriesModel = new NNewsCategoriesModel();
 
         foreach ($latestNews as &$item) {
             if ($item['foto'] > 0) {
@@ -90,6 +101,7 @@ class SiteController extends BaseController
                 $item['category_name'] = '';
             }
         }
+        unset($item); // Разрываем ссылку
 
         // Получаем название сайта с учетом языка
         $siteName = ($lang === 'en' && !empty($settings['SiteName_en']))
@@ -136,8 +148,14 @@ class SiteController extends BaseController
     /**
      * Отображение произвольной страницы с поддержкой языка
      *
+     * Обрабатывает как обычные страницы, так и страницы с префиксом 'en/'
+     * для английской версии. Выполняет редирект на правильный URL при необходимости.
+     *
      * @route GET /{slug}
+     * @route GET /en/{slug}
+     *
      * @param string ...$segments Сегменты URL
+     *
      * @return string|RedirectResponse HTML страница или редирект
      * @throws PageNotFoundException Если страница не найдена
      */
@@ -162,6 +180,7 @@ class SiteController extends BaseController
             throw PageNotFoundException::forPageNotFound();
         }
 
+        // Проверяем правильность URL (редирект если путь не соответствует)
         $correctPath = $this->pagesModel->getFullPath($page['id']);
         if ($fullPath !== $correctPath) {
             return redirect()->to('/' . ($lang === 'en' ? 'en/' : '') . $correctPath);
@@ -174,7 +193,9 @@ class SiteController extends BaseController
         $keywords = t_seo($page, 'keywords', $settings);
 
         $data = [
-            'title'         => ($lang === 'en' && !empty($page['name_en'])) ? $page['name_en'] . ' | ' . ($settings['SiteName_en'] ?? $settings['SiteName']) : $page['name'] . ' | ' . ($settings['SiteName'] ?? 'n-cms'),
+            'title'         => ($lang === 'en' && !empty($page['name_en']))
+                ? $page['name_en'] . ' | ' . ($settings['SiteName_en'] ?? $settings['SiteName'])
+                : $page['name'] . ' | ' . ($settings['SiteName'] ?? 'n-cms'),
             'description'   => $description,
             'keywords'      => $keywords,
             'page'          => $page,
@@ -196,8 +217,12 @@ class SiteController extends BaseController
     /**
      * Получение хлебных крошек для навигации с учетом языка
      *
+     * Формирует цепочку родительских страниц, исключая текущую.
+     * Названия страниц выводятся на текущем языке.
+     *
      * @param int $id ID текущей страницы
-     * @return array
+     *
+     * @return array Массив хлебных крошек с полями 'name' и 'url'
      */
     private function getBreadcrumbs(int $id): array
     {
@@ -233,32 +258,38 @@ class SiteController extends BaseController
     }
 
     /**
-     * Список новостей с фильтрацией по категории
+     * Список новостей с фильтрацией по категории и дате
+     *
+     * Поддерживает фильтрацию по категории, диапазону дат,
+     * пагинацию и локализацию контента.
      *
      * @route GET /news
-     * @return string
+     *
+     * @return string HTML страница со списком новостей
      */
     public function news(): string
     {
         $perPage = 9;
-        $page = $this->request->getGet('page') ?? 1;
-        $category = $this->request->getGet('category') ?? 0;
+        $page = (int)($this->request->getGet('page') ?? 1);
+        $category = (int)($this->request->getGet('category') ?? 0);
         $date_from = $this->request->getGet('date_from') ?? '';
         $date_to = $this->request->getGet('date_to') ?? '';
 
         $settings = $this->settingsModel->getAll();
         $lang = $this->currentLang;
 
-        $newsModel = new \App\Models\NNewsArticlesModel();
-        $fileModel = new \App\Models\NFileManagerModel();
-        $categoriesModel = new \App\Models\NNewsCategoriesModel();
+        $newsModel = new NNewsArticlesModel();
+        $fileModel = new NFileManagerModel();
+        $categoriesModel = new NNewsCategoriesModel();
 
         $builder = $newsModel->where('publish', 1);
 
+        // Фильтр по категории
         if ($category > 0) {
             $builder = $builder->where('category_news', $category);
         }
 
+        // Фильтр по дате (диапазон)
         if (!empty($date_from)) {
             $builder = $builder->where('date >=', $date_from);
         }
@@ -276,10 +307,12 @@ class SiteController extends BaseController
                 $item['name'] = $item['name_en'] ?? $item['name'];
                 $item['anons_text'] = $item['anons_text_en'] ?? $item['anons_text'];
             }
+            unset($item);
         }
 
         $allCategories = $categoriesModel->orderBy('priority', 'ASC')->findAll();
 
+        // Добавляем изображения и названия категорий
         foreach ($news as &$item) {
             if ($item['foto'] > 0) {
                 $file = $fileModel->find($item['foto']);
@@ -294,13 +327,20 @@ class SiteController extends BaseController
                 $item['category_name'] = '';
             }
         }
+        unset($item);
 
         $pager = $newsModel->pager;
 
         $data = [
-            'title'          => ($lang === 'en' && !empty($settings['SiteName_en'])) ? 'News | ' . $settings['SiteName_en'] : 'Новости | ' . ($settings['SiteName'] ?? 'n-cms'),
-            'description'    => ($lang === 'en' && !empty($settings['Description_en'])) ? $settings['Description_en'] : 'Новости и события компании',
-            'keywords'       => ($lang === 'en' && !empty($settings['Keywords_en'])) ? $settings['Keywords_en'] : 'новости, события',
+            'title'          => ($lang === 'en' && !empty($settings['SiteName_en']))
+                ? 'News | ' . $settings['SiteName_en']
+                : 'Новости | ' . ($settings['SiteName'] ?? 'n-cms'),
+            'description'    => ($lang === 'en' && !empty($settings['Description_en']))
+                ? $settings['Description_en']
+                : 'Новости и события компании',
+            'keywords'       => ($lang === 'en' && !empty($settings['Keywords_en']))
+                ? $settings['Keywords_en']
+                : 'новости, события',
             'news'           => $news,
             'pager'          => $pager,
             'currentPage'    => ($lang === 'en') ? 'News' : 'Новости',
@@ -323,17 +363,20 @@ class SiteController extends BaseController
      * Детальная страница новости
      *
      * @route GET /news/{slug}
-     * @param string $slug
-     * @return string
+     *
+     * @param string $slug URL-путь новости
+     *
+     * @return string HTML страница новости
+     * @throws PageNotFoundException Если новость не найдена
      */
     public function newsDetail(string $slug): string
     {
         $settings = $this->settingsModel->getAll();
         $lang = $this->currentLang;
 
-        $newsModel = new \App\Models\NNewsArticlesModel();
-        $fileModel = new \App\Models\NFileManagerModel();
-        $categoriesModel = new \App\Models\NNewsCategoriesModel();
+        $newsModel = new NNewsArticlesModel();
+        $fileModel = new NFileManagerModel();
+        $categoriesModel = new NNewsCategoriesModel();
 
         $news = $newsModel->getByPathWithLang($slug, $lang);
 
@@ -341,6 +384,7 @@ class SiteController extends BaseController
             throw PageNotFoundException::forPageNotFound();
         }
 
+        // Получаем главное изображение
         if ($news['foto'] > 0) {
             $file = $fileModel->find($news['foto']);
             if ($file) {
@@ -356,15 +400,18 @@ class SiteController extends BaseController
             $news['category_name'] = '';
         }
 
+        // Получаем галерею новости
         $galleryFiles = [];
         if ($news['media'] > 0) {
             $files = $fileModel->getFilesByCategory($news['media']);
             foreach ($files as &$file) {
                 $file['size_formatted'] = $this->formatFileSize($file['file_size']);
             }
+            unset($file);
             $galleryFiles = $files;
         }
 
+        // Получаем другие новости (3 штуки)
         $otherNews = $newsModel->where('publish', 1)
             ->where('id !=', $news['id'])
             ->orderBy('date', 'DESC')
@@ -379,9 +426,12 @@ class SiteController extends BaseController
                 }
             }
         }
+        unset($item);
 
         $data = [
-            'title'       => ($lang === 'en' && !empty($news['name_en'])) ? $news['name_en'] . ' | ' . ($settings['SiteName_en'] ?? $settings['SiteName']) : $news['name'] . ' | ' . ($settings['SiteName'] ?? 'n-cms'),
+            'title'       => ($lang === 'en' && !empty($news['name_en']))
+                ? $news['name_en'] . ' | ' . ($settings['SiteName_en'] ?? $settings['SiteName'])
+                : $news['name'] . ' | ' . ($settings['SiteName'] ?? 'n-cms'),
             'description' => $news['description'] ?: $news['anons_text'],
             'keywords'    => $news['keywords'],
             'news'        => $news,
@@ -405,8 +455,11 @@ class SiteController extends BaseController
     /**
      * Страница контактов
      *
+     * Отображает контактную информацию из настроек сайта.
+     *
      * @route GET /contacts
-     * @return string
+     *
+     * @return string HTML страница контактов
      */
     public function contacts(): string
     {
@@ -450,17 +503,23 @@ class SiteController extends BaseController
     }
 
     /**
-     * Форматировать размер файла
+     * Форматирование размера файла в человекочитаемый вид
      *
-     * @param int $bytes
-     * @return string
+     * @param int $bytes Размер в байтах
+     *
+     * @return string Отформатированный размер
      */
     private function formatFileSize(int $bytes): string
     {
-        if ($bytes < 1024) return $bytes . ' Б';
-        if ($bytes < 1048576) return round($bytes / 1024, 1) . ' КБ';
-        if ($bytes < 1073741824) return round($bytes / 1048576, 1) . ' МБ';
+        if ($bytes < 1024) {
+            return $bytes . ' Б';
+        }
+        if ($bytes < 1048576) {
+            return round($bytes / 1024, 1) . ' КБ';
+        }
+        if ($bytes < 1073741824) {
+            return round($bytes / 1048576, 1) . ' МБ';
+        }
         return round($bytes / 1073741824, 1) . ' ГБ';
     }
-
 }

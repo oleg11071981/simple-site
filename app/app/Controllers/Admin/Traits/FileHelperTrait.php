@@ -5,7 +5,6 @@
  *
  * @package App\Controllers\Admin\Traits
  * @category Traits
- * @author  Your Name
  * @license MIT
  * @link    http://localhost
  * @noinspection PhpUnused
