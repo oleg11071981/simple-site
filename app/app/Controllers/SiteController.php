@@ -63,10 +63,13 @@ class SiteController extends BaseController
         $lang = $this->currentLang;
 
         // ============================================================
-        // Получаем новости категории "Новости комитета" (category_news = 1)
+        // Получаем последние 3 новости категории "Новости комитета" (category_news = 1)
+        // с флагом "Показывать на главной" (show_all = 1)
         // ============================================================
         $newsModel = new NNewsArticlesModel();
+
         $committeeNews = $newsModel->where('publish', 1)
+            ->where('show_all', 1)           // ← Добавлено
             ->where('category_news', 1)
             ->orderBy('date', 'DESC')
             ->orderBy('id', 'DESC')
@@ -74,9 +77,11 @@ class SiteController extends BaseController
             ->findAll();
 
         // ============================================================
-        // Получаем новости категории "Новости в РФ и мире" (category_news = 2)
+        // Получаем последние 3 новости категории "Новости в РФ и мире" (category_news = 2)
+        // с флагом "Показывать на главной" (show_all = 1)
         // ============================================================
         $worldNews = $newsModel->where('publish', 1)
+            ->where('show_all', 1)           // ← Добавлено
             ->where('category_news', 2)
             ->orderBy('date', 'DESC')
             ->orderBy('id', 'DESC')
@@ -86,9 +91,7 @@ class SiteController extends BaseController
         // Объединяем новости (сначала комитет, потом мир)
         $latestNews = array_merge($committeeNews, $worldNews);
 
-        // ============================================================
         // Локализация новостей (английская версия)
-        // ============================================================
         if ($lang === 'en') {
             foreach ($latestNews as &$item) {
                 $item['name'] = $item['name_en'] ?? $item['name'];
@@ -108,10 +111,16 @@ class SiteController extends BaseController
                     $item['foto_file'] = $file['file_name'];
                 }
             }
-            // Добавляем название категории
+            // Добавляем название категории (с учетом языка)
             if ($item['category_news'] > 0) {
                 $category = $categoriesModel->find($item['category_news']);
-                $item['category_name'] = $category ? $category['name'] : '';
+                if ($category) {
+                    $item['category_name'] = ($lang === 'en' && !empty($category['name_en']))
+                        ? $category['name_en']
+                        : $category['name'];
+                } else {
+                    $item['category_name'] = '';
+                }
             } else {
                 $item['category_name'] = '';
             }
