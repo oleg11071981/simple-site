@@ -86,6 +86,17 @@ class SiteController extends BaseController
         // Объединяем новости (сначала комитет, потом мир)
         $latestNews = array_merge($committeeNews, $worldNews);
 
+        // ============================================================
+        // Локализация новостей (английская версия)
+        // ============================================================
+        if ($lang === 'en') {
+            foreach ($latestNews as &$item) {
+                $item['name'] = $item['name_en'] ?? $item['name'];
+                $item['anons_text'] = $item['anons_text_en'] ?? $item['anons_text'];
+            }
+            unset($item);
+        }
+
         $fileModel = new NFileManagerModel();
         $categoriesModel = new NNewsCategoriesModel();
 
