@@ -261,6 +261,10 @@
                 </div>
             </div>
 
+            <!-- ======================================== -->
+            <!-- НАСТРОЙКИ ОТОБРАЖЕНИЯ (с добавленным статусом проекта) -->
+            <!-- ======================================== -->
+
             <div class="settings-section">
                 <h2>Настройки отображения / Display Settings</h2>
 
@@ -272,8 +276,24 @@
                                class="form-control">
                         <small>Чем меньше число, тем выше в списке / Smaller number = higher position</small>
                     </div>
+
                     <div class="form-group half">
-                        <label for="publish">Статус / Status</label>
+                        <label for="status">Статус проекта / Project status</label>
+                        <select id="status" name="status" class="form-control">
+                            <option value="active" <?= (isset($project) && $project['status'] == 'active') ? 'selected' : '' ?>>
+                                Активный / Active
+                            </option>
+                            <option value="completed" <?= (isset($project) && $project['status'] == 'completed') ? 'selected' : '' ?>>
+                                Завершённый / Completed
+                            </option>
+                        </select>
+                        <small>Активные проекты отображаются в начале списка на сайте</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label for="publish">Статус публикации / Publication status</label>
                         <select id="publish" name="publish" class="form-control">
                             <option value="0" <?= (isset($project) && $project['publish'] == 0) ? 'selected' : '' ?>>Черновик / Draft</option>
                             <option value="1" <?= (isset($project) && $project['publish'] == 1) ? 'selected' : '' ?>>Опубликовано / Published</option>

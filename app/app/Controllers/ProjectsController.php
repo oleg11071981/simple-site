@@ -11,7 +11,7 @@ use CodeIgniter\Exceptions\PageNotFoundException;
  * Контроллер публичной части проектов и мероприятий
  *
  * Обеспечивает отображение:
- * - Списка проектов
+ * - Списка проектов (разделён на активные и завершённые)
  * - Детальной страницы проекта с мероприятиями
  * - Детальной страницы мероприятия
  * - Поддержку многоязычности (RU/EN)
@@ -52,6 +52,10 @@ class ProjectsController extends BaseController
     /**
      * Отображение списка всех проектов
      *
+     * Разделяет проекты на две группы:
+     * - Активные проекты (status = 'active')
+     * - Завершённые проекты (status = 'completed')
+     *
      * GET /projects
      *
      * @return string HTML страница со списком проектов
@@ -61,13 +65,16 @@ class ProjectsController extends BaseController
         $settings = $this->settingsModel->getAll();
         $lang = $this->currentLang;
 
-        // Получаем проекты с учетом языка
-        $projects = $this->projectsModel->getPublishedWithLang(0, $lang);
+        // Получаем активные проекты с учетом языка
+        $activeProjects = $this->projectsModel->getActiveProjectsWithLang(0, $lang);
 
-        // Добавляем информацию о главном изображении для каждого проекта
+        // Получаем завершённые проекты с учетом языка
+        $completedProjects = $this->projectsModel->getCompletedProjectsWithLang(0, $lang);
+
         $fileModel = new NFileManagerModel();
 
-        foreach ($projects as &$project) {
+        // Добавляем информацию о главном изображении для активных проектов
+        foreach ($activeProjects as &$project) {
             if ($project['foto'] > 0) {
                 $file = $fileModel->find($project['foto']);
                 if ($file) {
@@ -76,25 +83,39 @@ class ProjectsController extends BaseController
             }
             $project['events_count'] = $this->eventsModel->getEventsCount($project['id']);
         }
+        unset($project);
+
+        // Добавляем информацию о главном изображении для завершённых проектов
+        foreach ($completedProjects as &$project) {
+            if ($project['foto'] > 0) {
+                $file = $fileModel->find($project['foto']);
+                if ($file) {
+                    $project['foto_file'] = $file['file_name'];
+                }
+            }
+            $project['events_count'] = $this->eventsModel->getEventsCount($project['id']);
+        }
+        unset($project);
 
         $data = [
-            'title'       => ($lang === 'en' && !empty($settings['SiteName_en']))
+            'title'            => ($lang === 'en' && !empty($settings['SiteName_en']))
                 ? 'Projects | ' . $settings['SiteName_en']
                 : 'Проекты | ' . ($settings['SiteName'] ?? 'n-cms'),
-            'description' => ($lang === 'en' && !empty($settings['Description_en']))
+            'description'      => ($lang === 'en' && !empty($settings['Description_en']))
                 ? $settings['Description_en']
                 : 'Проекты и мероприятия организации',
-            'keywords'    => ($lang === 'en' && !empty($settings['Keywords_en']))
+            'keywords'         => ($lang === 'en' && !empty($settings['Keywords_en']))
                 ? $settings['Keywords_en']
                 : 'проекты, мероприятия, события',
-            'projects'    => $projects,
-            'menuPages'   => $this->pagesModel->getMenuPages(),
-            'activePage'  => 'projects',
-            'currentPage' => ($lang === 'en') ? 'Projects' : 'Проекты',
-            'currentLang' => $lang,
-            'email'       => $this->contacts['email'],
-            'phone'       => $this->contacts['phone'],
-            'address'     => $this->contacts['address'],
+            'activeProjects'   => $activeProjects,
+            'completedProjects'=> $completedProjects,
+            'menuPages'        => $this->pagesModel->getMenuPages(),
+            'activePage'       => 'projects',
+            'currentPage'      => ($lang === 'en') ? 'Projects' : 'Проекты',
+            'currentLang'      => $lang,
+            'email'            => $this->contacts['email'],
+            'phone'            => $this->contacts['phone'],
+            'address'          => $this->contacts['address'],
         ];
 
         return view('site/projects/index', $data);
@@ -154,6 +175,7 @@ class ProjectsController extends BaseController
                 }
             }
         }
+        unset($event);
 
         $data = [
             'title'       => ($lang === 'en' && !empty($project['name_en']))
@@ -246,6 +268,7 @@ class ProjectsController extends BaseController
                 $other['name'] = $other['name_en'];
             }
         }
+        unset($other);
 
         $data = [
             'title'       => ($lang === 'en' && !empty($event['name_en']))

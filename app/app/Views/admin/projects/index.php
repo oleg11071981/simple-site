@@ -35,11 +35,21 @@
             </div>
 
             <div class="filter-group">
-                <label>Статус:</label>
+                <label>Статус публикации:</label>
                 <select name="publish" class="filter-select">
                     <option value="" <?= ($publish ?? '') == '' ? 'selected' : '' ?>>Все</option>
                     <option value="1" <?= ($publish ?? '') == '1' ? 'selected' : '' ?>>Опубликованные</option>
                     <option value="0" <?= ($publish ?? '') == '0' ? 'selected' : '' ?>>Черновики</option>
+                </select>
+            </div>
+
+            <!-- Добавлен фильтр по статусу проекта -->
+            <div class="filter-group">
+                <label>Статус проекта:</label>
+                <select name="status" class="filter-select">
+                    <option value="" <?= ($status ?? '') == '' ? 'selected' : '' ?>>Все</option>
+                    <option value="active" <?= ($status ?? '') == 'active' ? 'selected' : '' ?>>Активные</option>
+                    <option value="completed" <?= ($status ?? '') == 'completed' ? 'selected' : '' ?>>Завершённые</option>
                 </select>
             </div>
 
@@ -75,7 +85,8 @@
                     <th>Название проекта</th>
                     <th style="width: 100px">Мероприятий</th>
                     <th style="width: 80px">Приоритет</th>
-                    <th style="width: 100px">Статус</th>
+                    <th style="width: 100px">Статус проекта</th>
+                    <th style="width: 100px">Публикация</th>
                     <th style="width: 140px">Дата создания</th>
                     <th style="width: 140px">Действия</th>
                 </tr>
@@ -108,6 +119,13 @@
                             </td>
                             <td class="text-center"><?= esc($project['priority'] ?? 0) ?></td>
                             <td class="text-center">
+                                <?php if (($project['status'] ?? 'active') == 'active'): ?>
+                                    <span class="badge badge-success">Активный</span>
+                                <?php else: ?>
+                                    <span class="badge badge-secondary">Завершённый</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="text-center">
                                 <?php if ($project['publish'] == 1): ?>
                                     <span class="badge badge-success">Опубликовано</span>
                                 <?php else: ?>
@@ -137,7 +155,7 @@
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="8" class="text-center">Проекты не найдены</td>
+                        <td colspan="9" class="text-center">Проекты не найдены</td>
                     </tr>
                 <?php endif; ?>
                 </tbody>
@@ -209,6 +227,11 @@
             background: #007bff;
             color: white;
             text-decoration: none;
+        }
+
+        .badge-secondary {
+            background: #6c757d;
+            color: white;
         }
     </style>
 

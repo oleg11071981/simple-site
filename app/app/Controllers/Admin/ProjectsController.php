@@ -6,7 +6,7 @@
  * Предоставляет методы для CRUD операций с проектами:
  * - Список проектов с фильтрацией и пагинацией
  * - Создание/редактирование/удаление проектов
- * - Управление статусом публикации
+ * - Управление статусом публикации и статусом проекта (активный/завершённый)
  * - Массовые операции с проектами
  *
  * @package App\Controllers\Admin
@@ -73,6 +73,7 @@ class ProjectsController extends BaseController
         $perPage = (int)($this->request->getGet('per_page') ?? 20);
         $search  = $this->request->getGet('search') ?? '';
         $publish = $this->request->getGet('publish') ?? '';
+        $status  = $this->request->getGet('status') ?? '';  // ← Добавлен фильтр по статусу проекта
 
         $builder = $this->projectsModel;
 
@@ -84,6 +85,11 @@ class ProjectsController extends BaseController
         // Фильтр по статусу публикации
         if ($publish !== '') {
             $builder = $builder->where('publish', $publish);
+        }
+
+        // Фильтр по статусу проекта (active/completed)
+        if ($status !== '') {
+            $builder = $builder->where('status', $status);
         }
 
         $projects = $builder->orderBy('priority', 'ASC')
@@ -104,6 +110,7 @@ class ProjectsController extends BaseController
             'pager'       => $pager,
             'search'      => $search,
             'publish'     => $publish,
+            'status'      => $status,           // ← Передаём статус в представление
             'per_page'    => $perPage,
         ];
 
@@ -158,6 +165,7 @@ class ProjectsController extends BaseController
         $postData['priority'] = $postData['priority'] ?? 0;
         $postData['foto']     = $postData['foto'] ?? 0;
         $postData['media']    = $postData['media'] ?? 0;
+        $postData['status']   = $postData['status'] ?? NProjectsModel::STATUS_ACTIVE; // ← Статус по умолчанию
 
         if ($this->projectsModel->save($postData)) {
             return redirect()->to('/admin-panel/projects')
