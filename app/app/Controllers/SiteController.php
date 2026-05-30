@@ -50,7 +50,8 @@ class SiteController extends BaseController
     /**
      * Отображение главной страницы
      *
-     * Выводит блоки проектов и новостей с учетом текущего языка.
+     * Выводит блоки новостей и проектов с учетом текущего языка.
+     * Новости: 3 из категории "Новости комитета" + 3 из категории "Новости в РФ и мире".
      *
      * @route GET /
      *
@@ -61,31 +62,34 @@ class SiteController extends BaseController
         $settings = $this->settingsModel->getAll();
         $lang = $this->currentLang;
 
-        // Получаем проекты с учетом языка (3 последних)
-        $projectsModel = new NProjectsModel();
-        $projects = $projectsModel->getPublishedWithLang(3, $lang);
-
-        // Добавляем информацию о фото для каждого проекта
-        $fileModel = new NFileManagerModel();
-        $eventsModel = new NProjectEventsModel();
-
-        foreach ($projects as &$project) {
-            if ($project['foto'] > 0) {
-                $file = $fileModel->find($project['foto']);
-                if ($file) {
-                    $project['foto_file'] = $file['file_name'];
-                }
-            }
-            $project['events_count'] = $eventsModel->getEventsCount($project['id']);
-        }
-        unset($project); // Разрываем ссылку
-
-        // Получаем последние новости с учетом языка (3 штуки)
+        // ============================================================
+        // Получаем новости категории "Новости комитета" (category_news = 1)
+        // ============================================================
         $newsModel = new NNewsArticlesModel();
-        $latestNews = $newsModel->getLatestNewsWithLang(3, $lang);
+        $committeeNews = $newsModel->where('publish', 1)
+            ->where('category_news', 1)
+            ->orderBy('date', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->limit(3)
+            ->findAll();
 
+        // ============================================================
+        // Получаем новости категории "Новости в РФ и мире" (category_news = 2)
+        // ============================================================
+        $worldNews = $newsModel->where('publish', 1)
+            ->where('category_news', 2)
+            ->orderBy('date', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->limit(3)
+            ->findAll();
+
+        // Объединяем новости (сначала комитет, потом мир)
+        $latestNews = array_merge($committeeNews, $worldNews);
+
+        $fileModel = new NFileManagerModel();
         $categoriesModel = new NNewsCategoriesModel();
 
+        // Добавляем фото и названия категорий
         foreach ($latestNews as &$item) {
             if ($item['foto'] > 0) {
                 $file = $fileModel->find($item['foto']);
@@ -101,7 +105,26 @@ class SiteController extends BaseController
                 $item['category_name'] = '';
             }
         }
-        unset($item); // Разрываем ссылку
+        unset($item);
+
+        // ============================================================
+        // Получаем проекты с учетом языка (3 последних)
+        // ============================================================
+        $projectsModel = new NProjectsModel();
+        $projects = $projectsModel->getPublishedWithLang(3, $lang);
+
+        $eventsModel = new NProjectEventsModel();
+
+        foreach ($projects as &$project) {
+            if ($project['foto'] > 0) {
+                $file = $fileModel->find($project['foto']);
+                if ($file) {
+                    $project['foto_file'] = $file['file_name'];
+                }
+            }
+            $project['events_count'] = $eventsModel->getEventsCount($project['id']);
+        }
+        unset($project);
 
         // Получаем название сайта с учетом языка
         $siteName = ($lang === 'en' && !empty($settings['SiteName_en']))
@@ -132,8 +155,8 @@ class SiteController extends BaseController
             'slogan'      => $slogan,
             'mainText'    => $mainText,
             'menuPages'   => $this->pagesModel->getMenuPages(),
-            'projects'    => $projects,
             'latestNews'  => $latestNews,
+            'projects'    => $projects,
             'activePage'  => 'home',
             'currentPage' => '',
             'currentLang' => $lang,

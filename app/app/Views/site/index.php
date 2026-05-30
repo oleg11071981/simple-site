@@ -2,7 +2,53 @@
 
 <?= $this->section('content') ?>
 
-    <!-- Блок проектов -->
+    <!-- Блок последних новостей (сверху) -->
+<?php if (!empty($latestNews)): ?>
+    <section class="news-section">
+        <h2 class="section-title"><?= ($currentLang ?? 'ru') === 'en' ? 'Latest news' : 'Последние новости' ?></h2>
+        <div class="news-grid">
+            <?php foreach ($latestNews as $item): ?>
+                <article class="news-card">
+                    <?php if (!empty($item['foto_file'])): ?>
+                        <div class="news-image">
+                            <img src="/uploads/<?= $item['foto_file'] ?>" alt="<?= esc($item['name']) ?>">
+                        </div>
+                    <?php else: ?>
+                        <div class="news-image">📰</div>
+                    <?php endif; ?>
+                    <div class="news-content">
+                        <div class="news-meta">
+                            <span class="news-date"><?= date('d.m.Y', strtotime($item['date'])) ?></span>
+                            <?php if (!empty($item['category_name'])): ?>
+                                <?php
+                                $categoryClass = '';
+                                if ($item['category_news'] == 1) {
+                                    $categoryClass = 'committee';
+                                } elseif ($item['category_news'] == 2) {
+                                    $categoryClass = 'world';
+                                }
+                                ?>
+                                <span class="news-category <?= $categoryClass ?>">
+                                        <?= esc($item['category_name']) ?>
+                                    </span>
+                            <?php endif; ?>
+                        </div>
+                        <h3 class="news-title"><?= esc($item['name']) ?></h3>
+                        <p class="news-excerpt"><?= esc(substr(strip_tags($item['anons_text']), 0, 120)) ?>...</p>
+                        <a href="/news/<?= esc($item['path']) ?>" class="read-more">
+                            <?= ($currentLang ?? 'ru') === 'en' ? 'Details →' : 'Подробнее →' ?>
+                        </a>
+                    </div>
+                </article>
+            <?php endforeach; ?>
+        </div>
+        <div class="section-footer">
+            <a href="/news" class="all-link"><?= ($currentLang ?? 'ru') === 'en' ? 'All news →' : 'Все новости →' ?></a>
+        </div>
+    </section>
+<?php endif; ?>
+
+    <!-- Блок проектов (снизу) -->
 <?php if (!empty($projects)): ?>
     <section class="projects-section">
         <h2 class="section-title"><?= ($currentLang ?? 'ru') === 'en' ? 'Our projects' : 'Наши проекты' ?></h2>
@@ -50,52 +96,6 @@
         </div>
         <div class="section-footer">
             <a href="/projects" class="all-link"><?= ($currentLang ?? 'ru') === 'en' ? 'All projects →' : 'Все проекты →' ?></a>
-        </div>
-    </section>
-<?php endif; ?>
-
-    <!-- Блок последних новостей -->
-<?php if (!empty($latestNews)): ?>
-    <section class="news-section">
-        <h2 class="section-title"><?= ($currentLang ?? 'ru') === 'en' ? 'Latest news' : 'Последние новости' ?></h2>
-        <div class="news-grid">
-            <?php foreach ($latestNews as $item): ?>
-                <article class="news-card">
-                    <?php if (!empty($item['foto_file'])): ?>
-                        <div class="news-image">
-                            <img src="/uploads/<?= $item['foto_file'] ?>" alt="<?= esc($item['name']) ?>">
-                        </div>
-                    <?php else: ?>
-                        <div class="news-image">📰</div>
-                    <?php endif; ?>
-                    <div class="news-content">
-                        <div class="news-meta">
-                            <span class="news-date"><?= date('d.m.Y', strtotime($item['date'])) ?></span>
-                            <?php if (!empty($item['category_name'])): ?>
-                                <?php
-                                $categoryClass = '';
-                                if ($item['category_news'] == 1) {
-                                    $categoryClass = 'committee';
-                                } elseif ($item['category_news'] == 2) {
-                                    $categoryClass = 'world';
-                                }
-                                ?>
-                                <span class="news-category <?= $categoryClass ?>">
-                                        <?= esc($item['category_name']) ?>
-                                    </span>
-                            <?php endif; ?>
-                        </div>
-                        <h3 class="news-title"><?= esc($item['name']) ?></h3>
-                        <p class="news-excerpt"><?= esc(substr(strip_tags($item['anons_text']), 0, 120)) ?>...</p>
-                        <a href="/news/<?= esc($item['path']) ?>" class="read-more">
-                            <?= ($currentLang ?? 'ru') === 'en' ? 'Details →' : 'Подробнее →' ?>
-                        </a>
-                    </div>
-                </article>
-            <?php endforeach; ?>
-        </div>
-        <div class="section-footer">
-            <a href="/news" class="all-link"><?= ($currentLang ?? 'ru') === 'en' ? 'All news →' : 'Все новости →' ?></a>
         </div>
     </section>
 <?php endif; ?>
