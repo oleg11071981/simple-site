@@ -5,14 +5,17 @@
     <article class="project-detail">
         <div class="page-header">
             <h1 class="page-title"><?= esc($project['name']) ?></h1>
-            <?php if (!empty($project['anons_text'])): ?>
-                <p class="page-description"><?= esc($project['anons_text']) ?></p>
-            <?php endif; ?>
         </div>
 
         <?php if (!empty($project['foto_file'])): ?>
             <div class="project-detail-image">
                 <img src="/uploads/<?= $project['foto_file'] ?>" alt="<?= esc($project['name']) ?>">
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($project['anons_text'])): ?>
+            <div class="project-anons">
+                <p><?= esc($project['anons_text']) ?></p>
             </div>
         <?php endif; ?>
 
