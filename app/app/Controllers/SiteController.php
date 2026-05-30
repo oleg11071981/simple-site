@@ -50,9 +50,6 @@ class SiteController extends BaseController
     /**
      * Отображение главной страницы
      *
-     * Выводит блоки новостей и проектов с учетом текущего языка.
-     * Новости: 3 из категории "Новости комитета" + 3 из категории "Новости в РФ и мире".
-     *
      * @route GET /
      *
      * @return string HTML страница главной
@@ -63,35 +60,31 @@ class SiteController extends BaseController
         $lang = $this->currentLang;
 
         // ============================================================
-        // Получаем последние 3 новости категории "Новости комитета" (category_news = 1)
-        // с флагом "Показывать на главной" (show_all = 1)
+        // Получаем последние 3 новости категории "Новости комитета"
         // ============================================================
         $newsModel = new NNewsArticlesModel();
 
         $committeeNews = $newsModel->where('publish', 1)
-            ->where('show_all', 1)           // ← Добавлено
+            ->where('show_all', 1)
             ->where('category_news', 1)
             ->orderBy('date', 'DESC')
             ->orderBy('id', 'DESC')
-            ->limit(3)
-            ->findAll();
+            ->findAll(3);  // ← Используем параметр лимита в findAll()
 
         // ============================================================
-        // Получаем последние 3 новости категории "Новости в РФ и мире" (category_news = 2)
-        // с флагом "Показывать на главной" (show_all = 1)
+        // Получаем последние 3 новости категории "Новости в РФ и мире"
         // ============================================================
         $worldNews = $newsModel->where('publish', 1)
-            ->where('show_all', 1)           // ← Добавлено
+            ->where('show_all', 1)
             ->where('category_news', 2)
             ->orderBy('date', 'DESC')
             ->orderBy('id', 'DESC')
-            ->limit(3)
-            ->findAll();
+            ->findAll(3);  // ← Используем параметр лимита в findAll()
 
-        // Объединяем новости (сначала комитет, потом мир)
+        // Объединяем новости
         $latestNews = array_merge($committeeNews, $worldNews);
 
-        // Локализация новостей (английская версия)
+        // Локализация новостей
         if ($lang === 'en') {
             foreach ($latestNews as &$item) {
                 $item['name'] = $item['name_en'] ?? $item['name'];
@@ -111,7 +104,7 @@ class SiteController extends BaseController
                     $item['foto_file'] = $file['file_name'];
                 }
             }
-            // Добавляем название категории (с учетом языка)
+            // Добавляем название категории с учетом языка
             if ($item['category_news'] > 0) {
                 $category = $categoriesModel->find($item['category_news']);
                 if ($category) {
@@ -128,7 +121,7 @@ class SiteController extends BaseController
         unset($item);
 
         // ============================================================
-        // Получаем проекты с учетом языка (3 последних)
+        // Получаем проекты
         // ============================================================
         $projectsModel = new NProjectsModel();
         $projects = $projectsModel->getPublishedWithLang(3, $lang);
@@ -146,7 +139,7 @@ class SiteController extends BaseController
         }
         unset($project);
 
-        // Получаем название сайта с учетом языка
+        // Настройки сайта с учетом языка
         $siteName = ($lang === 'en' && !empty($settings['SiteName_en']))
             ? $settings['SiteName_en']
             : ($settings['SiteName'] ?? 'n-cms');
