@@ -121,10 +121,10 @@ class SiteController extends BaseController
         unset($item);
 
         // ============================================================
-        // Получаем проекты
+        // Получаем проекты с учетом языка (3 последних активных)
         // ============================================================
         $projectsModel = new NProjectsModel();
-        $projects = $projectsModel->getPublishedWithLang(3, $lang);
+        $projects = $projectsModel->getActiveProjectsWithLang(3, $lang);
 
         $eventsModel = new NProjectEventsModel();
 
