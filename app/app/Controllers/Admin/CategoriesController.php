@@ -7,6 +7,7 @@
  * - Список категорий с деревом
  * - Создание/редактирование/удаление категорий
  * - Управление вложенностью
+ * - Просмотр файлов в категории
  *
  * @package App\Controllers\Admin
  * @category Controllers
@@ -184,11 +185,25 @@ class CategoriesController extends BaseController
                 ->with('error', 'Категория не найдена');
         }
 
+        // Получаем файлы из этой категории
+        $files = $this->filesModel
+            ->where('category', $id)
+            ->orderBy('priority', 'ASC')
+            ->orderBy('id', 'DESC')
+            ->findAll();
+
+        // Форматируем размер файлов
+        foreach ($files as &$file) {
+            $file['size_formatted'] = $this->formatFileSize($file['file_size']);
+            $file['icon'] = $this->getFileIcon($file['file_type']);
+        }
+
         $data = [
             'title'      => 'Редактирование категории',
             'activeMenu' => 'categories',
             'category'   => $category,
             'categories' => $this->categoriesModel->getForSelect($id),
+            'files'      => $files,  // Добавляем файлы в представление
         ];
 
         return view('admin/categories/form', $data);
@@ -295,5 +310,42 @@ class CategoriesController extends BaseController
         }
 
         return $breadcrumbs;
+    }
+
+    /**
+     * Форматирование размера файла в человекочитаемый вид
+     *
+     * @param int $bytes Размер в байтах
+     * @return string Отформатированный размер
+     */
+    private function formatFileSize(int $bytes): string
+    {
+        if ($bytes < 1024) {
+            return $bytes . ' Б';
+        }
+        if ($bytes < 1048576) {
+            return round($bytes / 1024, 1) . ' КБ';
+        }
+        if ($bytes < 1073741824) {
+            return round($bytes / 1048576, 1) . ' МБ';
+        }
+        return round($bytes / 1073741824, 1) . ' ГБ';
+    }
+
+    /**
+     * Получение иконки для типа файла
+     *
+     * @param string $fileType Тип файла
+     * @return string Иконка
+     */
+    private function getFileIcon(string $fileType): string
+    {
+        $icons = [
+            'jpg' => '🖼️', 'jpeg' => '🖼️', 'png' => '🖼️', 'gif' => '🖼️',
+            'pdf' => '📄', 'doc' => '📝', 'docx' => '📝', 'xls' => '📊',
+            'xlsx' => '📊', 'zip' => '📦', 'rar' => '📦', 'txt' => '📃',
+            'mp3' => '🎵', 'mp4' => '🎬', 'avi' => '🎬'
+        ];
+        return $icons[strtolower($fileType)] ?? '📁';
     }
 }
