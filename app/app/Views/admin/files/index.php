@@ -5,7 +5,9 @@
     <div class="page-header">
         <div class="header-actions">
             <h1>Файловый менеджер</h1>
-            <a href="/admin-panel/files/upload" class="btn-create">📤 Загрузить файл</a>
+            <a href="/admin-panel/files/upload<?= ($category ?? 0) > 0 ? '?category=' . $category : '' ?>" class="btn-create">
+                📤 Загрузить файл
+            </a>
         </div>
         <p>Управление файлами и изображениями сайта</p>
     </div>
