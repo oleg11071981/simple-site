@@ -92,8 +92,11 @@
                                 <?php foreach ($categories as $cat): ?>
                                     <option value="<?= $cat['id'] ?>"
                                             data-name="<?= esc(strtolower($cat['name'])) ?>"
-                                        <?= (isset($file) && $file['category'] == $cat['id']) ? 'selected' : '' ?>
-                                        <?= (isset($parent_id) && $parent_id == $cat['id'] && !isset($file)) ? 'selected' : '' ?>>
+                                        <?php if (isset($selectedCategory) && $selectedCategory == $cat['id']): ?>
+                                            selected
+                                        <?php elseif (isset($file) && $file['category'] == $cat['id']): ?>
+                                            selected
+                                        <?php endif; ?>>
                                         <?= str_repeat('—', $cat['level'] ?? 0) ?> <?= esc($cat['name']) ?>
                                     </option>
                                 <?php endforeach; ?>

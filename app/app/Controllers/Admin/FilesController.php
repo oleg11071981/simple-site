@@ -13,6 +13,7 @@
  *
  * @package App\Controllers\Admin
  * @category Controllers
+ * @author  Your Name
  * @license MIT
  * @link    http://localhost
  * @noinspection PhpUnused
@@ -26,7 +27,6 @@ use App\Models\NFileManagerCategoriesModel;
 use App\Models\NFileManagerModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use CodeIgniter\HTTP\ResponseInterface;
-use Exception;
 use ReflectionException;
 
 /**
@@ -166,10 +166,14 @@ class FilesController extends BaseController
     {
         $categoriesModel = new NFileManagerCategoriesModel();
 
+        // Получаем ID категории из GET параметра (если перешли из категории)
+        $selectedCategory = (int)($this->request->getGet('category') ?? 0);
+
         $data = [
-            'title'      => 'Загрузка файла',
-            'activeMenu' => 'files',
-            'categories' => $categoriesModel->orderBy('name', 'ASC')->findAll(),
+            'title'            => 'Загрузка файла',
+            'activeMenu'       => 'files',
+            'categories'       => $categoriesModel->orderBy('name', 'ASC')->findAll(),
+            'selectedCategory' => $selectedCategory,
         ];
 
         return view('admin/files/form', $data);
@@ -462,7 +466,7 @@ class FilesController extends BaseController
             @unlink($tempPath);
             return $this->response->setJSON(['success' => false, 'error' => 'Ошибка сохранения файла']);
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->response->setJSON([
                 'success' => false,
                 'error'   => $e->getMessage()
