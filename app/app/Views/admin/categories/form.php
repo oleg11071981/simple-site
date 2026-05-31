@@ -39,7 +39,7 @@
                 <input type="hidden" name="id" value="<?= $category['id'] ?>">
             <?php endif; ?>
 
-            <!-- Вкладки -->
+            <!-- Для РЕДАКТИРОВАНИЯ: показываем вкладки -->
             <?php if (isset($category)): ?>
                 <div class="tabs">
                     <button type="button" class="tab-btn active" data-tab="main">📋 Основное</button>
@@ -47,10 +47,10 @@
                 </div>
             <?php endif; ?>
 
-            <!-- Вкладка: Основное -->
-            <div id="tab-main" class="tab-content <?= isset($category) ? 'active' : '' ?>">
+            <!-- Основное содержимое (поля формы) -->
+            <div id="main-content" class="<?= isset($category) ? 'tab-content' : '' ?> <?= isset($category) ? 'active' : '' ?>">
                 <div class="settings-section">
-                    <h2>Основная информация</h2>
+                    <h2><?= isset($category) ? 'Основная информация' : 'Основная информация' ?></h2>
 
                     <?php if (isset($category)): ?>
                         <div class="form-group">
@@ -198,7 +198,8 @@
     </div>
 
     <script>
-        // Переключение вкладок
+        // Переключение вкладок (только если они есть)
+        <?php if (isset($category)): ?>
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const tabId = this.dataset.tab;
@@ -210,6 +211,7 @@
                 document.getElementById(`tab-${tabId}`).classList.add('active');
             });
         });
+        <?php endif; ?>
     </script>
 
     <style>
