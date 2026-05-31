@@ -198,19 +198,41 @@
     </div>
 
     <script>
-        // Переключение вкладок (только если они есть)
+        // Переключение вкладок (только если есть категория)
         <?php if (isset($category)): ?>
+        // Функция переключения вкладок
+        function switchTab(tabId) {
+            // Убираем активный класс у всех кнопок
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Убираем активный класс у всех вкладок
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Добавляем активный класс выбранной кнопке
+            const activeBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Показываем выбранную вкладку
+            if (tabId === 'main') {
+                document.getElementById('main-content').classList.add('active');
+            } else if (tabId === 'files') {
+                document.getElementById('tab-files').classList.add('active');
+            }
+        }
+
+        // Навешиваем обработчики на кнопки
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                const tabId = this.dataset.tab;
-
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-
-                this.classList.add('active');
-                document.getElementById(`tab-${tabId}`).classList.add('active');
+                switchTab(this.dataset.tab);
             });
         });
+
+        // При загрузке активируем вкладку "Основное"
+        switchTab('main');
         <?php endif; ?>
     </script>
 
