@@ -48,9 +48,9 @@
             <?php endif; ?>
 
             <!-- Основное содержимое (поля формы) -->
-            <div id="main-content" class="<?= isset($category) ? 'tab-content' : '' ?> <?= isset($category) ? 'active' : '' ?>">
+            <div id="main-content" <?= isset($category) ? 'class="tab-content active"' : '' ?>>
                 <div class="settings-section">
-                    <h2><?= isset($category) ? 'Основная информация' : 'Основная информация' ?></h2>
+                    <h2>Основная информация</h2>
 
                     <?php if (isset($category)): ?>
                         <div class="form-group">
