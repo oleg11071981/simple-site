@@ -66,4 +66,11 @@
         <?php endif; ?>
     </article>
 
+    <!-- Ссылка назад к списку новостей -->
+    <div class="back-to-news">
+        <a href="/news" class="back-link">
+            ← <?= ($currentLang ?? 'ru') === 'en' ? 'Back to news list' : 'Вернуться к списку новостей' ?>
+        </a>
+    </div>
+
 <?= $this->endSection() ?>
