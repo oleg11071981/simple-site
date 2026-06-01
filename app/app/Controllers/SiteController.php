@@ -451,8 +451,7 @@ class SiteController extends BaseController
         $otherNews = $newsModel->where('publish', 1)
             ->where('id !=', $news['id'])
             ->orderBy('date', 'DESC')
-            ->limit(3)
-            ->findAll();
+            ->findAll(4);
 
         foreach ($otherNews as &$item) {
             if ($item['foto'] > 0) {
