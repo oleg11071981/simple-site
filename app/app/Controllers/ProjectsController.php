@@ -253,7 +253,7 @@ class ProjectsController extends BaseController
             ->where('id !=', $event['id'])
             ->where('publish', 1)
             ->orderBy('date_start', 'ASC')
-            ->findAll(3);
+            ->findAll(4);
 
         foreach ($otherEvents as &$other) {
             if ($other['foto'] > 0) {
