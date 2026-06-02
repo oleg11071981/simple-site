@@ -52,40 +52,6 @@
                 }
             });
         });
-
-        CKEDITOR.on('dialogDefinition', function(ev) {
-            var dialogName = ev.data.name;
-
-            if (dialogName !== 'image' && dialogName !== 'link' && dialogName !== 'flash') {
-                return;
-            }
-
-            var uploadTab = ev.data.definition.getContents('Upload');
-
-            if (!uploadTab) {
-                return;
-            }
-
-            var token = getCsrfToken();
-            var fieldName = getCsrfFieldName();
-
-            if (!token || !fieldName) {
-                return;
-            }
-
-            // dialogDefinition вызывается при каждом открытии диалога — не дублируем поле
-            if (uploadTab.get('csrf_token')) {
-                uploadTab.get('csrf_token').setValue(token);
-                return;
-            }
-
-            uploadTab.add({
-                type: 'hidden',
-                id: 'csrf_token',
-                name: fieldName,
-                value: token
-            });
-        });
     }
 
     // ========================================
