@@ -54,12 +54,10 @@
                 <span class="icon-edit">✏️</span>
             </a>
             <!-- Иконка удаления -->
-            <a href="/admin-panel/pages/delete/<?= $page['id'] ?>"
-               class="btn-icon btn-delete"
-               title="Удалить"
-               onclick="return confirm('Удалить страницу «<?= esc($page['name']) ?>»?')">
-                <span class="icon-delete">🗑️</span>
-            </a>
+            <?= view('admin/partials/delete_button', [
+                'url'     => '/admin-panel/pages/delete/' . $page['id'],
+                'confirm' => 'Удалить страницу «' . esc($page['name']) . '»?',
+            ]) ?>
         </td>
     </tr>
     <?php if (!empty($page['children'])): ?>

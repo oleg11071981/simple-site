@@ -211,6 +211,21 @@ body {
     background: #e9ecef;
 }
 
+.delete-form {
+    display: inline;
+    margin: 0;
+    padding: 0;
+}
+
+.delete-form .btn-icon {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    font: inherit;
+    line-height: inherit;
+}
+
 .icon-edit { color: #007bff; }
 .icon-delete { color: #dc3545; }
 .icon-eye { color: #28a745; }

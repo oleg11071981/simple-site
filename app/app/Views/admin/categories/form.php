@@ -168,9 +168,10 @@
                                                 <a href="/admin-panel/files/edit/<?= $file['id'] ?>" class="btn-icon" title="Редактировать">
                                                     <span class="icon-edit">✏️</span>
                                                 </a>
-                                                <a href="/admin-panel/files/delete/<?= $file['id'] ?>" class="btn-icon" title="Удалить" onclick="return confirm('Удалить файл «<?= esc($file['name']) ?>»?')">
-                                                    <span class="icon-delete">🗑️</span>
-                                                </a>
+                                                <?= view('admin/partials/delete_button', [
+                                                    'url'     => '/admin-panel/files/delete/' . $file['id'],
+                                                    'confirm' => 'Удалить файл «' . esc($file['name']) . '»?',
+                                                ]) ?>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

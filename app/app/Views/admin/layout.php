@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="csrf-token" content="<?= csrf_hash() ?>">
+    <meta name="csrf-header" content="<?= esc(config('Security')->headerName) ?>">
+    <meta name="csrf-name" content="<?= esc(config('Security')->tokenName) ?>">
     <title><?= $title ?? 'Админ-панель' ?> | n-cms</title>
     <?php
     // Cache busting для админки

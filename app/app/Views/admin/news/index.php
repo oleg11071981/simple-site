@@ -142,9 +142,10 @@
                                 <a href="/admin-panel/news/edit/<?= $item['id'] ?>" class="btn-icon" title="Редактировать">
                                     <span class="icon-edit">✏️</span>
                                 </a>
-                                <a href="/admin-panel/news/delete/<?= $item['id'] ?>" class="btn-icon" title="Удалить" onclick="return confirm('Удалить новость «<?= esc($item['name']) ?>»?')">
-                                    <span class="icon-delete">🗑️</span>
-                                </a>
+                                <?= view('admin/partials/delete_button', [
+                                    'url'     => '/admin-panel/news/delete/' . $item['id'],
+                                    'confirm' => 'Удалить новость «' . esc($item['name']) . '»?',
+                                ]) ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

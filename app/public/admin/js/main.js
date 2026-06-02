@@ -7,6 +7,82 @@
     'use strict';
 
     // ========================================
+    // CSRF (для AJAX и CKEditor)
+    // ========================================
+
+    function getCsrfToken() {
+        var meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute('content') : '';
+    }
+
+    function getCsrfHeaderName() {
+        var meta = document.querySelector('meta[name="csrf-header"]');
+        return meta ? meta.getAttribute('content') : 'X-CSRF-TOKEN';
+    }
+
+    function getCsrfFieldName() {
+        var meta = document.querySelector('meta[name="csrf-name"]');
+        return meta ? meta.getAttribute('content') : 'csrf_test_name';
+    }
+
+    window.getCsrfToken = getCsrfToken;
+    window.getCsrfHeaderName = getCsrfHeaderName;
+    window.getCsrfFieldName = getCsrfFieldName;
+
+    window.withCsrfHeaders = function(headers) {
+        var result = headers || {};
+        var token = getCsrfToken();
+        var headerName = getCsrfHeaderName();
+
+        if (token && headerName) {
+            result[headerName] = token;
+        }
+
+        return result;
+    };
+
+    if (typeof CKEDITOR !== 'undefined') {
+        CKEDITOR.on('instanceCreated', function(ev) {
+            ev.editor.on('fileUploadRequest', function(evt) {
+                var token = getCsrfToken();
+                var fieldName = getCsrfFieldName();
+
+                if (token && fieldName) {
+                    evt.data.requestData[fieldName] = token;
+                }
+            });
+        });
+
+        CKEDITOR.on('dialogDefinition', function(ev) {
+            var dialogName = ev.data.name;
+
+            if (dialogName !== 'image' && dialogName !== 'link' && dialogName !== 'flash') {
+                return;
+            }
+
+            var uploadTab = ev.data.definition.getContents('Upload');
+
+            if (!uploadTab) {
+                return;
+            }
+
+            var token = getCsrfToken();
+            var fieldName = getCsrfFieldName();
+
+            if (!token || !fieldName) {
+                return;
+            }
+
+            uploadTab.add({
+                type: 'hidden',
+                id: 'csrf_token',
+                name: fieldName,
+                value: token
+            });
+        });
+    }
+
+    // ========================================
     // БУРГЕР-МЕНЮ (общий для всех страниц)
     // ========================================
 

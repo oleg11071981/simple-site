@@ -67,6 +67,8 @@
     </div>
 
     <div class="table-container">
+        <form action="/admin-panel/files/bulk-action" method="post" id="bulkForm">
+            <?= csrf_field() ?>
         <table class="data-table">
             <thead>
             <tr>
@@ -126,9 +128,10 @@
                             <a href="/admin-panel/files/edit/<?= $file['id'] ?>" class="btn-icon" title="Редактировать">
                                 <span class="icon-edit">✏️</span>
                             </a>
-                            <a href="/admin-panel/files/delete/<?= $file['id'] ?>" class="btn-icon" title="Удалить" onclick="return confirm('Удалить файл «<?= esc($file['name']) ?>»?')">
-                                <span class="icon-delete">🗑️</span>
-                            </a>
+                            <?= view('admin/partials/delete_button', [
+                                'url'     => '/admin-panel/files/delete/' . $file['id'],
+                                'confirm' => 'Удалить файл «' . esc($file['name']) . '»?',
+                            ]) ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -157,32 +160,12 @@
                 </div>
             <?php endif; ?>
         </div>
+        </form>
     </div>
 
     <script>
-        function toggleAll(source) {
-            var checkboxes = document.querySelectorAll('input[name="selected_ids[]"]');
-            for (var i = 0; i < checkboxes.length; i++) {
-                checkboxes[i].checked = source.checked;
-            }
-        }
-
         function confirmBulkAction() {
-            var action = document.querySelector('select[name="bulk_action"]').value;
-            if (action === '') {
-                alert('Пожалуйста, выберите действие');
-                return;
-            }
-
-            var checkboxes = document.querySelectorAll('input[name="selected_ids[]"]:checked');
-            if (checkboxes.length === 0) {
-                alert('Пожалуйста, выберите хотя бы один файл');
-                return;
-            }
-
-            if (action === 'delete' && confirm('Вы действительно хотите удалить выбранные файлы?')) {
-                document.getElementById('bulkForm').submit();
-            }
+            window.confirmBulkAction('bulkForm');
         }
     </script>
 

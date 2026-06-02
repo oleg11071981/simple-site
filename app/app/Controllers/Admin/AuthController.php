@@ -119,10 +119,12 @@ class AuthController extends BaseController
          * @var array|null $user Данные пользователя или null если не найден
          */
         $user = $this->userModel
-            ->where('login', $login)          // Ищем по логину
-            ->orWhere('email', $login)        // Или по email
-            ->where('publish', 1)             // Только активные пользователи
-            ->first();                        // Берем первого найденного
+            ->groupStart()
+                ->where('login', $login)
+                ->orWhere('email', $login)
+            ->groupEnd()
+            ->where('publish', 1)
+            ->first();
 
         // ============================================================
         // Шаг 4: Проверка пароля и авторизация

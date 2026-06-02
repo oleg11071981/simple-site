@@ -362,10 +362,10 @@
                         <?php if (isset($file)): ?>
                         fetch('/admin-panel/files/crop-image/<?= $file['id'] ?>', {
                             method: 'POST',
-                            headers: {
+                            headers: window.withCsrfHeaders({
                                 'Content-Type': 'application/json',
                                 'X-Requested-With': 'XMLHttpRequest'
-                            },
+                            }),
                             body: JSON.stringify({
                                 image_data: croppedImageData,
                                 width: canvas.width,

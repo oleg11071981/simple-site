@@ -147,9 +147,10 @@
                                 <a href="/admin-panel/projects/edit/<?= $project['id'] ?>" class="btn-icon" title="Редактировать">
                                     <span class="icon-edit">✏️</span>
                                 </a>
-                                <a href="/admin-panel/projects/delete/<?= $project['id'] ?>" class="btn-icon" title="Удалить" onclick="return confirm('Удалить проект «<?= esc($project['name']) ?>»? Все связанные мероприятия также будут удалены.')">
-                                    <span class="icon-delete">🗑️</span>
-                                </a>
+                                <?= view('admin/partials/delete_button', [
+                                    'url'     => '/admin-panel/projects/delete/' . $project['id'],
+                                    'confirm' => 'Удалить проект «' . esc($project['name']) . '»? Все связанные мероприятия также будут удалены.',
+                                ]) ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

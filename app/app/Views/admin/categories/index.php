@@ -95,9 +95,10 @@
                             <a href="/admin-panel/categories/create?parent=<?= $cat['id'] ?>" class="btn-icon" title="Добавить подкатегорию">
                                 <span class="icon-add">➕</span>
                             </a>
-                            <a href="/admin-panel/categories/delete/<?= $cat['id'] ?>" class="btn-icon" title="Удалить" onclick="return confirm('Удалить категорию «<?= esc($cat['name']) ?>»?')">
-                                <span class="icon-delete">🗑️</span>
-                            </a>
+                            <?= view('admin/partials/delete_button', [
+                                'url'     => '/admin-panel/categories/delete/' . $cat['id'],
+                                'confirm' => 'Удалить категорию «' . esc($cat['name']) . '»?',
+                            ]) ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

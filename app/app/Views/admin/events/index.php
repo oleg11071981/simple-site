@@ -136,9 +136,10 @@
                             <a href="/admin-panel/events/edit/<?= $event['id'] ?>" class="btn-icon" title="Редактировать">
                                 <span class="icon-edit">✏️</span>
                             </a>
-                            <a href="/admin-panel/events/delete/<?= $event['id'] ?>" class="btn-icon" title="Удалить" onclick="return confirm('Удалить мероприятие «<?= esc($event['name']) ?>»?')">
-                                <span class="icon-delete">🗑️</span>
-                            </a>
+                            <?= view('admin/partials/delete_button', [
+                                'url'     => '/admin-panel/events/delete/' . $event['id'],
+                                'confirm' => 'Удалить мероприятие «' . esc($event['name']) . '»?',
+                            ]) ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

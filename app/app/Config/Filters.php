@@ -37,24 +37,7 @@ class Filters extends BaseConfig
     public array $globals = [
         'before' => [
             // 'honeypot',
-            'csrf' => [
-                'except' => [
-                    'admin-panel/login',              // страница входа
-                    'admin-panel/auth/authenticate',  // авторизация
-                    'admin-panel/settings/save',      // сохранение настроек
-                    'admin-panel/pages/store',        // создание страницы
-                    'admin-panel/pages/update/*',     // обновление страницы
-                    'admin-panel/pages/bulk-action',  // массовые действия
-                    'admin-panel/files/store',        // загрузка файлов
-                    'admin-panel/files/update/*',     // обновление файла
-                    'admin-panel/files/bulk-action',  // массовые действия с файлами
-                    'admin-panel/categories/store',   // создание категории
-                    'admin-panel/categories/update/*', // обновление категории
-                    'admin-panel/editor/upload',      // загрузка через редактор
-                    'admin-panel/editor/upload-image', // загрузка изображений
-                    'admin-panel/files/crop-image/*'
-                ]
-            ],
+            'csrf',
             // 'invalidchars',
         ],
         'after' => [
