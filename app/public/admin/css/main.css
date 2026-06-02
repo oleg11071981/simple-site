@@ -211,6 +211,14 @@ body {
     background: #e9ecef;
 }
 
+/* Форма массовых действий без обёртки таблицы (чекбоксы через form="bulkForm") */
+.bulk-form-setup {
+    display: contents;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
 .delete-form {
     display: inline;
     margin: 0;

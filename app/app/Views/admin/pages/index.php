@@ -95,15 +95,16 @@
 
     <!-- Таблица страниц -->
     <div class="table-container">
-        <form action="/admin-panel/pages/bulk-action" method="post" id="bulkForm">
+        <form action="/admin-panel/pages/bulk-action" method="post" id="bulkForm" class="bulk-form-setup">
             <?= csrf_field() ?>
             <input type="hidden" name="parent" value="<?= $parent_id ?? 0 ?>">
+        </form>
 
             <table class="data-table">
                 <thead>
                 <tr>
                     <th style="width: 30px">
-                        <input type="checkbox" id="selectAll" onclick="toggleAll(this)">
+                        <input type="checkbox" id="selectAll" form="bulkForm" onclick="toggleAll(this)">
                     </th>
                     <th style="width: 60px">ID</th>
                     <th>Название страницы</th>
@@ -118,7 +119,7 @@
                     <?php foreach ($pages as $page): ?>
                         <tr class="<?= $page['publish'] == 0 ? 'draft-row' : '' ?>">
                             <td class="text-center">
-                                <input type="checkbox" name="selected_ids[]" value="<?= $page['id'] ?>">
+                                <input type="checkbox" name="selected_ids[]" form="bulkForm" value="<?= $page['id'] ?>">
                             </td>
                             <td class="text-center"><?= esc($page['id']) ?></td>
                             <td>
@@ -171,7 +172,7 @@
             <div class="table-actions">
                 <div class="bulk-actions">
                     <span>С отмеченными:</span>
-                    <select name="bulk_action" class="bulk-select">
+                    <select name="bulk_action" form="bulkForm" class="bulk-select">
                         <option value="">Выберите действие</option>
                         <option value="publish">Опубликовать</option>
                         <option value="unpublish">Снять с публикации</option>
@@ -186,7 +187,6 @@
                     </div>
                 <?php endif; ?>
             </div>
-        </form>
     </div>
 
     <script>

@@ -72,14 +72,15 @@
 
     <!-- Таблица проектов -->
     <div class="table-container">
-        <form action="/admin-panel/projects/bulk-action" method="post" id="bulkForm">
+        <form action="/admin-panel/projects/bulk-action" method="post" id="bulkForm" class="bulk-form-setup">
             <?= csrf_field() ?>
+        </form>
 
             <table class="data-table">
                 <thead>
                 <tr>
                     <th style="width: 30px">
-                        <input type="checkbox" id="selectAll" onclick="toggleAll(this)">
+                        <input type="checkbox" id="selectAll" form="bulkForm" onclick="toggleAll(this)">
                     </th>
                     <th style="width: 60px">ID</th>
                     <th>Название проекта</th>
@@ -96,7 +97,7 @@
                     <?php foreach ($projects as $project): ?>
                         <tr>
                             <td class="text-center">
-                                <input type="checkbox" name="selected_ids[]" value="<?= $project['id'] ?>">
+                                <input type="checkbox" name="selected_ids[]" form="bulkForm" value="<?= $project['id'] ?>">
                             </td>
                             <td class="text-center"><?= esc($project['id']) ?></td>
                             <td>
@@ -166,7 +167,7 @@
             <div class="table-actions">
                 <div class="bulk-actions">
                     <span>С отмеченными:</span>
-                    <select name="bulk_action" class="bulk-select">
+                    <select name="bulk_action" form="bulkForm" class="bulk-select">
                         <option value="">Выберите действие</option>
                         <option value="publish">Опубликовать</option>
                         <option value="unpublish">Снять с публикации</option>
@@ -181,7 +182,6 @@
                     </div>
                 <?php endif; ?>
             </div>
-        </form>
     </div>
 
     <style>

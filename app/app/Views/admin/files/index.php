@@ -67,13 +67,15 @@
     </div>
 
     <div class="table-container">
-        <form action="/admin-panel/files/bulk-action" method="post" id="bulkForm">
+        <form action="/admin-panel/files/bulk-action" method="post" id="bulkForm" class="bulk-form-setup">
             <?= csrf_field() ?>
+        </form>
+
         <table class="data-table">
             <thead>
             <tr>
                 <th style="width: 30px">
-                    <input type="checkbox" id="selectAll" onclick="toggleAll(this)">
+                    <input type="checkbox" id="selectAll" form="bulkForm" onclick="toggleAll(this)">
                 </th>
                 <th style="width: 80px">Превью</th>
                 <th style="width: 60px">ID</th>
@@ -90,7 +92,7 @@
                 <?php foreach ($files as $file): ?>
                     <tr>
                         <td class="text-center">
-                            <input type="checkbox" name="selected_ids[]" value="<?= $file['id'] ?>">
+                            <input type="checkbox" name="selected_ids[]" form="bulkForm" value="<?= $file['id'] ?>">
                         </td>
                         <td class="text-center">
                             <?php if (in_array($file['file_type'], ['jpg', 'jpeg', 'png', 'gif', 'webp'])): ?>
@@ -147,7 +149,7 @@
         <div class="table-actions">
             <div class="bulk-actions">
                 <span>С отмеченными:</span>
-                <select name="bulk_action" class="bulk-select">
+                <select name="bulk_action" form="bulkForm" class="bulk-select">
                     <option value="">Выберите действие</option>
                     <option value="delete">Удалить</option>
                 </select>
@@ -160,7 +162,6 @@
                 </div>
             <?php endif; ?>
         </div>
-        </form>
     </div>
 
     <script>
