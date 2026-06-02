@@ -316,7 +316,7 @@
 
         // CKEditor для русской версии
         if (typeof CKEDITOR !== 'undefined') {
-            if (document.getElementById('MainText')) {
+            if (document.getElementById('MainText') && !CKEDITOR.instances.MainText) {
                 CKEDITOR.replace('MainText', {
                     language: 'ru',
                     height: 400,
@@ -339,7 +339,7 @@
             }
 
             // CKEditor для английской версии
-            if (document.getElementById('MainText_en')) {
+            if (document.getElementById('MainText_en') && !CKEDITOR.instances.MainText_en) {
                 CKEDITOR.replace('MainText_en', {
                     language: 'en',
                     height: 400,

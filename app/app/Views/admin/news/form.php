@@ -399,7 +399,7 @@
         }
 
         // CKEditor для русской версии
-        if (typeof CKEDITOR !== 'undefined' && document.getElementById('more_info')) {
+        if (typeof CKEDITOR !== 'undefined' && document.getElementById('more_info') && !CKEDITOR.instances.more_info) {
             CKEDITOR.replace('more_info', {
                 language: 'ru',
                 height: 400,
@@ -422,7 +422,7 @@
         }
 
         // CKEditor для английской версии
-        if (typeof CKEDITOR !== 'undefined' && document.getElementById('more_info_en')) {
+        if (typeof CKEDITOR !== 'undefined' && document.getElementById('more_info_en') && !CKEDITOR.instances.more_info_en) {
             CKEDITOR.replace('more_info_en', {
                 language: 'en',
                 height: 400,

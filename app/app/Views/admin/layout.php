@@ -85,7 +85,7 @@
 <?php if (!isset($additionalJs) || (strpos($additionalJs, 'pages.js') === false && strpos($additionalJs, 'settings.js') === false && strpos($additionalJs, 'files.js') === false)): ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            if (typeof CKEDITOR !== 'undefined' && document.getElementById('MainText')) {
+            if (typeof CKEDITOR !== 'undefined' && document.getElementById('MainText') && !CKEDITOR.instances.MainText) {
                 CKEDITOR.replace('MainText', {
                     language: 'ru',
                     height: 400,

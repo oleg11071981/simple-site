@@ -73,6 +73,12 @@
                 return;
             }
 
+            // dialogDefinition вызывается при каждом открытии диалога — не дублируем поле
+            if (uploadTab.get('csrf_token')) {
+                uploadTab.get('csrf_token').setValue(token);
+                return;
+            }
+
             uploadTab.add({
                 type: 'hidden',
                 id: 'csrf_token',
@@ -265,8 +271,15 @@
             ]
         };
 
+        const elementId = element.id || selector;
+
+        if (CKEDITOR.instances[elementId]) {
+            return CKEDITOR.instances[elementId];
+        }
+
         const config = customConfig ? Object.assign({}, defaultConfig, customConfig) : defaultConfig;
-        CKEDITOR.replace(element.id || selector, config);
+
+        return CKEDITOR.replace(elementId, config);
     }
 
     // Объявляем глобальную функцию для использования в других скриптах
@@ -283,8 +296,8 @@
         // Уведомления
         initAlerts();
 
-        // CKEditor для MainText (если есть)
-        if (document.getElementById('MainText') && typeof CKEDITOR !== 'undefined') {
+        // CKEditor для MainText (только на страницах без своей инициализации в шаблоне)
+        if (document.getElementById('MainText') && typeof CKEDITOR !== 'undefined' && !CKEDITOR.instances.MainText) {
             initCKEditor('MainText');
         }
 
@@ -353,11 +366,6 @@
         if (descriptionTextarea) {
             descriptionTextarea.addEventListener('input', updateCharCounters);
             updateCharCounters();
-        }
-
-        // CKEditor для more_info (для страниц)
-        if (document.getElementById('more_info') && typeof CKEDITOR !== 'undefined') {
-            initCKEditor('more_info');
         }
     });
 })();
