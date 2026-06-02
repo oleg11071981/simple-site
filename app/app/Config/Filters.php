@@ -37,7 +37,13 @@ class Filters extends BaseConfig
     public array $globals = [
         'before' => [
             // 'honeypot',
-            'csrf',
+            'csrf' => [
+                // CKEditor загружает файлы через iframe-форму без CSRF-поля (только auth).
+                'except' => [
+                    'admin-panel/editor/upload',
+                    'admin-panel/editor/upload-image',
+                ],
+            ],
             // 'invalidchars',
         ],
         'after' => [
