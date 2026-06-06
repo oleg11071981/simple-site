@@ -6,14 +6,23 @@
         <div class="swiper gallery-swiper">
             <div class="swiper-wrapper">
                 <?php foreach ($files as $file): ?>
+                    <?php
+                    // Определяем подпись с учетом языка
+                    $caption = '';
+                    if (($currentLang ?? 'ru') === 'en') {
+                        $caption = !empty($file['title_en']) ? $file['title_en'] : ($file['title'] ?? $file['name']);
+                    } else {
+                        $caption = $file['title'] ?? $file['name'];
+                    }
+                    ?>
                     <div class="swiper-slide gallery-slide">
                         <?php if (in_array($file['file_type'], ['jpg', 'jpeg', 'png', 'gif', 'webp'])): ?>
                             <a href="/uploads/<?= esc($file['file_name']) ?>"
                                class="gallery-link bigfoto"
                                data-fancybox="gallery"
-                               data-caption="<?= ($currentLang ?? 'ru') === 'en' && !empty($file['title_en']) ? esc($file['title_en']) : esc($file['title'] ?? $file['name']) ?>">
+                               data-caption="<?= esc($caption) ?>">
                                 <img src="/uploads/<?= esc($file['file_name']) ?>"
-                                     alt="<?= ($currentLang ?? 'ru') === 'en' && !empty($file['title_en']) ? esc($file['title_en']) : esc($file['title'] ?? $file['name']) ?>">
+                                     alt="<?= esc($caption) ?>">
                             </a>
                         <?php else: ?>
                             <div class="gallery-file">
@@ -35,13 +44,13 @@
                                 </a>
                             </div>
                         <?php endif; ?>
-                        <div class="gallery-caption">
-                            <?= ($currentLang ?? 'ru') === 'en' && !empty($file['title_en']) ? esc($file['title_en']) : esc($file['title'] ?? $file['name']) ?>
-                        </div>
+                        <div class="gallery-caption"><?= esc($caption) ?></div>
                     </div>
                 <?php endforeach; ?>
             </div>
+            <!-- Пагинация -->
             <div class="swiper-pagination"></div>
+            <!-- Кнопки навигации -->
             <div class="swiper-button-prev"></div>
             <div class="swiper-button-next"></div>
         </div>
