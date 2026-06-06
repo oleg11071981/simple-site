@@ -42,6 +42,7 @@ class Filters extends BaseConfig
                 'except' => [
                     'admin-panel/editor/upload',
                     'admin-panel/editor/upload-image',
+                    'admin-panel/settings/save',
                 ],
             ],
             // 'invalidchars',
