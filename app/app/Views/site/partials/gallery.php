@@ -1,3 +1,8 @@
+<?php
+// Отладка: какие файлы пришли во вьюху
+$debugIds = array_column($files ?? [], 'id');
+echo "<!-- В gallery.php пришли IDs: " . implode(', ', $debugIds) . " -->\n";
+?>
 <?php if (!empty($files)): ?>
     <div class="gallery-section">
         <h2 class="gallery-title"><?= ($currentLang ?? 'ru') === 'en' ? 'Gallery' : 'Галерея' ?></h2>
