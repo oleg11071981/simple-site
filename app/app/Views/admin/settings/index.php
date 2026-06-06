@@ -145,15 +145,16 @@
                     </div>
                 </div>
 
+                <!-- ДОПОЛНИТЕЛЬНЫЕ ПОЛЯ (С ИЗМЕНЕНИЯМИ) -->
                 <div class="settings-section">
                     <h2>Дополнительные поля</h2>
 
                     <div class="form-group">
-                        <label for="additional_field1">Дополнительное поле 1</label>
-                        <input type="text" id="additional_field1" name="additional_field1"
-                               value="<?= esc($settings['additional_field1'] ?? '') ?>"
-                               class="form-control"
-                               placeholder="Дополнительное поле">
+                        <label for="additional_field1">Дополнительное поле 1 (схема проезда / map)</label>
+                        <textarea id="additional_field1" name="additional_field1" rows="8"
+                                  class="form-control"
+                                  placeholder="Вставьте код карты или HTML-разметку"><?= esc($settings['additional_field1'] ?? '') ?></textarea>
+                        <small>Поддерживается HTML разметка. Например, код карты Яндекс или Google Maps.</small>
                     </div>
 
                     <div class="form-group">
@@ -261,7 +262,6 @@
                     </div>
                 </div>
 
-                <!-- Счетчики и дополнительные поля не переводятся -->
                 <div class="settings-section">
                     <h2>Counters & Analytics / Счетчики и аналитика</h2>
 
@@ -274,15 +274,16 @@
                     </div>
                 </div>
 
+                <!-- ДОПОЛНИТЕЛЬНЫЕ ПОЛЯ (С ИЗМЕНЕНИЯМИ) -->
                 <div class="settings-section">
                     <h2>Additional Fields / Дополнительные поля</h2>
 
                     <div class="form-group">
-                        <label for="additional_field1">Additional Field 1 / Дополнительное поле 1</label>
-                        <input type="text" id="additional_field1" name="additional_field1"
-                               value="<?= esc($settings['additional_field1'] ?? '') ?>"
-                               class="form-control"
-                               placeholder="Additional field">
+                        <label for="additional_field1">Additional Field 1 (map / location)</label>
+                        <textarea id="additional_field1" name="additional_field1" rows="8"
+                                  class="form-control"
+                                  placeholder="Insert map code or HTML markup"><?= esc($settings['additional_field1'] ?? '') ?></textarea>
+                        <small>HTML supported. For example, Yandex or Google Maps embed code.</small>
                     </div>
 
                     <div class="form-group">
