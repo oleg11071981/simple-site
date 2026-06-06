@@ -241,20 +241,18 @@ class ProjectsController extends BaseController
         // Получаем галерею мероприятия
         $galleryFiles = [];
         if ($event['media'] > 0) {
-            // Отладка: выводим ID категории
-            echo "media = " . $event['media'] . "<br>";
-
             $files = $fileModel->getFilesByCategory($event['media']);
-
-            // Отладка: выводим ID файлов, которые вернул метод
-            $debugIds = array_column($files, 'id');
-            echo "IDs из getFilesByCategory: " . implode(', ', $debugIds) . "<br>";
-
             foreach ($files as &$file) {
                 $file['size_formatted'] = $this->formatFileSize($file['file_size']);
             }
             $galleryFiles = $files;
         }
+
+// ОТЛАДКА
+        echo "Файлы в галерее (IDs): ";
+        $debugIds = array_column($galleryFiles, 'id');
+        echo implode(', ', $debugIds);
+        exit;
 
         // Получаем другие мероприятия этого проекта
         $otherEvents = $this->eventsModel->where('project_id', $project['id'])
