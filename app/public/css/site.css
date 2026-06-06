@@ -1880,9 +1880,10 @@ main {
     display: block;
 }
 
-.project-info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+/* Информационные блоки (вертикально) */
+.project-info-list {
+    display: flex;
+    flex-direction: column;
     gap: 1.5rem;
     margin: 2rem 0;
 }
