@@ -1127,28 +1127,26 @@ main {
     background: #6476be;
 }
 
-/* Кнопки навигации */
+/* Кнопки навигации (стрелки) */
 .swiper-button-prev,
 .swiper-button-next {
     width: 44px;
     height: 44px;
-    background: #001e78;
+    background: transparent;
     border-radius: 50%;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .swiper-button-prev:hover,
 .swiper-button-next:hover {
-    background: #6476be;
-    transform: scale(1.05);
+    transform: scale(1.1);
 }
 
 .swiper-button-prev:after,
 .swiper-button-next:after {
-    font-size: 18px;
+    font-size: 32px;
     font-weight: bold;
-    color: white;
+    color: #001e78;
 }
 
 /* Скрываем пагинацию (точки) */
@@ -1170,7 +1168,7 @@ main {
 
     .swiper-button-prev:after,
     .swiper-button-next:after {
-        font-size: 14px;
+        font-size: 24px;
     }
 
     .gallery-link,
@@ -1188,15 +1186,9 @@ main {
         padding: 0 30px;
     }
 
-    .swiper-button-prev,
-    .swiper-button-next {
-        width: 30px;
-        height: 30px;
-    }
-
     .swiper-button-prev:after,
     .swiper-button-next:after {
-        font-size: 12px;
+        font-size: 20px;
     }
 }
 

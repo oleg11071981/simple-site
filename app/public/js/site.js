@@ -67,16 +67,18 @@ document.addEventListener('DOMContentLoaded', function() {
             },
         });
     }
-    // ========================================
-// Swiper слайдер для галереи
-// ========================================
+    // Swiper слайдер для галереи
     const gallerySwiper = document.querySelector('.gallery-swiper');
     if (gallerySwiper && typeof Swiper !== 'undefined') {
         new Swiper('.gallery-swiper', {
             slidesPerView: 1,
             spaceBetween: 20,
-            loop: false,
-            pagination: false,  // ← отключаем пагинацию
+            loop: true,                    // ← зацикливание
+            autoplay: {                    // ← автоплей
+                delay: 4000,               // 4 секунды между слайдами
+                disableOnInteraction: false, // не отключать при взаимодействии
+            },
+            pagination: false,
             navigation: {
                 nextEl: '.swiper-button-next',
                 prevEl: '.swiper-button-prev',
