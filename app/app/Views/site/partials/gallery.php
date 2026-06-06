@@ -8,11 +8,12 @@
                 <?php foreach ($files as $file): ?>
                     <?php
                     // Определяем подпись с учетом языка
-                    $caption = '';
                     if (($currentLang ?? 'ru') === 'en') {
-                        $caption = !empty($file['title_en']) ? $file['title_en'] : ($file['title'] ?? $file['name']);
+                        // Английская версия: title_en, если нет - title, если нет - name
+                        $caption = !empty($file['title_en']) ? $file['title_en'] : (!empty($file['title']) ? $file['title'] : $file['name']);
                     } else {
-                        $caption = $file['title'] ?? $file['name'];
+                        // Русская версия: title, если нет - name
+                        $caption = !empty($file['title']) ? $file['title'] : $file['name'];
                     }
                     ?>
                     <div class="swiper-slide gallery-slide">
@@ -48,9 +49,7 @@
                     </div>
                 <?php endforeach; ?>
             </div>
-            <!-- Пагинация -->
             <div class="swiper-pagination"></div>
-            <!-- Кнопки навигации -->
             <div class="swiper-button-prev"></div>
             <div class="swiper-button-next"></div>
         </div>
