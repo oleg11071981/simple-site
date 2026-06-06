@@ -248,12 +248,6 @@ class ProjectsController extends BaseController
             $galleryFiles = $files;
         }
 
-// ОТЛАДКА
-        echo "Файлы в галерее (IDs): ";
-        $debugIds = array_column($galleryFiles, 'id');
-        echo implode(', ', $debugIds);
-        exit;
-
         // Получаем другие мероприятия этого проекта
         $otherEvents = $this->eventsModel->where('project_id', $project['id'])
             ->where('id !=', $event['id'])
