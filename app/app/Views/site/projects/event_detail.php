@@ -66,6 +66,11 @@
         <?php endif; ?>
 
         <!-- Галерея мероприятия -->
+        <?php
+        // Отладка: выводим ID файлов, которые передаются в галерею
+        $debugIds = array_column($galleryFiles ?? [], 'id');
+        echo "<!-- IDs передаваемые в gallery: " . implode(', ', $debugIds) . " -->\n";
+        ?>
         <?= view('site/partials/gallery', ['files' => $galleryFiles ?? []]) ?>
 
         <!-- Другие мероприятия проекта -->
