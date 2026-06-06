@@ -41,8 +41,7 @@ class Filters extends BaseConfig
                 // CKEditor загружает файлы через iframe-форму без CSRF-поля (только auth).
                 'except' => [
                     'admin-panel/editor/upload',
-                    'admin-panel/editor/upload-image',
-                    'admin-panel/settings/save',
+                    'admin-panel/editor/upload-image'
                 ],
             ],
             // 'invalidchars',
