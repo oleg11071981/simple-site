@@ -160,6 +160,7 @@ class ProjectsController extends BaseController
             foreach ($files as &$file) {
                 $file['size_formatted'] = $this->formatFileSize($file['file_size']);
             }
+            unset($file);
             $galleryFiles = $files;
         }
 
@@ -169,9 +170,9 @@ class ProjectsController extends BaseController
         // Добавляем изображения к мероприятиям
         foreach ($events as &$event) {
             if ($event['foto'] > 0) {
-                $file = $fileModel->find($event['foto']);
-                if ($file) {
-                    $event['foto_file'] = $file['file_name'];
+                $eventFile = $fileModel->find($event['foto']);
+                if ($eventFile) {
+                    $event['foto_file'] = $eventFile['file_name'];
                 }
             }
         }
@@ -232,9 +233,9 @@ class ProjectsController extends BaseController
 
         // Получаем главное изображение мероприятия
         if ($event['foto'] > 0) {
-            $file = $fileModel->find($event['foto']);
-            if ($file) {
-                $event['foto_file'] = $file['file_name'];
+            $eventFile = $fileModel->find($event['foto']);
+            if ($eventFile) {
+                $event['foto_file'] = $eventFile['file_name'];
             }
         }
 
@@ -245,10 +246,9 @@ class ProjectsController extends BaseController
             foreach ($files as &$file) {
                 $file['size_formatted'] = $this->formatFileSize($file['file_size']);
             }
+            unset($file);
             $galleryFiles = $files;
         }
-
-        print_r($galleryFiles);
 
         // Получаем другие мероприятия этого проекта
         $otherEvents = $this->eventsModel->where('project_id', $project['id'])
@@ -259,9 +259,9 @@ class ProjectsController extends BaseController
 
         foreach ($otherEvents as &$other) {
             if ($other['foto'] > 0) {
-                $file = $fileModel->find($other['foto']);
-                if ($file) {
-                    $other['foto_file'] = $file['file_name'];
+                $otherFile = $fileModel->find($other['foto']);
+                if ($otherFile) {
+                    $other['foto_file'] = $otherFile['file_name'];
                 }
             }
             // Локализация названия других мероприятий
@@ -270,8 +270,6 @@ class ProjectsController extends BaseController
             }
         }
         unset($other);
-
-        print_r($galleryFiles);
 
         $data = [
             'title'       => ($lang === 'en' && !empty($event['name_en']))
