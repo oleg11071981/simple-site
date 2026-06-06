@@ -73,26 +73,32 @@ class SettingsController extends BaseController
     {
         $postData = $this->request->getPost();
 
-        // Сохраняем каждый параметр в базу данных
+        // Получаем raw-значение для additional_field1 (без фильтрации)
+        $rawAdditionalField1 = $this->request->getRawInput()['additional_field1'] ?? null;
+        if ($rawAdditionalField1 === null) {
+            $rawAdditionalField1 = $this->request->getPost('additional_field1', false);
+        }
+
         foreach ($postData as $key => $value) {
-            // Пропускаем CSRF токен (не нужно сохранять)
             if ($key === 'csrf_test_name') {
                 continue;
+            }
+
+            // Для additional_field1 используем raw-значение
+            if ($key === 'additional_field1' && $rawAdditionalField1 !== null) {
+                $value = $rawAdditionalField1;
             }
 
             $this->settingsModel->saveValue($key, $value);
         }
 
-        // Очищаем кэш настроек, чтобы изменения вступили в силу немедленно
         $this->settingsModel->clearCache();
 
-        // Логируем действие для аудита
         log_message('info', '[SETTINGS] Пользователь "{login}" (ID: {id}) обновил настройки сайта', [
             'login' => session()->get('user_login'),
             'id'    => session()->get('user_id')
         ]);
 
-        // Перенаправляем обратно на страницу настроек с сообщением об успехе
         return redirect()->to('/admin-panel/settings')
             ->with('success', 'Настройки сохранены');
     }
