@@ -294,18 +294,6 @@ class ProjectsController extends BaseController
             'address'     => $this->contacts['address'],
         ];
 
-// ОТЛАДКА ПЕРЕД view
-        $debugBefore = array_column($data["galleryFiles"], 'id');
-        echo "Перед view IDs: " . implode(', ', $debugBefore) . "<br>";
-
-// Отладка после возможного изменения
-// (здесь может быть другой код, меняющий $galleryFiles)
-
-        echo "После возможных изменений IDs: " . implode(', ', array_column($data["galleryFiles"], 'id')) . "<br>";
-        exit;
-
-
-
         return view('site/projects/event_detail', $data);
     }
 
