@@ -27,6 +27,7 @@ class NFileManagerModel extends Model
         'file_name', 'file_type', 'mime_type', 'name', 'category',
         'width', 'height', 'file_size', 'thumb_width', 'thumb_height',
         'thumb_file_size', 'foto', 'cnt', 'title', 'priority',
+        'title_en',  // ← Добавить поле для английской подписи
         'create', 'modify', 'create_by_user', 'modify_by_user'
     ];
 

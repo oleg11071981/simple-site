@@ -71,6 +71,15 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="title_en">Подпись (English) / Caption (English)</label>
+                    <input type="text" id="title_en" name="title_en"
+                           value="<?= esc($file['title_en'] ?? '') ?>"
+                           class="form-control"
+                           placeholder="Enter caption in English">
+                    <small>Для отображения в английской версии сайта</small>
+                </div>
+
+                <div class="form-group">
                     <label for="priority">Приоритет сортировки</label>
                     <input type="number" id="priority" name="priority"
                            value="<?= esc($file['priority'] ?? 0) ?>"

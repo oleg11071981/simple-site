@@ -11,9 +11,9 @@
                             <a href="/uploads/<?= esc($file['file_name']) ?>"
                                class="gallery-link bigfoto"
                                data-fancybox="gallery"
-                               data-caption="<?= esc($file['title'] ?: $file['name']) ?>">
+                               data-caption="<?= ($currentLang ?? 'ru') === 'en' && !empty($file['title_en']) ? esc($file['title_en']) : esc($file['title'] ?? $file['name']) ?>">
                                 <img src="/uploads/<?= esc($file['file_name']) ?>"
-                                     alt="<?= esc($file['title'] ?: $file['name']) ?>">
+                                     alt="<?= ($currentLang ?? 'ru') === 'en' && !empty($file['title_en']) ? esc($file['title_en']) : esc($file['title'] ?? $file['name']) ?>">
                             </a>
                         <?php else: ?>
                             <div class="gallery-file">
@@ -35,13 +35,13 @@
                                 </a>
                             </div>
                         <?php endif; ?>
-                        <div class="gallery-caption"><?= esc($file['title'] ?: $file['name']) ?></div>
+                        <div class="gallery-caption">
+                            <?= ($currentLang ?? 'ru') === 'en' && !empty($file['title_en']) ? esc($file['title_en']) : esc($file['title'] ?? $file['name']) ?>
+                        </div>
                     </div>
                 <?php endforeach; ?>
             </div>
-            <!-- Пагинация -->
             <div class="swiper-pagination"></div>
-            <!-- Кнопки навигации -->
             <div class="swiper-button-prev"></div>
             <div class="swiper-button-next"></div>
         </div>
