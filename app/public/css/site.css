@@ -1049,7 +1049,7 @@ main {
 /* Swiper контейнер */
 .gallery-swiper {
     width: 100%;
-    padding: 0 40px;
+    padding: 0 50px;
     margin: 0 auto;
     overflow: hidden;
 }
@@ -1127,43 +1127,50 @@ main {
     background: #6476be;
 }
 
-/* Пагинация Swiper */
-.swiper-pagination-bullet {
-    background: #001e78;
-    opacity: 0.3;
-}
-
-.swiper-pagination-bullet-active {
-    opacity: 1;
-    background: #001e78;
-}
-
 /* Кнопки навигации */
 .swiper-button-prev,
 .swiper-button-next {
-    color: #001e78;
-    background: rgba(255, 255, 255, 0.9);
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
+    background: #001e78;
     border-radius: 50%;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+    background: #6476be;
+    transform: scale(1.05);
 }
 
 .swiper-button-prev:after,
 .swiper-button-next:after {
     font-size: 18px;
+    font-weight: bold;
+    color: white;
 }
 
-.swiper-button-prev:hover,
-.swiper-button-next:hover {
-    background: #001e78;
-    color: white;
+/* Скрываем пагинацию (точки) */
+.swiper-pagination {
+    display: none;
 }
 
 /* Адаптивность */
 @media (max-width: 768px) {
     .gallery-swiper {
-        padding: 0 30px;
+        padding: 0 40px;
+    }
+
+    .swiper-button-prev,
+    .swiper-button-next {
+        width: 36px;
+        height: 36px;
+    }
+
+    .swiper-button-prev:after,
+    .swiper-button-next:after {
+        font-size: 14px;
     }
 
     .gallery-link,
@@ -1174,22 +1181,22 @@ main {
     .gallery-title {
         font-size: 1.25rem;
     }
-
-    .swiper-button-prev,
-    .swiper-button-next {
-        width: 28px;
-        height: 28px;
-    }
-
-    .swiper-button-prev:after,
-    .swiper-button-next:after {
-        font-size: 14px;
-    }
 }
 
 @media (max-width: 480px) {
     .gallery-swiper {
-        padding: 0 20px;
+        padding: 0 30px;
+    }
+
+    .swiper-button-prev,
+    .swiper-button-next {
+        width: 30px;
+        height: 30px;
+    }
+
+    .swiper-button-prev:after,
+    .swiper-button-next:after {
+        font-size: 12px;
     }
 }
 
