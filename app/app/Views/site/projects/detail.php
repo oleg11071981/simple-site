@@ -20,25 +20,27 @@
         <?php endif; ?>
 
         <!-- Информационные блоки -->
-        <div class="project-info-grid">
-            <?php if (!empty($project['organizing_committee'])): ?>
-                <div class="info-card">
-                    <h3 class="info-card-title">👥 <?= ($currentLang ?? 'ru') === 'en' ? 'Organizing committee' : 'Оргкомитет' ?></h3>
-                    <div class="info-card-content">
-                        <?= nl2br(esc($project['organizing_committee'])) ?>
+        <?php if (!empty($project['organizing_committee']) || !empty($project['supported_by'])): ?>
+            <div class="project-info-list">
+                <?php if (!empty($project['organizing_committee'])): ?>
+                    <div class="info-card">
+                        <h3 class="info-card-title">👥 <?= ($currentLang ?? 'ru') === 'en' ? 'Organizing committee' : 'Оргкомитет' ?></h3>
+                        <div class="info-card-content">
+                            <?= nl2br(esc($project['organizing_committee'])) ?>
+                        </div>
                     </div>
-                </div>
-            <?php endif; ?>
+                <?php endif; ?>
 
-            <?php if (!empty($project['supported_by'])): ?>
-                <div class="info-card">
-                    <h3 class="info-card-title">🤝 <?= ($currentLang ?? 'ru') === 'en' ? 'Supported by' : 'Проводится при поддержке' ?></h3>
-                    <div class="info-card-content">
-                        <?= nl2br(esc($project['supported_by'])) ?>
+                <?php if (!empty($project['supported_by'])): ?>
+                    <div class="info-card">
+                        <h3 class="info-card-title">🤝 <?= ($currentLang ?? 'ru') === 'en' ? 'Supported by' : 'Проводится при поддержке' ?></h3>
+                        <div class="info-card-content">
+                            <?= nl2br(esc($project['supported_by'])) ?>
+                        </div>
                     </div>
-                </div>
-            <?php endif; ?>
-        </div>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
 
         <!-- Мероприятия проекта (сетка 3 колонки) -->
         <?php if (!empty($events)): ?>
