@@ -248,6 +248,16 @@ class ProjectsController extends BaseController
             $galleryFiles = $files;
         }
 
+// ОТЛАДКА ПЕРЕД view
+        $debugBefore = array_column($galleryFiles, 'id');
+        echo "Перед view IDs: " . implode(', ', $debugBefore) . "<br>";
+
+// Отладка после возможного изменения
+// (здесь может быть другой код, меняющий $galleryFiles)
+
+        echo "После возможных изменений IDs: " . implode(', ', array_column($galleryFiles, 'id')) . "<br>";
+        exit;
+
         // Получаем другие мероприятия этого проекта
         $otherEvents = $this->eventsModel->where('project_id', $project['id'])
             ->where('id !=', $event['id'])
