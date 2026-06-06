@@ -248,6 +248,8 @@ class ProjectsController extends BaseController
             $galleryFiles = $files;
         }
 
+        print_r($galleryFiles);
+
         // Получаем другие мероприятия этого проекта
         $otherEvents = $this->eventsModel->where('project_id', $project['id'])
             ->where('id !=', $event['id'])
@@ -268,6 +270,8 @@ class ProjectsController extends BaseController
             }
         }
         unset($other);
+
+        print_r($galleryFiles);
 
         $data = [
             'title'       => ($lang === 'en' && !empty($event['name_en']))
