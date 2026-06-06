@@ -67,4 +67,35 @@ document.addEventListener('DOMContentLoaded', function() {
             },
         });
     }
+    // Инициализация Swiper слайдера для галереи
+    const gallerySwiper = document.querySelector('.gallery-swiper');
+    if (gallerySwiper && typeof Swiper !== 'undefined') {
+        new Swiper('.gallery-swiper', {
+            slidesPerView: 1,
+            spaceBetween: 20,
+            loop: false,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 2,
+                    spaceBetween: 20,
+                },
+                768: {
+                    slidesPerView: 3,
+                    spaceBetween: 20,
+                },
+                1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 24,
+                },
+            },
+        });
+    }
 });
