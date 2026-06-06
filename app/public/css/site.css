@@ -1145,8 +1145,9 @@ main {
 .swiper-button-prev:after,
 .swiper-button-next:after {
     font-size: 32px;
-    font-weight: bold;
-    color: #001e78;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Скрываем пагинацию (точки) */
