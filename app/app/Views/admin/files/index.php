@@ -28,6 +28,7 @@
     </div>
 <?php endif; ?>
 
+    <!-- Фильтры -->
     <div class="filters-bar">
         <form action="/admin-panel/files" method="get" class="filters-form">
             <div class="filter-group">
@@ -63,87 +64,95 @@
                     <option value="100" <?= ($per_page ?? 50) == 100 ? 'selected' : '' ?>>100</option>
                 </select>
             </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn-apply">Применить</button>
+                <a href="/admin-panel/files" class="filter-reset-btn">Сбросить</a>
+            </div>
         </form>
     </div>
 
+    <!-- Таблица файлов -->
     <div class="table-container">
         <form action="/admin-panel/files/bulk-action" method="post" id="bulkForm" class="bulk-form-setup">
             <?= csrf_field() ?>
         </form>
 
-        <table class="data-table">
-            <thead>
-            <tr>
-                <th style="width: 30px">
-                    <input type="checkbox" id="selectAll" form="bulkForm" onclick="toggleAll(this)">
-                </th>
-                <th style="width: 80px">Превью</th>
-                <th style="width: 60px">ID</th>
-                <th>Название</th>
-                <th style="width: 100px">Тип</th>
-                <th style="width: 100px">Категория</th>
-                <th style="width: 80px">Размер</th>
-                <th style="width: 140px">Дата создания</th>
-                <th style="width: 100px">Действия</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php if (!empty($files) && is_array($files)): ?>
-                <?php foreach ($files as $file): ?>
-                    <tr>
-                        <td class="text-center">
-                            <input type="checkbox" name="selected_ids[]" form="bulkForm" value="<?= $file['id'] ?>">
-                        </td>
-                        <td class="text-center">
-                            <?php if (in_array($file['file_type'], ['jpg', 'jpeg', 'png', 'gif', 'webp'])): ?>
-                                <img src="/uploads/<?= $file['file_name'] ?>" width="50" height="50" style="object-fit: cover; border-radius: 4px;">
-                            <?php else: ?>
-                                <span style="font-size: 30px;"><?= $file['icon'] ?></span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="text-center"><?= esc($file['id']) ?></td>
-                        <td>
-                            <div class="file-name">
-                                <a href="/admin-panel/files/edit/<?= $file['id'] ?>" class="file-link">
-                                    <?= esc($file['name']) ?>
-                                </a>
-                            </div>
-                            <div class="file-original-name">
-                                <small><?= esc($file['file_name']) ?></small>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="file-type-badge"><?= strtoupper(esc($file['file_type'])) ?></span>
-                        </td>
-                        <td class="text-center">
-                            <?php if ($file['category'] > 0): ?>
-                                <a href="/admin-panel/files?category=<?= $file['category'] ?>" class="category-link">
-                                    📁 <?= esc($file['category_name']) ?>
-                                </a>
-                            <?php else: ?>
-                                <span class="no-category">—</span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="text-center"><?= $file['size_formatted'] ?></td>
-                        <td class="date-cell"><?= date('d.m.Y H:i', strtotime($file['create'])) ?></td>
-                        <td class="actions">
-                            <a href="/admin-panel/files/edit/<?= $file['id'] ?>" class="btn-icon" title="Редактировать">
-                                <span class="icon-edit">✏️</span>
-                            </a>
-                            <?= view('admin/partials/delete_button', [
-                                'url'     => '/admin-panel/files/delete/' . $file['id'],
-                                'confirm' => 'Удалить файл «' . esc($file['name']) . '»?',
-                            ]) ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
+        <div class="table-scroll-wrapper">
+            <table class="data-table">
+                <thead>
                 <tr>
-                    <td colspan="9" class="text-center">Файлы не найдены</td>
+                    <th style="width: 30px">
+                        <input type="checkbox" id="selectAll" form="bulkForm" onclick="toggleAll(this)">
+                    </th>
+                    <th style="width: 80px">Превью</th>
+                    <th style="width: 60px">ID</th>
+                    <th>Название</th>
+                    <th style="width: 100px">Тип</th>
+                    <th style="width: 100px">Категория</th>
+                    <th style="width: 80px">Размер</th>
+                    <th style="width: 140px">Дата создания</th>
+                    <th style="width: 100px">Действия</th>
                 </tr>
-            <?php endif; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                <?php if (!empty($files) && is_array($files)): ?>
+                    <?php foreach ($files as $file): ?>
+                        <tr>
+                            <td class="text-center">
+                                <input type="checkbox" name="selected_ids[]" form="bulkForm" value="<?= $file['id'] ?>">
+                            </td>
+                            <td class="text-center">
+                                <?php if (in_array($file['file_type'], ['jpg', 'jpeg', 'png', 'gif', 'webp'])): ?>
+                                    <img src="/uploads/<?= $file['file_name'] ?>" width="50" height="50" style="object-fit: cover; border-radius: 4px;">
+                                <?php else: ?>
+                                    <span style="font-size: 30px;"><?= $file['icon'] ?></span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="text-center"><?= esc($file['id']) ?></td>
+                            <td>
+                                <div class="file-name">
+                                    <a href="/admin-panel/files/edit/<?= $file['id'] ?>" class="file-link">
+                                        <?= esc($file['name']) ?>
+                                    </a>
+                                </div>
+                                <div class="file-original-name">
+                                    <small><?= esc($file['file_name']) ?></small>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="file-type-badge"><?= strtoupper(esc($file['file_type'])) ?></span>
+                            </td>
+                            <td class="text-center">
+                                <?php if ($file['category'] > 0): ?>
+                                    <a href="/admin-panel/files?category=<?= $file['category'] ?>" class="category-link">
+                                        📁 <?= esc($file['category_name']) ?>
+                                    </a>
+                                <?php else: ?>
+                                    <span class="no-category">—</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="text-center"><?= $file['size_formatted'] ?></td>
+                            <td class="date-cell"><?= date('d.m.Y H:i', strtotime($file['create'])) ?></td>
+                            <td class="actions">
+                                <a href="/admin-panel/files/edit/<?= $file['id'] ?>" class="btn-icon" title="Редактировать">
+                                    <span class="icon-edit">✏️</span>
+                                </a>
+                                <?= view('admin/partials/delete_button', [
+                                    'url'     => '/admin-panel/files/delete/' . $file['id'],
+                                    'confirm' => 'Удалить файл «' . esc($file['name']) . '»?',
+                                ]) ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="9" class="text-center">Файлы не найдены</td>
+                    </tr>
+                <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
 
         <!-- Массовые действия и пагинация -->
         <div class="table-actions">
@@ -153,7 +162,7 @@
                     <option value="">Выберите действие</option>
                     <option value="delete">Удалить</option>
                 </select>
-                <button type="button" class="btn-apply" onclick="confirmBulkAction()">Применить</button>
+                <button type="button" class="btn-apply" onclick="confirmBulkAction('bulkForm')">Применить</button>
             </div>
 
             <?php if (isset($pager) && $pager->getPageCount() > 1): ?>
@@ -165,8 +174,22 @@
     </div>
 
     <script>
-        function confirmBulkAction() {
-            window.confirmBulkAction('bulkForm');
+        function confirmBulkAction(formId) {
+            var action = document.querySelector('select[name="bulk_action"]').value;
+            if (action === '') {
+                alert('Пожалуйста, выберите действие');
+                return;
+            }
+
+            var checkboxes = document.querySelectorAll('input[name="selected_ids[]"]:checked');
+            if (checkboxes.length === 0) {
+                alert('Пожалуйста, выберите хотя бы один файл');
+                return;
+            }
+
+            if (action === 'delete' && confirm('Вы действительно хотите удалить выбранные файлы?')) {
+                document.getElementById(formId).submit();
+            }
         }
     </script>
 
