@@ -51,64 +51,66 @@
 
     <!-- Таблица категорий -->
     <div class="table-container">
-        <table class="data-table">
-            <thead>
-            <tr>
-                <th style="width: 60px">ID</th>
-                <th>Название категории</th>
-                <th style="width: 100px">Файлов</th>
-                <th style="width: 80px">Приоритет</th>
-                <th style="width: 140px">Дата создания</th>
-                <th style="width: 100px">Действия</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php if (!empty($categories) && is_array($categories)): ?>
-                <?php foreach ($categories as $cat): ?>
-                    <tr class="<?= $cat['has_children'] ? 'has-children' : '' ?>">
-                        <td class="text-center"><?= esc($cat['id']) ?></td>
-                        <td>
-                            <div class="category-name">
-                                <div class="category-name">
-                                    <?php if ($cat['has_children']): ?>
-                                        <span class="category-icon">📁</span>
-                                    <?php else: ?>
-                                        <span class="category-icon">📂</span>
-                                    <?php endif; ?>
-                                    <a href="/admin-panel/categories?parent=<?= $cat['id'] ?>" class="category-link">
-                                        <?= esc($cat['name']) ?>
-                                    </a>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="text-center">
-                            <a href="/admin-panel/files?category=<?= $cat['id'] ?>" class="files-count-link">
-                                <?= $cat['files_count'] ?>
-                            </a>
-                        </td>
-                        <td class="text-center"><?= esc($cat['priority'] ?? 0) ?></td>
-                        <td class="date-cell"><?= date('d.m.Y H:i', strtotime($cat['create'])) ?></td>
-                        <td class="actions">
-                            <a href="/admin-panel/categories/edit/<?= $cat['id'] ?>" class="btn-icon" title="Редактировать">
-                                <span class="icon-edit">✏️</span>
-                            </a>
-                            <a href="/admin-panel/categories/create?parent=<?= $cat['id'] ?>" class="btn-icon" title="Добавить подкатегорию">
-                                <span class="icon-add">➕</span>
-                            </a>
-                            <?= view('admin/partials/delete_button', [
-                                'url'     => '/admin-panel/categories/delete/' . $cat['id'],
-                                'confirm' => 'Удалить категорию «' . esc($cat['name']) . '»?',
-                            ]) ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
+        <div class="table-scroll-wrapper">
+            <table class="data-table">
+                <thead>
                 <tr>
-                    <td colspan="6" class="text-center">Категории не найдены</td>
+                    <th style="width: 60px">ID</th>
+                    <th>Название категории</th>
+                    <th style="width: 100px">Файлов</th>
+                    <th style="width: 80px">Приоритет</th>
+                    <th style="width: 140px">Дата создания</th>
+                    <th style="width: 100px">Действия</th>
                 </tr>
-            <?php endif; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                <?php if (!empty($categories) && is_array($categories)): ?>
+                    <?php foreach ($categories as $cat): ?>
+                        <tr class="<?= $cat['has_children'] ? 'has-children' : '' ?>">
+                            <td class="text-center"><?= esc($cat['id']) ?></td>
+                            <td>
+                                <div class="category-name">
+                                    <div class="category-name">
+                                        <?php if ($cat['has_children']): ?>
+                                            <span class="category-icon">📁</span>
+                                        <?php else: ?>
+                                            <span class="category-icon">📂</span>
+                                        <?php endif; ?>
+                                        <a href="/admin-panel/categories?parent=<?= $cat['id'] ?>" class="category-link">
+                                            <?= esc($cat['name']) ?>
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <a href="/admin-panel/files?category=<?= $cat['id'] ?>" class="files-count-link">
+                                    <?= $cat['files_count'] ?>
+                                </a>
+                            </td>
+                            <td class="text-center"><?= esc($cat['priority'] ?? 0) ?></td>
+                            <td class="date-cell"><?= date('d.m.Y H:i', strtotime($cat['create'])) ?></td>
+                            <td class="actions">
+                                <a href="/admin-panel/categories/edit/<?= $cat['id'] ?>" class="btn-icon" title="Редактировать">
+                                    <span class="icon-edit">✏️</span>
+                                </a>
+                                <a href="/admin-panel/categories/create?parent=<?= $cat['id'] ?>" class="btn-icon" title="Добавить подкатегорию">
+                                    <span class="icon-add">➕</span>
+                                </a>
+                                <?= view('admin/partials/delete_button', [
+                                    'url'     => '/admin-panel/categories/delete/' . $cat['id'],
+                                    'confirm' => 'Удалить категорию «' . esc($cat['name']) . '»?',
+                                ]) ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="6" class="text-center">Категории не найдены</td>
+                    </tr>
+                <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 
 <?= $this->endSection() ?>
