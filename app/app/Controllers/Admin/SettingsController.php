@@ -86,6 +86,9 @@ class SettingsController extends BaseController
      */
     public function save(): RedirectResponse
     {
+        // Отладка: посмотрим, что приходит в POST
+        log_message('error', 'POST data: ' . print_r($this->request->getPost(), true));
+
         $postData = $this->request->getPost();
 
         foreach ($postData as $key => $value) {
@@ -93,16 +96,12 @@ class SettingsController extends BaseController
                 continue;
             }
 
-            // Сохраняем значение (метод saveValue сам обрабатывает экранирование)
+            log_message('error', 'Saving: ' . $key . ' = ' . $value);
+
             $this->settingsModel->saveValue($key, $value);
         }
 
         $this->settingsModel->clearCache();
-
-        log_message('info', '[SETTINGS] Пользователь "{login}" (ID: {id}) обновил настройки сайта', [
-            'login' => session()->get('user_login'),
-            'id'    => session()->get('user_id')
-        ]);
 
         return redirect()->to('/admin-panel/settings')
             ->with('success', 'Настройки сохранены');
