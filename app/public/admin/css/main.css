@@ -1572,3 +1572,193 @@ body {
     color: white;
     text-decoration: none;
 }
+
+/* ========================================
+   МОБИЛЬНАЯ АДАПТАЦИЯ (ДОПОЛНИТЕЛЬНАЯ)
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Фильтры в колонку */
+    .filters-bar {
+        padding: 12px;
+    }
+
+    .filters-form {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .filter-group {
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .filter-group label {
+        min-width: 80px;
+    }
+
+    .filter-select,
+    .filter-input {
+        flex: 1;
+        width: 100%;
+    }
+
+    /* Кнопки фильтров на всю ширину */
+    .filter-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 5px;
+    }
+
+    .btn-apply,
+    .filter-reset-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Таблица с горизонтальным скроллом */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .data-table {
+        min-width: 700px;
+    }
+
+    /* Кнопки массовых действий на всю ширину */
+    .table-actions {
+        flex-direction: column;
+        gap: 15px;
+        padding: 12px;
+    }
+
+    .bulk-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .bulk-select {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .btn-apply {
+        min-width: 100px;
+    }
+
+    /* Пагинация на мобильных */
+    .pagination {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .pagination a,
+    .pagination span {
+        padding: 4px 10px;
+        font-size: 12px;
+    }
+
+    /* Хлебные крошки */
+    .breadcrumbs {
+        padding: 8px 12px;
+        font-size: 12px;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .breadcrumbs a,
+    .breadcrumbs span {
+        display: inline-block;
+    }
+
+    /* Заголовок страницы */
+    .page-header h1 {
+        font-size: 22px;
+    }
+
+    .header-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    /* Формы */
+    .form-container {
+        padding: 0 12px;
+    }
+
+    .settings-section {
+        padding: 16px;
+    }
+
+    .form-group label {
+        font-size: 13px;
+    }
+
+    .form-control {
+        font-size: 13px;
+        padding: 8px 10px;
+    }
+
+    /* Кнопки форм на всю ширину */
+    .form-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn-cancel,
+    .btn-save {
+        width: 100%;
+        max-width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    /* Уведомления */
+    .alert {
+        top: 70px;
+        right: 10px;
+        left: 10px;
+        min-width: auto;
+        max-width: none;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Ещё более компактно для маленьких экранов */
+    .filter-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .filter-group label {
+        min-width: auto;
+    }
+
+    .bulk-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .bulk-select {
+        width: 100%;
+    }
+
+    .btn-apply {
+        width: 100%;
+    }
+
+    .page-header h1 {
+        font-size: 20px;
+    }
+
+    .settings-section h2 {
+        font-size: 16px;
+    }
+}
