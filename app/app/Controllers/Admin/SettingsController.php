@@ -19,6 +19,7 @@
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
+use App\Models\NSiteconfigModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use ReflectionException;
 
@@ -32,6 +33,20 @@ use ReflectionException;
  */
 class SettingsController extends BaseController
 {
+    /**
+     * Модель настроек сайта
+     *
+     * @var NSiteconfigModel
+     */
+    protected NSiteconfigModel $settingsModel;
+
+    /**
+     * Конструктор контроллера
+     */
+    public function __construct()
+    {
+        $this->settingsModel = new NSiteconfigModel();
+    }
 
     /**
      * Отображение страницы управления настройками
@@ -73,22 +88,12 @@ class SettingsController extends BaseController
     {
         $postData = $this->request->getPost();
 
-        // Получаем raw-значение для additional_field1 (без фильтрации)
-        $rawAdditionalField1 = $this->request->getRawInput()['additional_field1'] ?? null;
-        if ($rawAdditionalField1 === null) {
-            $rawAdditionalField1 = $this->request->getPost('additional_field1', false);
-        }
-
         foreach ($postData as $key => $value) {
             if ($key === 'csrf_test_name') {
                 continue;
             }
 
-            // Для additional_field1 используем raw-значение
-            if ($key === 'additional_field1' && $rawAdditionalField1 !== null) {
-                $value = $rawAdditionalField1;
-            }
-
+            // Сохраняем значение (метод saveValue сам обрабатывает экранирование)
             $this->settingsModel->saveValue($key, $value);
         }
 
