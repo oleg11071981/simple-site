@@ -90,6 +90,11 @@
                     <option value="100" <?= ($per_page ?? 50) == 100 ? 'selected' : '' ?>>100</option>
                 </select>
             </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn-apply">Применить</button>
+                <a href="/admin-panel/pages?parent=<?= $parent_id ?? 0 ?>" class="filter-reset-btn">Сбросить</a>
+            </div>
         </form>
     </div>
 
@@ -100,6 +105,7 @@
             <input type="hidden" name="parent" value="<?= $parent_id ?? 0 ?>">
         </form>
 
+        <div class="table-scroll-wrapper">
             <table class="data-table">
                 <thead>
                 <tr>
@@ -167,26 +173,27 @@
                 <?php endif; ?>
                 </tbody>
             </table>
+        </div>
 
-            <!-- Массовые действия -->
-            <div class="table-actions">
-                <div class="bulk-actions">
-                    <span>С отмеченными:</span>
-                    <select name="bulk_action" form="bulkForm" class="bulk-select">
-                        <option value="">Выберите действие</option>
-                        <option value="publish">Опубликовать</option>
-                        <option value="unpublish">Снять с публикации</option>
-                        <option value="delete">Удалить</option>
-                    </select>
-                    <button type="button" class="btn-apply" onclick="confirmBulkAction()">Применить</button>
-                </div>
-
-                <?php if (isset($pager) && $pager->getPageCount() > 1): ?>
-                    <div class="pagination">
-                        <?= $pager->links() ?>
-                    </div>
-                <?php endif; ?>
+        <!-- Массовые действия -->
+        <div class="table-actions">
+            <div class="bulk-actions">
+                <span>С отмеченными:</span>
+                <select name="bulk_action" form="bulkForm" class="bulk-select">
+                    <option value="">Выберите действие</option>
+                    <option value="publish">Опубликовать</option>
+                    <option value="unpublish">Снять с публикации</option>
+                    <option value="delete">Удалить</option>
+                </select>
+                <button type="button" class="btn-apply" onclick="confirmBulkAction()">Применить</button>
             </div>
+
+            <?php if (isset($pager) && $pager->getPageCount() > 1): ?>
+                <div class="pagination">
+                    <?= $pager->links() ?>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 
     <script>
