@@ -43,7 +43,6 @@
                 </select>
             </div>
 
-            <!-- Добавлен фильтр по статусу проекта -->
             <div class="filter-group">
                 <label>Статус проекта:</label>
                 <select name="status" class="filter-select">
@@ -76,6 +75,7 @@
             <?= csrf_field() ?>
         </form>
 
+        <div class="table-scroll-wrapper">
             <table class="data-table">
                 <thead>
                 <tr>
@@ -162,26 +162,27 @@
                 <?php endif; ?>
                 </tbody>
             </table>
+        </div>
 
-            <!-- Массовые действия -->
-            <div class="table-actions">
-                <div class="bulk-actions">
-                    <span>С отмеченными:</span>
-                    <select name="bulk_action" form="bulkForm" class="bulk-select">
-                        <option value="">Выберите действие</option>
-                        <option value="publish">Опубликовать</option>
-                        <option value="unpublish">Снять с публикации</option>
-                        <option value="delete">Удалить</option>
-                    </select>
-                    <button type="button" class="btn-apply" onclick="confirmBulkAction('bulkForm')">Применить</button>
-                </div>
-
-                <?php if (isset($pager) && $pager->getPageCount() > 1): ?>
-                    <div class="pagination">
-                        <?= $pager->links() ?>
-                    </div>
-                <?php endif; ?>
+        <!-- Массовые действия -->
+        <div class="table-actions">
+            <div class="bulk-actions">
+                <span>С отмеченными:</span>
+                <select name="bulk_action" form="bulkForm" class="bulk-select">
+                    <option value="">Выберите действие</option>
+                    <option value="publish">Опубликовать</option>
+                    <option value="unpublish">Снять с публикации</option>
+                    <option value="delete">Удалить</option>
+                </select>
+                <button type="button" class="btn-apply" onclick="confirmBulkAction('bulkForm')">Применить</button>
             </div>
+
+            <?php if (isset($pager) && $pager->getPageCount() > 1): ?>
+                <div class="pagination">
+                    <?= $pager->links() ?>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 
     <style>
@@ -233,6 +234,12 @@
         .badge-secondary {
             background: #6c757d;
             color: white;
+        }
+
+        /* Обёртка для скролла таблицы */
+        .table-scroll-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
     </style>
 
