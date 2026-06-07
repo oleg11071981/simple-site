@@ -1772,3 +1772,14 @@ body {
     display: block;
     overflow: hidden;
 }
+
+.pagination {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination li {
+    display: inline-block;
+    list-style: none;
+}
