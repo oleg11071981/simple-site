@@ -76,80 +76,82 @@
 
     <!-- Таблица мероприятий -->
     <div class="table-container">
-        <table class="data-table">
-            <thead>
-            <tr>
-                <th style="width: 60px">ID</th>
-                <th>Название мероприятия</th>
-                <th>Проект</th>
-                <th style="width: 110px">Дата начала</th>
-                <th style="width: 110px">Дата окончания</th>
-                <th style="width: 100px">Статус</th>
-                <th style="width: 140px">Дата создания</th>
-                <th style="width: 100px">Действия</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php if (!empty($events) && is_array($events)): ?>
-                <?php foreach ($events as $event): ?>
-                    <tr>
-                        <td class="text-center"><?= esc($event['id']) ?></td>
-                        <td>
-                            <div class="event-name">
-                                <span class="event-icon">📅</span>
-                                <a href="/admin-panel/events/edit/<?= $event['id'] ?>" class="event-link">
-                                    <?= esc($event['name']) ?>
-                                </a>
-                            </div>
-                            <?php if (!empty($event['location'])): ?>
-                                <div class="event-location">
-                                    <small>📍 <?= esc($event['location']) ?></small>
-                                </div>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <div class="page-name">
-                                <span class="page-icon">📄</span>
-                                <a href="/admin-panel/projects/edit/<?= $event['project_id'] ?>" class="page-link">
-                                    <?= esc($event['project_name'] ?? '—') ?>
-                                </a>
-                            </div>
-                        </td>
-                        <td class="date-cell"><?= $event['date_start'] ? date('d.m.Y', strtotime($event['date_start'])) : '—' ?></td>
-                        <td class="date-cell"><?= $event['date_end'] ? date('d.m.Y', strtotime($event['date_end'])) : '—' ?></td>
-                        <td class="text-center">
-                            <?php if ($event['publish'] == 1): ?>
-                                <span class="badge badge-success">Опубликовано</span>
-                            <?php else: ?>
-                                <span class="badge badge-warning">Черновик</span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="date-cell"><?= date('d.m.Y H:i', strtotime($event['create'])) ?></td>
-                        <td class="actions">
-                            <a href="/admin-panel/events/toggle/<?= $event['id'] ?>" class="btn-icon" title="Переключить статус">
-                                <?php if ($event['publish'] == 1): ?>
-                                    <span class="icon-eye">👁️</span>
-                                <?php else: ?>
-                                    <span class="icon-eye-off">👁️‍🗨️</span>
-                                <?php endif; ?>
-                            </a>
-                            <a href="/admin-panel/events/edit/<?= $event['id'] ?>" class="btn-icon" title="Редактировать">
-                                <span class="icon-edit">✏️</span>
-                            </a>
-                            <?= view('admin/partials/delete_button', [
-                                'url'     => '/admin-panel/events/delete/' . $event['id'],
-                                'confirm' => 'Удалить мероприятие «' . esc($event['name']) . '»?',
-                            ]) ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
+        <div class="table-scroll-wrapper">
+            <table class="data-table">
+                <thead>
                 <tr>
-                    <td colspan="8" class="text-center">Мероприятия не найдены</td>
+                    <th style="width: 60px">ID</th>
+                    <th>Название мероприятия</th>
+                    <th>Проект</th>
+                    <th style="width: 110px">Дата начала</th>
+                    <th style="width: 110px">Дата окончания</th>
+                    <th style="width: 100px">Статус</th>
+                    <th style="width: 140px">Дата создания</th>
+                    <th style="width: 100px">Действия</th>
                 </tr>
-            <?php endif; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                <?php if (!empty($events) && is_array($events)): ?>
+                    <?php foreach ($events as $event): ?>
+                        <tr>
+                            <td class="text-center"><?= esc($event['id']) ?></td>
+                            <td>
+                                <div class="event-name">
+                                    <span class="event-icon">📅</span>
+                                    <a href="/admin-panel/events/edit/<?= $event['id'] ?>" class="event-link">
+                                        <?= esc($event['name']) ?>
+                                    </a>
+                                </div>
+                                <?php if (!empty($event['location'])): ?>
+                                    <div class="event-location">
+                                        <small>📍 <?= esc($event['location']) ?></small>
+                                    </div>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <div class="page-name">
+                                    <span class="page-icon">📄</span>
+                                    <a href="/admin-panel/projects/edit/<?= $event['project_id'] ?>" class="page-link">
+                                        <?= esc($event['project_name'] ?? '—') ?>
+                                    </a>
+                                </div>
+                            </td>
+                            <td class="date-cell"><?= $event['date_start'] ? date('d.m.Y', strtotime($event['date_start'])) : '—' ?></td>
+                            <td class="date-cell"><?= $event['date_end'] ? date('d.m.Y', strtotime($event['date_end'])) : '—' ?></td>
+                            <td class="text-center">
+                                <?php if ($event['publish'] == 1): ?>
+                                    <span class="badge badge-success">Опубликовано</span>
+                                <?php else: ?>
+                                    <span class="badge badge-warning">Черновик</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="date-cell"><?= date('d.m.Y H:i', strtotime($event['create'])) ?></td>
+                            <td class="actions">
+                                <a href="/admin-panel/events/toggle/<?= $event['id'] ?>" class="btn-icon" title="Переключить статус">
+                                    <?php if ($event['publish'] == 1): ?>
+                                        <span class="icon-eye">👁️</span>
+                                    <?php else: ?>
+                                        <span class="icon-eye-off">👁️‍🗨️</span>
+                                    <?php endif; ?>
+                                </a>
+                                <a href="/admin-panel/events/edit/<?= $event['id'] ?>" class="btn-icon" title="Редактировать">
+                                    <span class="icon-edit">✏️</span>
+                                </a>
+                                <?= view('admin/partials/delete_button', [
+                                    'url'     => '/admin-panel/events/delete/' . $event['id'],
+                                    'confirm' => 'Удалить мероприятие «' . esc($event['name']) . '»?',
+                                ]) ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="8" class="text-center">Мероприятия не найдены</td>
+                    </tr>
+                <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
 
         <!-- Пагинация -->
         <?php if (isset($pager) && $pager->getPageCount() > 1): ?>
