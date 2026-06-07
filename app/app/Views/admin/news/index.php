@@ -26,6 +26,7 @@
     </div>
 <?php endif; ?>
 
+    <!-- Фильтры -->
     <div class="filters-bar">
         <form action="/admin-panel/news" method="get" class="filters-form">
             <div class="filter-group">
@@ -60,7 +61,7 @@
 
             <div class="filter-group">
                 <label>Поиск:</label>
-                <input type="text" name="search" class="filter-select" value="<?= esc($search ?? '') ?>" placeholder="Название...">
+                <input type="text" name="search" class="filter-input" value="<?= esc($search ?? '') ?>" placeholder="Название...">
             </div>
 
             <div class="filter-group">
@@ -74,15 +75,20 @@
                 </select>
             </div>
 
-            <button type="submit" class="btn-apply">Применить</button>
+            <div class="filter-actions">
+                <button type="submit" class="btn-apply">Применить</button>
+                <a href="/admin-panel/news" class="filter-reset-btn">Сбросить</a>
+            </div>
         </form>
     </div>
 
+    <!-- Таблица новостей -->
     <div class="table-container">
         <form action="/admin-panel/news/bulk-action" method="post" id="bulkForm" class="bulk-form-setup">
             <?= csrf_field() ?>
         </form>
 
+        <div class="table-scroll-wrapper">
             <table class="data-table">
                 <thead>
                 <tr>
@@ -152,30 +158,32 @@
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="7" class="text-center">Новости не найдены</td>
+                        <td colspan="8" class="text-center">Новости не найдены</td>
                     </tr>
                 <?php endif; ?>
                 </tbody>
             </table>
+        </div>
 
-            <div class="table-actions">
-                <div class="bulk-actions">
-                    <span>С отмеченными:</span>
-                    <select name="bulk_action" form="bulkForm" class="bulk-select">
-                        <option value="">Выберите действие</option>
-                        <option value="publish">Опубликовать</option>
-                        <option value="unpublish">Снять с публикации</option>
-                        <option value="delete">Удалить</option>
-                    </select>
-                    <button type="button" class="btn-apply" onclick="confirmBulkAction('bulkForm')">Применить</button>
-                </div>
-
-                <?php if (isset($pager) && $pager->getPageCount() > 1): ?>
-                    <div class="pagination">
-                        <?= $pager->links() ?>
-                    </div>
-                <?php endif; ?>
+        <!-- Массовые действия -->
+        <div class="table-actions">
+            <div class="bulk-actions">
+                <span>С отмеченными:</span>
+                <select name="bulk_action" form="bulkForm" class="bulk-select">
+                    <option value="">Выберите действие</option>
+                    <option value="publish">Опубликовать</option>
+                    <option value="unpublish">Снять с публикации</option>
+                    <option value="delete">Удалить</option>
+                </select>
+                <button type="button" class="btn-apply" onclick="confirmBulkAction('bulkForm')">Применить</button>
             </div>
+
+            <?php if (isset($pager) && $pager->getPageCount() > 1): ?>
+                <div class="pagination">
+                    <?= $pager->links() ?>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 
     <script>
