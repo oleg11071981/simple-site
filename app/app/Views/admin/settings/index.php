@@ -145,7 +145,7 @@
                     </div>
                 </div>
 
-                <!-- ДОПОЛНИТЕЛЬНЫЕ ПОЛЯ (С ИЗМЕНЕНИЯМИ) -->
+                <!-- ДОПОЛНИТЕЛЬНЫЕ ПОЛЯ (ТОЛЬКО НА РУССКОЙ ВКЛАДКЕ) -->
                 <div class="settings-section">
                     <h2>Дополнительные поля</h2>
 
@@ -262,38 +262,7 @@
                     </div>
                 </div>
 
-                <div class="settings-section">
-                    <h2>Counters & Analytics / Счетчики и аналитика</h2>
-
-                    <div class="form-group">
-                        <label for="Counters">Code / Код</label>
-                        <textarea id="Counters" name="Counters" rows="10"
-                                  class="form-control"
-                                  placeholder="Вставьте код счетчиков (Яндекс.Метрика, Google Analytics и др.)"><?= esc($settings['Counters'] ?? '') ?></textarea>
-                        <small>JavaScript код будет вставлен перед закрывающим тегом body</small>
-                    </div>
-                </div>
-
-                <!-- ДОПОЛНИТЕЛЬНЫЕ ПОЛЯ (С ИЗМЕНЕНИЯМИ) -->
-                <div class="settings-section">
-                    <h2>Additional Fields / Дополнительные поля</h2>
-
-                    <div class="form-group">
-                        <label for="additional_field1">Additional Field 1 (map / location)</label>
-                        <textarea id="additional_field1" name="additional_field1" rows="8"
-                                  class="form-control"
-                                  placeholder="Insert map code or HTML markup"><?= esc($settings['additional_field1'] ?? '') ?></textarea>
-                        <small>HTML supported. For example, Yandex or Google Maps embed code.</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="additional_field2">Additional Field 2 / Дополнительное поле 2</label>
-                        <input type="text" id="additional_field2" name="additional_field2"
-                               value="<?= esc($settings['additional_field2'] ?? '') ?>"
-                               class="form-control"
-                               placeholder="Additional field">
-                    </div>
-                </div>
+                <!-- Дополнительные поля НЕ дублируем на английской вкладке -->
             </div>
 
             <!-- Кнопки -->
