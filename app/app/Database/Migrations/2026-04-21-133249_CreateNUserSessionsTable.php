@@ -43,11 +43,9 @@ class CreateNUserSessionsTable extends Migration
                 'comment'    => 'IP-адрес пользователя',
             ],
             'timestamp' => [
-                'type'       => 'INT',
-                'constraint' => 10,
-                'unsigned'   => true,
-                'default'    => 0,
-                'comment'    => 'Временная метка (Unix timestamp)',
+                'type'    => 'DATETIME',
+                'null'    => false,
+                'comment' => 'Время последней активности сессии (для GC)',
             ],
             'data' => [
                 'type'       => 'BLOB',

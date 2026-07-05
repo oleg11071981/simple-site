@@ -41,7 +41,7 @@
         <a href="/admin-panel/files" class="<?= $activeMenu === 'files' ? 'active' : '' ?>">📁 Файлы</a>
         <a href="/admin-panel/categories" class="<?= $activeMenu === 'categories' ? 'active' : '' ?>">📂 Категории файлов</a>
         <a href="/admin-panel/settings" class="<?= $activeMenu === 'settings' ? 'active' : '' ?>">⚙️ Настройки</a>
-        <a href="/admin-panel/logout" class="logout-link">🚪 Выйти</a>
+        <?= view('admin/partials/logout_button') ?>
     </div>
 
     <!-- Бургер меню (мобильные) -->
@@ -64,7 +64,7 @@
         <li><a href="/admin-panel/files">📁 Файлы</a></li>
         <li><a href="/admin-panel/categories">📂 Категории файлов</a></li>
         <li><a href="/admin-panel/settings">⚙️ Настройки</a></li>
-        <li><a href="/admin-panel/logout">🚪 Выйти</a></li>
+        <li><?= view('admin/partials/logout_button') ?></li>
     </ul>
 </div>
 

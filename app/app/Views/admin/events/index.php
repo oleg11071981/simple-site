@@ -127,13 +127,11 @@
                             </td>
                             <td class="date-cell"><?= date('d.m.Y H:i', strtotime($event['create'])) ?></td>
                             <td class="actions">
-                                <a href="/admin-panel/events/toggle/<?= $event['id'] ?>" class="btn-icon" title="Переключить статус">
-                                    <?php if ($event['publish'] == 1): ?>
-                                        <span class="icon-eye">👁️</span>
-                                    <?php else: ?>
-                                        <span class="icon-eye-off">👁️‍🗨️</span>
-                                    <?php endif; ?>
-                                </a>
+                            <?= view('admin/partials/toggle_button', [
+                                'url'         => '/admin-panel/events/toggle/' . $event['id'],
+                                'published'   => $event['publish'] == 1,
+                                'buttonTitle' => 'Переключить статус',
+                            ]) ?>
                                 <a href="/admin-panel/events/edit/<?= $event['id'] ?>" class="btn-icon" title="Редактировать">
                                     <span class="icon-edit">✏️</span>
                                 </a>

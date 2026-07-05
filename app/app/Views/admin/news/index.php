@@ -139,13 +139,10 @@
                             <td class="date-cell"><?= date('d.m.Y', strtotime($item['date'])) ?></td>
                             <td class="date-cell"><?= date('d.m.Y H:i', strtotime($item['create'])) ?></td>
                             <td class="actions">
-                                <a href="/admin-panel/news/toggle/<?= $item['id'] ?>" class="btn-icon" title="<?= $item['publish'] == 1 ? 'Снять с публикации' : 'Опубликовать' ?>">
-                                    <?php if ($item['publish'] == 1): ?>
-                                        <span class="icon-eye">👁️</span>
-                                    <?php else: ?>
-                                        <span class="icon-eye-off">👁️‍🗨️</span>
-                                    <?php endif; ?>
-                                </a>
+                                <?= view('admin/partials/toggle_button', [
+                                    'url'       => '/admin-panel/news/toggle/' . $item['id'],
+                                    'published' => $item['publish'] == 1,
+                                ]) ?>
                                 <a href="/admin-panel/news/edit/<?= $item['id'] ?>" class="btn-icon" title="Редактировать">
                                     <span class="icon-edit">✏️</span>
                                 </a>

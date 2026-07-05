@@ -21,8 +21,10 @@ Options -Indexes
 	RewriteCond %{REQUEST_URI} (.+)/$
 	RewriteRule ^ %1 [L,R=301]
 
-	# Rewrite "www.example.com -> example.com"
-	RewriteCond %{HTTPS} !=on
+	# Rewrite "www.example.com -> example.com" (сохраняет https на production)
+	RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+	RewriteCond %{HTTPS} =on
+	RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
 	RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
 	RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
 

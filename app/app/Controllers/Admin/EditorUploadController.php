@@ -70,6 +70,14 @@ class EditorUploadController extends BaseController
             ]);
         }
 
+        $validationError = $this->validateUploadedFile($file, self::ALLOWED_FILE_TYPES);
+        if ($validationError !== null) {
+            return $this->response->setJSON([
+                'uploaded' => false,
+                'error'    => ['message' => $validationError]
+            ]);
+        }
+
         // Создаём папку для загрузок, если её нет
         $uploadPath = FCPATH . 'uploads/ckeditor/';
         if (!is_dir($uploadPath)) {
@@ -78,12 +86,6 @@ class EditorUploadController extends BaseController
 
         // Проверяем тип файла
         $fileType = strtolower($file->getExtension());
-        if (!in_array($fileType, self::ALLOWED_FILE_TYPES)) {
-            return $this->response->setJSON([
-                'uploaded' => false,
-                'error'    => ['message' => 'Тип файла не поддерживается']
-            ]);
-        }
 
         // Сохраняем файл с уникальным именем
         $newName = $file->getRandomName();
@@ -127,6 +129,14 @@ class EditorUploadController extends BaseController
             ]);
         }
 
+        $validationError = $this->validateUploadedFile($file, self::ALLOWED_IMAGE_TYPES);
+        if ($validationError !== null) {
+            return $this->response->setJSON([
+                'uploaded' => false,
+                'error'    => ['message' => $validationError]
+            ]);
+        }
+
         // Создаём папку для загрузок, если её нет
         $uploadPath = FCPATH . 'uploads/ckeditor/images/';
         if (!is_dir($uploadPath)) {
@@ -135,12 +145,6 @@ class EditorUploadController extends BaseController
 
         // Проверяем, что это изображение
         $fileType = strtolower($file->getExtension());
-        if (!in_array($fileType, self::ALLOWED_IMAGE_TYPES)) {
-            return $this->response->setJSON([
-                'uploaded' => false,
-                'error'    => ['message' => 'Можно загружать только изображения (JPG, PNG, GIF, WEBP)']
-            ]);
-        }
 
         // Проверяем размер (max 5MB)
         if ($file->getSize() > self::MAX_IMAGE_SIZE) {

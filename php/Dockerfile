@@ -1,4 +1,4 @@
-FROM php:7.4-fpm
+FROM php:8.2-fpm
 
 RUN apt-get update \
   && apt-get install -y \
@@ -60,8 +60,8 @@ RUN apt-get update && apt-get install -y \
     && pecl install memcached \
     && docker-php-ext-enable memcached
 
-# Устанавливаем xdebug
-RUN pecl install xdebug-3.1.6 && docker-php-ext-enable xdebug
+# Xdebug для локальной разработки (PHP 8.2)
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 ## Устанавливаем в качестве рабочей директории '/app'.
 #WORKDIR /var/www/html

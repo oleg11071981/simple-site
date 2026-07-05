@@ -200,6 +200,12 @@ class FilesController extends BaseController
             return redirect()->back()->with('error', 'Выберите файл для загрузки');
         }
 
+        $allowedTypes = array_merge(self::IMAGE_TYPES, self::DOCUMENT_TYPES);
+        $validationError = $this->validateUploadedFile($file, $allowedTypes);
+        if ($validationError !== null) {
+            return redirect()->back()->with('error', $validationError);
+        }
+
         // Проверка размера файла
         if ($file->getSize() > self::MAX_FILE_SIZE) {
             return redirect()->back()->with('error', 'Размер файла не должен превышать 50 МБ');

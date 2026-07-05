@@ -251,6 +251,61 @@ body {
     outline-offset: 2px;
 }
 
+.post-action-form {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    border: none;
+    vertical-align: middle;
+}
+
+.post-action-form .btn-icon-toggle {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    line-height: inherit;
+    box-shadow: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.post-action-form .btn-icon-toggle:hover {
+    background: #e9ecef;
+}
+
+.post-action-form .btn-icon-toggle:focus {
+    outline: none;
+}
+
+.logout-form {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.logout-form .logout-link {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font: inherit;
+    padding: 8px 0;
+}
+
+.sidebar-menu .logout-form {
+    display: block;
+}
+
+.sidebar-menu .logout-form .logout-link {
+    display: block;
+    width: 100%;
+    text-align: left;
+    color: #dc3545;
+    text-decoration: none;
+    padding: 12px 20px;
+}
+
 .icon-edit { color: #007bff; }
 .icon-delete { color: #dc3545; }
 .icon-eye { color: #28a745; }

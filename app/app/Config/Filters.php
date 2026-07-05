@@ -8,7 +8,7 @@ use CodeIgniter\Filters\DebugToolbar;
 use CodeIgniter\Filters\Honeypot;
 use CodeIgniter\Filters\InvalidChars;
 use CodeIgniter\Filters\SecureHeaders;
-use App\Filters\AuthFilter; // Добавляем наш фильтр авторизации
+use App\Filters\AuthFilter;
 
 class Filters extends BaseConfig
 {
@@ -78,4 +78,18 @@ class Filters extends BaseConfig
      * @var array<string, array<string, list<string>>>
      */
     public array $filters = [];
+
+    public function __construct()
+    {
+        if (ENVIRONMENT === 'production') {
+            $this->globals['after'] = array_values(array_filter(
+                $this->globals['after'],
+                static fn ($filter) => $filter !== 'toolbar'
+            ));
+
+            if (! in_array('secureheaders', $this->globals['after'], true)) {
+                $this->globals['after'][] = 'secureheaders';
+            }
+        }
+    }
 }

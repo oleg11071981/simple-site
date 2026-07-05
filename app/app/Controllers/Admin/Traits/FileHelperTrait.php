@@ -12,8 +12,63 @@
 
 namespace App\Controllers\Admin\Traits;
 
+use CodeIgniter\HTTP\Files\UploadedFile;
+
 trait FileHelperTrait
 {
+    /**
+     * Допустимые MIME-типы по расширению
+     *
+     * @var array<string, list<string>>
+     */
+    private array $mimeMap = [
+        'jpg'  => ['image/jpeg', 'image/pjpeg'],
+        'jpeg' => ['image/jpeg', 'image/pjpeg'],
+        'png'  => ['image/png'],
+        'gif'  => ['image/gif'],
+        'webp' => ['image/webp'],
+        'pdf'  => ['application/pdf'],
+        'doc'  => ['application/msword'],
+        'docx' => ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+        'xls'  => ['application/vnd.ms-excel'],
+        'xlsx' => ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        'zip'  => ['application/zip', 'application/x-zip-compressed'],
+        'rar'  => ['application/vnd.rar', 'application/x-rar-compressed'],
+        'txt'  => ['text/plain'],
+    ];
+
+    /**
+     * Проверить загружаемый файл по расширению и MIME.
+     * Возвращает текст ошибки или null, если файл допустим.
+     */
+    protected function validateUploadedFile(UploadedFile $file, array $allowedExtensions): ?string
+    {
+        if (!$file->isValid()) {
+            return 'Файл повреждён или не был загружен';
+        }
+
+        $extension = strtolower($file->getExtension());
+        if (!in_array($extension, $allowedExtensions, true)) {
+            return 'Тип файла не поддерживается';
+        }
+
+        $mimeType = strtolower((string) $file->getMimeType());
+        $allowedMimes = $this->mimeMap[$extension] ?? [];
+
+        if ($allowedMimes !== [] && !in_array($mimeType, $allowedMimes, true)) {
+            return 'Содержимое файла не соответствует заявленному типу';
+        }
+
+        if ($this->isImage($extension)) {
+            $imageInfo = @getimagesize($file->getTempName());
+            if ($imageInfo === false) {
+                return 'Файл не является корректным изображением';
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Форматировать размер файла
      *

@@ -16,6 +16,7 @@
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
+use App\Libraries\LoginThrottler;
 use App\Models\NUsersModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use ReflectionException;
@@ -103,15 +104,17 @@ class AuthController extends BaseController
 
         // Проверяем, что оба поля заполнены
         if (empty($login) || empty($password)) {
-            // Возвращаем ошибку с сохранением введенных данных
             return redirect()->back()
                 ->with('error', 'Пожалуйста, заполните все поля')
                 ->withInput();
         }
 
-        // ============================================================
-        // Шаг 3: Поиск пользователя в базе данных
-        // ============================================================
+        $throttler = new LoginThrottler();
+        if ($throttler->isLocked($this->request)) {
+            return redirect()->back()
+                ->with('error', $throttler->lockoutMessage())
+                ->withInput();
+        }
 
         /**
          * Поиск активного пользователя по логину или email
@@ -162,15 +165,8 @@ class AuthController extends BaseController
             // Обновляем запись в базе данных
             $this->userModel->update($user['id'], $updateData);
 
-            // --------------------------------------------------------
-            // 4.3: Логирование успешного входа
-            // --------------------------------------------------------
+            $throttler->clear($this->request);
 
-            /**
-             * Записываем в лог информацию об успешной авторизации
-             *
-             * @see https://codeigniter.com/user_guide/general/logging.html
-             */
             log_message('info', '[AUTH] Пользователь "{login}" (ID: {id}) успешно вошел в систему', [
                 'login' => $user['login'],
                 'id'    => $user['id']
@@ -184,10 +180,8 @@ class AuthController extends BaseController
         // Шаг 5: Обработка неудачной попытки входа
         // ============================================================
 
-        /**
-         * Записываем в лог предупреждение о неудачной попытке
-         * Это помогает отслеживать подбор паролей
-         */
+        $throttler->recordFailure($this->request);
+
         log_message('warning', '[AUTH] Неудачная попытка входа для логина/email: {login} с IP: {ip}', [
             'login' => $login,
             'ip'    => $this->request->getIPAddress()

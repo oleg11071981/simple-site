@@ -138,13 +138,10 @@
                                 <a href="/admin-panel/events/create?project_id=<?= $project['id'] ?>" class="btn-icon" title="Добавить мероприятие">
                                     <span class="icon-add">➕</span>
                                 </a>
-                                <a href="/admin-panel/projects/toggle/<?= $project['id'] ?>" class="btn-icon" title="<?= $project['publish'] == 1 ? 'Снять с публикации' : 'Опубликовать' ?>">
-                                    <?php if ($project['publish'] == 1): ?>
-                                        <span class="icon-eye">👁️</span>
-                                    <?php else: ?>
-                                        <span class="icon-eye-off">👁️‍🗨️</span>
-                                    <?php endif; ?>
-                                </a>
+                                <?= view('admin/partials/toggle_button', [
+                                    'url'       => '/admin-panel/projects/toggle/' . $project['id'],
+                                    'published' => $project['publish'] == 1,
+                                ]) ?>
                                 <a href="/admin-panel/projects/edit/<?= $project['id'] ?>" class="btn-icon" title="Редактировать">
                                     <span class="icon-edit">✏️</span>
                                 </a>

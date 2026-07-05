@@ -149,13 +149,10 @@
                             <td class="date-cell"><?= date('d.m.Y H:i', strtotime($page['create'])) ?></td>
                             <td class="date-cell"><?= date('d.m.Y H:i', strtotime($page['modify'])) ?></td>
                             <td class="actions">
-                                <a href="/admin-panel/pages/toggle/<?= $page['id'] ?>?parent=<?= $parent_id ?? 0 ?>" class="btn-icon" title="<?= $page['publish'] == 1 ? 'Снять с публикации' : 'Опубликовать' ?>">
-                                    <?php if ($page['publish'] == 1): ?>
-                                        <span class="icon-eye">👁️</span>
-                                    <?php else: ?>
-                                        <span class="icon-eye-off">👁️‍🗨️</span>
-                                    <?php endif; ?>
-                                </a>
+                                <?= view('admin/partials/toggle_button', [
+                                    'url'       => '/admin-panel/pages/toggle/' . $page['id'],
+                                    'published' => $page['publish'] == 1,
+                                ]) ?>
                                 <a href="/admin-panel/pages/edit/<?= $page['id'] ?>" class="btn-icon" title="Редактировать">
                                     <span class="icon-edit">✏️</span>
                                 </a>
