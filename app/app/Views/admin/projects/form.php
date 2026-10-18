@@ -91,6 +91,14 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="more_info">Полное описание (Русский)</label>
+                        <textarea id="more_info" name="more_info" rows="15"
+                                  class="form-control"
+                                  placeholder="Подробное описание проекта (HTML)"><?= htmlspecialchars($project['more_info'] ?? '') ?></textarea>
+                        <small>Поддерживается HTML разметка. Используйте визуальный редактор.</small>
+                    </div>
+
+                    <div class="form-group">
                         <label for="organizing_committee">Оргкомитет (Русский)</label>
                         <textarea id="organizing_committee" name="organizing_committee" rows="6"
                                   class="form-control"
@@ -153,6 +161,14 @@
                         <textarea id="anons_text_en" name="anons_text_en" rows="4"
                                   class="form-control"
                                   placeholder="Short project description"><?= esc($project['anons_text_en'] ?? '') ?></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="more_info_en">Full description (English)</label>
+                        <textarea id="more_info_en" name="more_info_en" rows="15"
+                                  class="form-control"
+                                  placeholder="Detailed project description (HTML)"><?= htmlspecialchars($project['more_info_en'] ?? '') ?></textarea>
+                        <small>HTML supported. Use visual editor.</small>
                     </div>
 
                     <div class="form-group">
@@ -399,6 +415,52 @@
                 }
             }
             document.getElementById(field).value = result;
+        }
+
+        // CKEditor для русской версии
+        if (typeof CKEDITOR !== 'undefined' && document.getElementById('more_info') && !CKEDITOR.instances.more_info) {
+            CKEDITOR.replace('more_info', {
+                language: 'ru',
+                height: 400,
+                toolbar: [
+                    ['Source', '-', 'NewPage', 'Preview'],
+                    ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord'],
+                    ['Undo', 'Redo', '-', 'Find', 'Replace', '-', 'SelectAll', 'RemoveFormat'],
+                    ['Bold', 'Italic', 'Underline', 'Strike'],
+                    ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', 'Blockquote'],
+                    ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+                    ['Link', 'Unlink', 'Anchor'],
+                    ['Image', 'Table', 'HorizontalRule', 'SpecialChar'],
+                    ['Styles', 'Format', 'Font', 'FontSize'],
+                    ['TextColor', 'BGColor'],
+                    ['Maximize', 'ShowBlocks']
+                ],
+                filebrowserBrowseUrl: '/admin-panel/editor/ckeditor-browse',
+                filebrowserUploadUrl: '/admin-panel/editor/upload-image'
+            });
+        }
+
+        // CKEditor для английской версии
+        if (typeof CKEDITOR !== 'undefined' && document.getElementById('more_info_en') && !CKEDITOR.instances.more_info_en) {
+            CKEDITOR.replace('more_info_en', {
+                language: 'en',
+                height: 400,
+                toolbar: [
+                    ['Source', '-', 'NewPage', 'Preview'],
+                    ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord'],
+                    ['Undo', 'Redo', '-', 'Find', 'Replace', '-', 'SelectAll', 'RemoveFormat'],
+                    ['Bold', 'Italic', 'Underline', 'Strike'],
+                    ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', 'Blockquote'],
+                    ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+                    ['Link', 'Unlink', 'Anchor'],
+                    ['Image', 'Table', 'HorizontalRule', 'SpecialChar'],
+                    ['Styles', 'Format', 'Font', 'FontSize'],
+                    ['TextColor', 'BGColor'],
+                    ['Maximize', 'ShowBlocks']
+                ],
+                filebrowserBrowseUrl: '/admin-panel/editor/ckeditor-browse',
+                filebrowserUploadUrl: '/admin-panel/editor/upload-image'
+            });
         }
     </script>
 

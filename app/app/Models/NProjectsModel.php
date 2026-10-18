@@ -43,6 +43,7 @@ class NProjectsModel extends Model
         'name',
         'path',
         'anons_text',
+        'more_info',
         'organizing_committee',
         'supported_by',
         'foto',
@@ -61,6 +62,7 @@ class NProjectsModel extends Model
         // Английские версии полей
         'name_en',
         'anons_text_en',
+        'more_info_en',
         'organizing_committee_en',
         'supported_by_en',
         'keywords_en',
@@ -264,6 +266,7 @@ class NProjectsModel extends Model
         if ($lang === 'en') {
             $project['name'] = $project['name_en'] ?? $project['name'];
             $project['anons_text'] = $project['anons_text_en'] ?? $project['anons_text'];
+            $project['more_info'] = $project['more_info_en'] ?? $project['more_info'];
             $project['organizing_committee'] = $project['organizing_committee_en'] ?? $project['organizing_committee'];
             $project['supported_by'] = $project['supported_by_en'] ?? $project['supported_by'];
             $project['keywords'] = $project['keywords_en'] ?? $project['keywords'];
@@ -296,6 +299,7 @@ class NProjectsModel extends Model
             foreach ($projects as &$project) {
                 $project['name'] = $project['name_en'] ?? $project['name'];
                 $project['anons_text'] = $project['anons_text_en'] ?? $project['anons_text'];
+                $project['more_info'] = $project['more_info_en'] ?? $project['more_info'];
                 $project['organizing_committee'] = $project['organizing_committee_en'] ?? $project['organizing_committee'];
                 $project['supported_by'] = $project['supported_by_en'] ?? $project['supported_by'];
                 $project['keywords'] = $project['keywords_en'] ?? $project['keywords'];
@@ -330,6 +334,7 @@ class NProjectsModel extends Model
             foreach ($projects as &$project) {
                 $project['name'] = $project['name_en'] ?? $project['name'];
                 $project['anons_text'] = $project['anons_text_en'] ?? $project['anons_text'];
+                $project['more_info'] = $project['more_info_en'] ?? $project['more_info'];
                 $project['organizing_committee'] = $project['organizing_committee_en'] ?? $project['organizing_committee'];
                 $project['supported_by'] = $project['supported_by_en'] ?? $project['supported_by'];
                 $project['keywords'] = $project['keywords_en'] ?? $project['keywords'];
@@ -364,6 +369,7 @@ class NProjectsModel extends Model
             foreach ($projects as &$project) {
                 $project['name'] = $project['name_en'] ?? $project['name'];
                 $project['anons_text'] = $project['anons_text_en'] ?? $project['anons_text'];
+                $project['more_info'] = $project['more_info_en'] ?? $project['more_info'];
                 $project['organizing_committee'] = $project['organizing_committee_en'] ?? $project['organizing_committee'];
                 $project['supported_by'] = $project['supported_by_en'] ?? $project['supported_by'];
                 $project['keywords'] = $project['keywords_en'] ?? $project['keywords'];

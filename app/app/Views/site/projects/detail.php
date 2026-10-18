@@ -19,6 +19,12 @@
             </div>
         <?php endif; ?>
 
+        <?php if (!empty($project['more_info'])): ?>
+            <div class="project-description">
+                <?= $project['more_info'] ?>
+            </div>
+        <?php endif; ?>
+
         <!-- Информационные блоки -->
         <?php if (!empty($project['organizing_committee']) || !empty($project['supported_by'])): ?>
             <div class="project-info-list">

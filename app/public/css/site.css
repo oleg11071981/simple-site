@@ -1726,6 +1726,41 @@ main {
     border-left: 4px solid #001e78;
 }
 
+.project-description {
+    color: #4b5563;
+    line-height: 1.8;
+    font-size: 1.0625rem;
+    margin: 1.5rem 0 2rem;
+}
+
+.project-description:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.project-description p {
+    margin-bottom: 1.5rem;
+}
+
+.project-description h2,
+.project-description h3 {
+    margin: 2rem 0 1rem;
+    color: #1f2937;
+}
+
+.project-description ul,
+.project-description ol {
+    margin: 1rem 0 1.5rem 1.8rem;
+}
+
+.project-description img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+    margin: 1rem 0;
+}
+
 .projects-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
