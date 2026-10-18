@@ -320,15 +320,23 @@ main {
     overflow: hidden;
 }
 
-.page-text a {
+.page-text a,
+.home-text a,
+.news-detail-content a,
+.project-description a,
+.event-description a {
     color: #001e78;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 2px;
+    text-decoration: none;
+    transition: color 0.2s;
 }
 
-.page-text a:hover {
+.page-text a:hover,
+.home-text a:hover,
+.news-detail-content a:hover,
+.project-description a:hover,
+.event-description a:hover {
     color: #6476be;
+    text-decoration: underline;
 }
 
 .page-text img {
@@ -441,17 +449,6 @@ main {
     margin-bottom: 0.5rem;
     line-height: 1.6;
     overflow: hidden;
-}
-
-.home-text a {
-    color: #001e78;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 2px;
-}
-
-.home-text a:hover {
-    color: #6476be;
 }
 
 .home-text img {
@@ -749,15 +746,6 @@ main {
     margin-bottom: 0.5rem;
     line-height: 1.6;
     overflow: hidden;
-}
-
-.news-detail-content a {
-    color: #001e78;
-    text-decoration: underline;
-}
-
-.news-detail-content a:hover {
-    color: #6476be;
 }
 
 .news-detail-content img {
