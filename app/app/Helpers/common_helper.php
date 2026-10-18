@@ -29,3 +29,19 @@ if (!function_exists('declension')) {
         return $many;
     }
 }
+
+if (!function_exists('has_date')) {
+    /**
+     * Дата задана и не является нулевым значением MySQL (0000-00-00).
+     */
+    function has_date(?string $date): bool
+    {
+        if ($date === null || trim($date) === '') {
+            return false;
+        }
+
+        $year = (int) substr($date, 0, 4);
+
+        return $year > 0;
+    }
+}

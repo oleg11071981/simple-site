@@ -31,10 +31,10 @@
                     <?php endif; ?>
 
                     <div class="project-meta">
-                        <?php if (!empty($project['date_start'])): ?>
+                        <?php if (has_date($project['date_start'] ?? null)): ?>
                             <span class="project-date">
                                 📅 <?= date('d.m.Y', strtotime($project['date_start'])) ?>
-                                <?php if (!empty($project['date_end']) && $project['date_end'] != $project['date_start']): ?>
+                                <?php if (has_date($project['date_end'] ?? null) && $project['date_end'] != $project['date_start']): ?>
                                     – <?= date('d.m.Y', strtotime($project['date_end'])) ?>
                                 <?php endif; ?>
                             </span>
@@ -88,10 +88,10 @@
                         <?php endif; ?>
 
                         <div class="project-meta">
-                            <?php if (!empty($project['date_start'])): ?>
+                            <?php if (has_date($project['date_start'] ?? null)): ?>
                                 <span class="project-date">
                                     📅 <?= date('d.m.Y', strtotime($project['date_start'])) ?>
-                                    <?php if (!empty($project['date_end']) && $project['date_end'] != $project['date_start']): ?>
+                                    <?php if (has_date($project['date_end'] ?? null) && $project['date_end'] != $project['date_start']): ?>
                                         – <?= date('d.m.Y', strtotime($project['date_end'])) ?>
                                     <?php endif; ?>
                                 </span>
