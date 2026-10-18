@@ -135,7 +135,7 @@ class SiteController extends BaseController
                     $project['foto_file'] = $file['file_name'];
                 }
             }
-            $project['events_count'] = $eventsModel->getEventsCount($project['id']);
+            $project['events_count'] = $eventsModel->getEventsCount($project['id'], true);
         }
         unset($project);
 

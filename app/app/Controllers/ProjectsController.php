@@ -81,7 +81,7 @@ class ProjectsController extends BaseController
                     $project['foto_file'] = $file['file_name'];
                 }
             }
-            $project['events_count'] = $this->eventsModel->getEventsCount($project['id']);
+            $project['events_count'] = $this->eventsModel->getEventsCount($project['id'], true);
         }
         unset($project);
 
@@ -93,7 +93,7 @@ class ProjectsController extends BaseController
                     $project['foto_file'] = $file['file_name'];
                 }
             }
-            $project['events_count'] = $this->eventsModel->getEventsCount($project['id']);
+            $project['events_count'] = $this->eventsModel->getEventsCount($project['id'], true);
         }
         unset($project);
 

@@ -154,10 +154,15 @@ class NProjectEventsModel extends Model
     /**
      * Количество мероприятий у проекта
      */
-    public function getEventsCount(int $projectId): int
+    public function getEventsCount(int $projectId, bool $publishedOnly = false): int
     {
-        return $this->where('project_id', $projectId)
-            ->countAllResults();
+        $builder = $this->where('project_id', $projectId);
+
+        if ($publishedOnly) {
+            $builder->where('publish', 1);
+        }
+
+        return $builder->countAllResults();
     }
 
     /**
