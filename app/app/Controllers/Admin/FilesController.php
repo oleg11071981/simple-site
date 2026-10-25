@@ -370,7 +370,7 @@ class FilesController extends BaseController
     }
 
     /**
-     * Обновление информации о файле
+     * Обновление информации о файле (метаданные и опциональная замена файла)
      *
      * @route POST /admin-panel/files/update/{id}
      *
@@ -380,15 +380,121 @@ class FilesController extends BaseController
      */
     public function update(int $id): RedirectResponse
     {
-        $postData = $this->request->getPost();
-
-        if ($this->filesModel->update($id, $postData)) {
-            return redirect()->to('/admin-panel/files')->with('success', 'Файл успешно обновлён');
+        $existing = $this->filesModel->find($id);
+        if (! $existing) {
+            return redirect()->to('/admin-panel/files')->with('error', 'Файл не найден');
         }
 
-        return redirect()->back()
-            ->with('errors', $this->filesModel->errors())
-            ->withInput();
+        $postData = $this->request->getPost();
+        $category = (int) ($postData['category'] ?? $existing['category'] ?? 0);
+        $listUrl  = $category > 0
+            ? '/admin-panel/files?category=' . $category
+            : '/admin-panel/files';
+
+        $updateData = [
+            'name'     => trim((string) ($postData['name'] ?? $existing['name'])),
+            'title'    => trim((string) ($postData['title'] ?? '')),
+            'title_en' => trim((string) ($postData['title_en'] ?? '')),
+            'priority' => (int) ($postData['priority'] ?? 0),
+            'category' => $category,
+        ];
+
+        $newFile = $this->request->getFile('userfile');
+        $oldFileName = $existing['file_name'];
+        $replaced    = false;
+
+        if ($newFile !== null && $newFile->getError() !== UPLOAD_ERR_NO_FILE) {
+            if (! $newFile->isValid()) {
+                return redirect()->back()
+                    ->with('error', 'Новый файл повреждён или не был загружен')
+                    ->withInput();
+            }
+
+            $allowedTypes = array_merge(self::IMAGE_TYPES, self::DOCUMENT_TYPES, ['webp', 'zip', 'rar']);
+            $validationError = $this->validateUploadedFile($newFile, $allowedTypes);
+            if ($validationError !== null) {
+                return redirect()->back()->with('error', $validationError)->withInput();
+            }
+
+            if ($newFile->getSize() > self::MAX_FILE_SIZE) {
+                return redirect()->back()
+                    ->with('error', 'Размер файла не должен превышать 50 МБ')
+                    ->withInput();
+            }
+
+            $uploadPath = FCPATH . 'uploads/';
+            if (! is_dir($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+
+            $fileType = strtolower($newFile->getExtension());
+            $mimeType = $newFile->getMimeType();
+            $fileSize = $newFile->getSize();
+            $newName  = $newFile->getRandomName();
+
+            if (! $newFile->move($uploadPath, $newName)) {
+                return redirect()->back()
+                    ->with('error', 'Ошибка при сохранении нового файла')
+                    ->withInput();
+            }
+
+            $fullPath = $uploadPath . $newName;
+            $width    = 0;
+            $height   = 0;
+
+            if ($this->isImage($fileType)) {
+                $resized = $this->resizeImageIfNeeded(
+                    $fullPath,
+                    $fileType,
+                    self::MAX_IMAGE_SIDE,
+                    self::IMAGE_JPEG_QUALITY
+                );
+
+                if ($resized !== null) {
+                    $width    = $resized['width'];
+                    $height   = $resized['height'];
+                    $fileSize = $resized['file_size'];
+                } else {
+                    $imageInfo = @getimagesize($fullPath);
+                    if ($imageInfo) {
+                        $width  = $imageInfo[0];
+                        $height = $imageInfo[1];
+                    }
+                    $fileSize = (int) filesize($fullPath);
+                }
+            }
+
+            $updateData['file_name'] = $newName;
+            $updateData['file_type'] = $fileType;
+            $updateData['mime_type'] = $mimeType;
+            $updateData['file_size'] = $fileSize;
+            $updateData['width']     = $width;
+            $updateData['height']    = $height;
+            $replaced = true;
+        }
+
+        if (! $this->filesModel->update($id, $updateData)) {
+            if ($replaced && ! empty($updateData['file_name'])) {
+                @unlink(FCPATH . 'uploads/' . $updateData['file_name']);
+            }
+
+            return redirect()->back()
+                ->with('errors', $this->filesModel->errors())
+                ->withInput();
+        }
+
+        if ($replaced && $oldFileName !== '' && $oldFileName !== ($updateData['file_name'] ?? '')) {
+            $oldPath = FCPATH . 'uploads/' . $oldFileName;
+            if (is_file($oldPath)) {
+                @unlink($oldPath);
+            }
+        }
+
+        $message = $replaced
+            ? 'Файл успешно обновлён и заменён'
+            : 'Файл успешно обновлён';
+
+        return redirect()->to($listUrl)->with('success', $message);
     }
 
     /**

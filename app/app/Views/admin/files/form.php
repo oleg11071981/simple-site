@@ -195,7 +195,14 @@
 
                 <?php if (isset($file)): ?>
                     <div class="form-group">
-                        <label>Имя файла</label>
+                        <label for="userfile">Заменить файл</label>
+                        <input type="file" id="userfile" name="userfile" class="form-control">
+                        <small>Необязательно. ID записи сохранится, ссылки из проектов/галерей не сломаются. Изображения больше 1280 px уменьшаются автоматически.</small>
+                        <div id="selectedFilesList" style="margin-top: 8px; font-size: 13px; color: #555;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Имя файла на диске</label>
                         <div class="form-control-static"><?= esc($file['file_name']) ?></div>
                     </div>
 
