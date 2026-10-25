@@ -60,10 +60,8 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             closeOnOutsideClick: true,
             caption: function(fancybox, slide) {
-                return slide.triggerEl?.getAttribute('data-caption') ||
-                    slide.triggerEl?.getAttribute('title') ||
-                    slide.triggerEl?.querySelector('img')?.getAttribute('alt') ||
-                    '';
+                // Только поле «Подпись» (data-caption); имя файла не показываем
+                return (slide.triggerEl?.getAttribute('data-caption') || '').trim();
             },
         });
     }

@@ -16,7 +16,6 @@
                         $caption = $file['title'] ?? '';
                     }
                     $caption = trim((string) $caption);
-                    $altText = $caption !== '' ? $caption : ($file['name'] ?? '');
                     ?>
                     <div class="swiper-slide gallery-slide">
                         <?php if (in_array($file['file_type'], ['jpg', 'jpeg', 'png', 'gif', 'webp'])): ?>
@@ -25,7 +24,7 @@
                                data-fancybox="gallery"
                                <?php if ($caption !== ''): ?>data-caption="<?= esc($caption) ?>"<?php endif; ?>>
                                 <img src="/uploads/<?= esc($file['file_name']) ?>"
-                                     alt="<?= esc($altText) ?>">
+                                     alt="<?= esc($caption) ?>">
                             </a>
                         <?php else: ?>
                             <div class="gallery-file">
