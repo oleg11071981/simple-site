@@ -116,4 +116,108 @@ trait FileHelperTrait
     {
         return in_array(strtolower($fileType), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
     }
+
+    /**
+     * Уменьшить изображение по длинной стороне (без апскейла).
+     *
+     * @return array{width: int, height: int, file_size: int}|null
+     */
+    protected function resizeImageIfNeeded(
+        string $filePath,
+        string $extension,
+        int $maxSide = 1280,
+        int $jpegQuality = 82
+    ): ?array {
+        $extension = strtolower($extension);
+        if (! $this->isImage($extension) || ! is_file($filePath) || ! extension_loaded('gd')) {
+            return null;
+        }
+
+        $imageInfo = @getimagesize($filePath);
+        if ($imageInfo === false) {
+            return null;
+        }
+
+        $width  = (int) $imageInfo[0];
+        $height = (int) $imageInfo[1];
+        if ($width < 1 || $height < 1) {
+            return null;
+        }
+
+        $longSide = max($width, $height);
+        if ($longSide <= $maxSide) {
+            return [
+                'width'     => $width,
+                'height'    => $height,
+                'file_size' => (int) filesize($filePath),
+            ];
+        }
+
+        $ratio     = $maxSide / $longSide;
+        $newWidth  = (int) max(1, round($width * $ratio));
+        $newHeight = (int) max(1, round($height * $ratio));
+
+        $source = match ($extension) {
+            'jpg', 'jpeg' => @imagecreatefromjpeg($filePath),
+            'png'         => @imagecreatefrompng($filePath),
+            'gif'         => @imagecreatefromgif($filePath),
+            'webp'        => function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($filePath) : false,
+            default       => false,
+        };
+
+        if ($source === false) {
+            return [
+                'width'     => $width,
+                'height'    => $height,
+                'file_size' => (int) filesize($filePath),
+            ];
+        }
+
+        $dest = imagecreatetruecolor($newWidth, $newHeight);
+        if ($dest === false) {
+            imagedestroy($source);
+
+            return [
+                'width'     => $width,
+                'height'    => $height,
+                'file_size' => (int) filesize($filePath),
+            ];
+        }
+
+        if (in_array($extension, ['png', 'gif', 'webp'], true)) {
+            imagealphablending($dest, false);
+            imagesavealpha($dest, true);
+            $transparent = imagecolorallocatealpha($dest, 0, 0, 0, 127);
+            imagefilledrectangle($dest, 0, 0, $newWidth, $newHeight, $transparent);
+        }
+
+        imagecopyresampled($dest, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+
+        $saved = match ($extension) {
+            'jpg', 'jpeg' => imagejpeg($dest, $filePath, $jpegQuality),
+            'png'         => imagepng($dest, $filePath, 6),
+            'gif'         => imagegif($dest, $filePath),
+            'webp'        => function_exists('imagewebp') ? imagewebp($dest, $filePath, $jpegQuality) : false,
+            default       => false,
+        };
+
+        imagedestroy($source);
+        imagedestroy($dest);
+
+        clearstatcache(true, $filePath);
+
+        if (! $saved) {
+            return [
+                'width'     => $width,
+                'height'    => $height,
+                'file_size' => (int) filesize($filePath),
+            ];
+        }
+
+        return [
+            'width'     => $newWidth,
+            'height'    => $newHeight,
+            'file_size' => (int) filesize($filePath),
+        ];
+    }
 }

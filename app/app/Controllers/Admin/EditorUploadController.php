@@ -96,6 +96,10 @@ class EditorUploadController extends BaseController
             ]);
         }
 
+        if ($this->isImage($fileType)) {
+            $this->resizeImageIfNeeded($uploadPath . $newName, $fileType);
+        }
+
         // Формируем URL для доступа к файлу
         $url = base_url('uploads/ckeditor/' . $newName);
 
@@ -162,6 +166,8 @@ class EditorUploadController extends BaseController
                 'error'    => ['message' => 'Ошибка при сохранении изображения']
             ]);
         }
+
+        $this->resizeImageIfNeeded($uploadPath . $newName, $fileType);
 
         // Формируем URL для доступа к файлу
         $url = base_url('uploads/ckeditor/images/' . $newName);

@@ -56,6 +56,16 @@ class FilesController extends BaseController
     private const IMAGE_TYPES = ['jpg', 'jpeg', 'png', 'gif'];
 
     /**
+     * Максимальная длина длинной стороны изображения при загрузке (px)
+     */
+    private const MAX_IMAGE_SIDE = 1280;
+
+    /**
+     * Качество JPEG/WebP после уменьшения
+     */
+    private const IMAGE_JPEG_QUALITY = 82;
+
+    /**
      * Типы файлов, считающиеся документами
      */
     private const DOCUMENT_TYPES = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt'];
@@ -254,12 +264,29 @@ class FilesController extends BaseController
                 continue;
             }
 
-            $width = $height = 0;
-            if (in_array($fileType, array_merge(self::IMAGE_TYPES, ['webp']), true)) {
-                $imageInfo = @getimagesize($uploadPath . $newName);
-                if ($imageInfo) {
-                    $width  = $imageInfo[0];
-                    $height = $imageInfo[1];
+            $fullPath = $uploadPath . $newName;
+            $width    = 0;
+            $height   = 0;
+
+            if ($this->isImage($fileType)) {
+                $resized = $this->resizeImageIfNeeded(
+                    $fullPath,
+                    $fileType,
+                    self::MAX_IMAGE_SIDE,
+                    self::IMAGE_JPEG_QUALITY
+                );
+
+                if ($resized !== null) {
+                    $width    = $resized['width'];
+                    $height   = $resized['height'];
+                    $fileSize = $resized['file_size'];
+                } else {
+                    $imageInfo = @getimagesize($fullPath);
+                    if ($imageInfo) {
+                        $width  = $imageInfo[0];
+                        $height = $imageInfo[1];
+                    }
+                    $fileSize = (int) filesize($fullPath);
                 }
             }
 

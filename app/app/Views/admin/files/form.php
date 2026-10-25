@@ -188,7 +188,7 @@
                     <div class="form-group">
                         <label for="userfile">Выберите файлы <span class="required">*</span></label>
                         <input type="file" id="userfile" name="userfile[]" class="form-control" multiple required>
-                        <small>Можно выбрать несколько файлов. Форматы: JPG, PNG, GIF, WEBP, PDF, DOC, XLS, ZIP</small>
+                        <small>Можно выбрать несколько файлов. Форматы: JPG, PNG, GIF, WEBP, PDF, DOC, XLS, ZIP. Изображения больше 1280 px по длинной стороне уменьшаются автоматически.</small>
                         <div id="selectedFilesList" style="margin-top: 8px; font-size: 13px; color: #555;"></div>
                     </div>
                 <?php endif; ?>
