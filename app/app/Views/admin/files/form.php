@@ -4,8 +4,8 @@
 
     <div class="form-container">
         <div class="page-header">
-            <h1><?= isset($file) ? 'Редактирование файла' : 'Загрузка файла' ?></h1>
-            <p><?= isset($file) ? 'Редактирование «' . esc($file['name']) . '»' : 'Добавление нового файла на сайт' ?></p>
+            <h1><?= isset($file) ? 'Редактирование файла' : 'Загрузка файлов' ?></h1>
+            <p><?= isset($file) ? 'Редактирование «' . esc($file['name']) . '»' : 'Можно выбрать несколько файлов сразу' ?></p>
         </div>
 
         <?php if (session()->getFlashdata('success')): ?>
@@ -54,12 +54,15 @@
                 <?php endif; ?>
 
                 <div class="form-group">
-                    <label for="name">Название файла <span class="required">*</span></label>
+                    <label for="name">Название файла<?= isset($file) ? ' <span class="required">*</span>' : '' ?></label>
                     <input type="text" id="name" name="name"
                            value="<?= esc($file['name'] ?? '') ?>"
                            class="form-control"
-                           placeholder="Введите название файла"
-                           required>
+                           placeholder="<?= isset($file) ? 'Введите название файла' : 'Для одного файла; при нескольких — из имени файла' ?>"
+                           <?= isset($file) ? 'required' : '' ?>>
+                    <?php if (!isset($file)): ?>
+                        <small>При загрузке нескольких файлов название берётся из имени каждого файла</small>
+                    <?php endif; ?>
                 </div>
 
                 <div class="form-group">
@@ -68,6 +71,9 @@
                            value="<?= esc($file['title'] ?? '') ?>"
                            class="form-control"
                            placeholder="Подпись к изображению">
+                    <?php if (!isset($file)): ?>
+                        <small>При загрузке нескольких файлов подписи остаются пустыми — задайте их при редактировании</small>
+                    <?php endif; ?>
                 </div>
 
                 <div class="form-group">
@@ -180,9 +186,10 @@
                     </div>
                 <?php else: ?>
                     <div class="form-group">
-                        <label for="userfile">Выберите файл <span class="required">*</span></label>
-                        <input type="file" id="userfile" name="userfile" class="form-control" required>
-                        <small>Поддерживаемые форматы: JPG, PNG, GIF, PDF, DOC, XLS, ZIP</small>
+                        <label for="userfile">Выберите файлы <span class="required">*</span></label>
+                        <input type="file" id="userfile" name="userfile[]" class="form-control" multiple required>
+                        <small>Можно выбрать несколько файлов. Форматы: JPG, PNG, GIF, WEBP, PDF, DOC, XLS, ZIP</small>
+                        <div id="selectedFilesList" style="margin-top: 8px; font-size: 13px; color: #555;"></div>
                     </div>
                 <?php endif; ?>
 
@@ -468,6 +475,20 @@
                             firstVisible.selected = true;
                         }
                     }
+                });
+            }
+
+            const fileInput = document.getElementById('userfile');
+            const filesList = document.getElementById('selectedFilesList');
+            if (fileInput && filesList) {
+                fileInput.addEventListener('change', function() {
+                    const files = Array.from(this.files || []);
+                    if (files.length === 0) {
+                        filesList.textContent = '';
+                        return;
+                    }
+                    filesList.innerHTML = '<strong>Выбрано: ' + files.length + '</strong><br>' +
+                        files.map(f => '• ' + f.name).join('<br>');
                 });
             }
         });

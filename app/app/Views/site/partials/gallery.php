@@ -7,23 +7,25 @@
             <div class="swiper-wrapper">
                 <?php foreach ($files as $file): ?>
                     <?php
-                    // Определяем подпись с учетом языка
+                    // Подпись только из title / title_en (без fallback на name)
                     if (($currentLang ?? 'ru') === 'en') {
-                        // Английская версия: title_en, если нет - title, если нет - name
-                        $caption = !empty($file['title_en']) ? $file['title_en'] : (!empty($file['title']) ? $file['title'] : $file['name']);
+                        $caption = !empty($file['title_en'])
+                            ? $file['title_en']
+                            : ($file['title'] ?? '');
                     } else {
-                        // Русская версия: title, если нет - name
-                        $caption = !empty($file['title']) ? $file['title'] : $file['name'];
+                        $caption = $file['title'] ?? '';
                     }
+                    $caption = trim((string) $caption);
+                    $altText = $caption !== '' ? $caption : ($file['name'] ?? '');
                     ?>
                     <div class="swiper-slide gallery-slide">
                         <?php if (in_array($file['file_type'], ['jpg', 'jpeg', 'png', 'gif', 'webp'])): ?>
                             <a href="/uploads/<?= esc($file['file_name']) ?>"
                                class="gallery-link bigfoto"
                                data-fancybox="gallery"
-                               data-caption="<?= esc($caption) ?>">
+                               <?php if ($caption !== ''): ?>data-caption="<?= esc($caption) ?>"<?php endif; ?>>
                                 <img src="/uploads/<?= esc($file['file_name']) ?>"
-                                     alt="<?= esc($caption) ?>">
+                                     alt="<?= esc($altText) ?>">
                             </a>
                         <?php else: ?>
                             <div class="gallery-file">
@@ -45,7 +47,9 @@
                                 </a>
                             </div>
                         <?php endif; ?>
-                        <div class="gallery-caption"><?= esc($caption) ?></div>
+                        <?php if ($caption !== ''): ?>
+                            <div class="gallery-caption"><?= esc($caption) ?></div>
+                        <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
             </div>

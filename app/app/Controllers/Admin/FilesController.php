@@ -170,7 +170,7 @@ class FilesController extends BaseController
         $selectedCategory = (int)($this->request->getGet('category') ?? 0);
 
         $data = [
-            'title'            => 'Загрузка файла',
+            'title'            => 'Загрузка файлов',
             'activeMenu'       => 'files',
             'categories'       => $categoriesModel->orderBy('name', 'ASC')->findAll(),
             'selectedCategory' => $selectedCategory,
@@ -180,10 +180,7 @@ class FilesController extends BaseController
     }
 
     /**
-     * Сохранение загруженного файла
-     *
-     * Обрабатывает загрузку файла, сохраняет его на диск
-     * и добавляет запись в базу данных.
+     * Сохранение загруженных файлов (один или несколько)
      *
      * @route POST /admin-panel/files/store
      *
@@ -192,73 +189,126 @@ class FilesController extends BaseController
      */
     public function store(): RedirectResponse
     {
-        $file = $this->request->getFile('userfile');
         $postData = $this->request->getPost();
+        $category = (int) ($postData['category'] ?? 0);
+        $listUrl  = $category > 0
+            ? '/admin-panel/files?category=' . $category
+            : '/admin-panel/files';
 
-        // Валидация наличия файла
-        if (!$file || !$file->isValid()) {
-            return redirect()->back()->with('error', 'Выберите файл для загрузки');
+        $files = $this->request->getFileMultiple('userfile');
+        if ($files === null) {
+            $single = $this->request->getFile('userfile');
+            $files  = ($single !== null) ? [$single] : [];
         }
 
-        $allowedTypes = array_merge(self::IMAGE_TYPES, self::DOCUMENT_TYPES);
-        $validationError = $this->validateUploadedFile($file, $allowedTypes);
-        if ($validationError !== null) {
-            return redirect()->back()->with('error', $validationError);
+        $files = array_values(array_filter(
+            $files,
+            static fn ($file) => $file !== null && $file->getError() !== UPLOAD_ERR_NO_FILE
+        ));
+
+        if ($files === []) {
+            return redirect()->back()->with('error', 'Выберите файл для загрузки')->withInput();
         }
 
-        // Проверка размера файла
-        if ($file->getSize() > self::MAX_FILE_SIZE) {
-            return redirect()->back()->with('error', 'Размер файла не должен превышать 50 МБ');
-        }
-
-        // Создаём директорию для загрузок, если её нет
         $uploadPath = FCPATH . 'uploads/';
         if (!is_dir($uploadPath)) {
             mkdir($uploadPath, 0755, true);
         }
 
-        $originalName = $file->getClientName();
-        $fileType = strtolower($file->getExtension());
-        $mimeType = $file->getMimeType();
-        $fileSize = $file->getSize();
+        $allowedTypes   = array_merge(self::IMAGE_TYPES, self::DOCUMENT_TYPES, ['webp', 'zip', 'rar']);
+        $isMultiple     = count($files) > 1;
+        $manualName     = trim((string) ($postData['name'] ?? ''));
+        $title          = trim((string) ($postData['title'] ?? ''));
+        $titleEn        = trim((string) ($postData['title_en'] ?? ''));
+        $priority       = (int) ($postData['priority'] ?? 0);
 
-        // Сохраняем файл с уникальным именем
-        $newName = $file->getRandomName();
-        if (!$file->move($uploadPath, $newName)) {
-            return redirect()->back()->with('error', 'Ошибка при загрузке файла');
-        }
+        $uploaded = 0;
+        $errors   = [];
 
-        // Для изображений определяем размеры
-        $width = $height = 0;
-        if (in_array($fileType, self::IMAGE_TYPES)) {
-            $imageInfo = getimagesize($uploadPath . $newName);
-            if ($imageInfo) {
-                $width = $imageInfo[0];
-                $height = $imageInfo[1];
+        foreach ($files as $file) {
+            $originalName = $file->getClientName() ?: 'file';
+
+            if (!$file->isValid()) {
+                $errors[] = $originalName . ': файл повреждён или не был загружен';
+                continue;
+            }
+
+            $validationError = $this->validateUploadedFile($file, $allowedTypes);
+            if ($validationError !== null) {
+                $errors[] = $originalName . ': ' . $validationError;
+                continue;
+            }
+
+            if ($file->getSize() > self::MAX_FILE_SIZE) {
+                $errors[] = $originalName . ': размер не должен превышать 50 МБ';
+                continue;
+            }
+
+            $fileType = strtolower($file->getExtension());
+            $mimeType = $file->getMimeType();
+            $fileSize = $file->getSize();
+            $newName  = $file->getRandomName();
+
+            if (!$file->move($uploadPath, $newName)) {
+                $errors[] = $originalName . ': ошибка при сохранении на диск';
+                continue;
+            }
+
+            $width = $height = 0;
+            if (in_array($fileType, array_merge(self::IMAGE_TYPES, ['webp']), true)) {
+                $imageInfo = @getimagesize($uploadPath . $newName);
+                if ($imageInfo) {
+                    $width  = $imageInfo[0];
+                    $height = $imageInfo[1];
+                }
+            }
+
+            $displayName = (!$isMultiple && $manualName !== '')
+                ? $manualName
+                : pathinfo($originalName, PATHINFO_FILENAME);
+
+            $saveData = [
+                'file_name' => $newName,
+                'file_type' => $fileType,
+                'mime_type' => $mimeType,
+                'file_size' => $fileSize,
+                'name'      => $displayName,
+                'category'  => $category,
+                'title'     => $isMultiple ? '' : $title,
+                'title_en'  => $isMultiple ? '' : $titleEn,
+                'priority'  => $priority,
+                'width'     => $width,
+                'height'    => $height,
+            ];
+
+            if ($this->filesModel->insert($saveData)) {
+                $uploaded++;
+            } else {
+                @unlink($uploadPath . $newName);
+                $modelErrors = $this->filesModel->errors();
+                $errors[] = $originalName . ': ' . (is_array($modelErrors) ? implode('; ', $modelErrors) : 'ошибка сохранения в БД');
             }
         }
 
-        // Подготовка данных для сохранения в БД
-        $saveData = [
-            'file_name' => $newName,
-            'file_type' => $fileType,
-            'mime_type' => $mimeType,
-            'file_size' => $fileSize,
-            'name'      => $postData['name'] ?? pathinfo($originalName, PATHINFO_FILENAME),
-            'category'  => (int)($postData['category'] ?? 0),
-            'title'     => $postData['title'] ?? '',
-            'priority'  => (int)($postData['priority'] ?? 0),
-            'width'     => $width,
-            'height'    => $height,
-        ];
-
-        if ($this->filesModel->save($saveData)) {
-            return redirect()->to('/admin-panel/files')->with('success', 'Файл успешно загружен');
+        if ($uploaded === 0) {
+            return redirect()->back()
+                ->with('error', $errors[0] ?? 'Не удалось загрузить файлы')
+                ->with('errors', $errors)
+                ->withInput();
         }
 
-        return redirect()->back()
-            ->with('errors', $this->filesModel->errors())
-            ->withInput();
+        $message = $uploaded === 1
+            ? 'Файл успешно загружен'
+            : 'Загружено файлов: ' . $uploaded;
+
+        if ($errors !== []) {
+            $message .= '. С ошибками: ' . count($errors);
+            return redirect()->to($listUrl)
+                ->with('success', $message)
+                ->with('errors', $errors);
+        }
+
+        return redirect()->to($listUrl)->with('success', $message);
     }
 
     /**
